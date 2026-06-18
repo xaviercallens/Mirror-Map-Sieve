@@ -1,5 +1,6 @@
-# The Mirror Map Sieve 🌌 & Callens-ALIX Attention Kernel
+# Mirror Map Sieve — Weight-5 Apéry-like Binomial Sum
 
+[![Zenodo](https://zenodo.org/badge/doi/10.5281/zenodo.20747943.svg)](https://doi.org/10.5281/zenodo.20747943)
 [![arXiv](https://img.shields.io/badge/arXiv-Pending-b31b1b.svg)](https://arxiv.org/)
 [![Lean 4](https://img.shields.io/badge/Lean_4-Verified_0_Axioms-009B5C.svg)](https://leanprover.github.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -171,18 +172,22 @@ Mirror-Map-Sieve/
 
 ## 📜 Citation
 
-If you use the Mirror Map Sieve, the $S_{a,b}$ Universal Diagonal Theorem, or the INT64 Attention Kernel in your research, please cite:
+If you use this work, please cite the Zenodo record (peer-reviewed preprint v3):
 
 ```bibtex
-@misc{callens2026mirrormapsieve,
-      title={Automated Classification of Calabi-Yau Periods and the Universal Diagonal Theorem via the Mirror Map Sieve},
-      author={Xavier Callens, Socrate AI Lab},
-      year={2026},
-      eprint={XXXX.XXXXX},
-      archivePrefix={arXiv},
-      primaryClass={math.AG}
+@misc{callens2026weight5,
+  author       = {Callens, Xavier},
+  title        = {A Weight-5 {A}p{\'e}ry-like Binomial Sum, its {C}alabi--{Y}au 4-fold Period, and Supercongruences},
+  year         = {2026},
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.20747943},
+  url          = {https://doi.org/10.5281/zenodo.20747943},
+  note         = {Mirror-Map-Sieve v1.0.0, GitHub: https://github.com/xaviercallens/Mirror-Map-Sieve}
 }
 ```
+
+**Zenodo record:** https://doi.org/10.5281/zenodo.20747943  
+**GitHub release:** https://github.com/xaviercallens/Mirror-Map-Sieve/releases/tag/v1.0.0
 
 ---
 
