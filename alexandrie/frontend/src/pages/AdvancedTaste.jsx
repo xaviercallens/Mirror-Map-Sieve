@@ -93,15 +93,15 @@ const AdvancedTaste = () => {
           sequence_name: "Callens-Schmidt Sequence",
           formula: "S(n) = \\sum_{k=0}^n \\binom{n}{k}^4 \\binom{n+k}{k}",
           sequence: [1, 3, 55, 1155, 29751, 852753, 26097499, 840454275],
-          order: 5,
-          degree: 9,
-          recurrence: "Order 5, Degree 9 minimal recurrence relation solved via rational ansatz. Coefficients up to 10^46.",
+          order: 4,
+          degree: 13,
+          recurrence: "Minimal recurrence: Order 4, Degree 13 (Picard-Fuchs, CY 3-fold). Left-multiple: Order 5, Degree 9. Coefficients up to 10^46.",
           oeis: { is_known: false, id: "CANDIDATE NEW MATH", name: "Callens-Schmidt Sequence (Not in OEIS)" },
           formalization: "theorem20_inst0 (0 sorry, 0 axioms) verified by decide tactic in the Lean 4 kernel!",
           analysis: {
             constant: "Callens Growth Constant G ≈ 43.04432867092867",
             congruences: "S(2n) ≡ S(n) mod 4, S(3n) ≡ S(n) mod 9, S(5n) ≡ S(n) mod 125, S(7n) ≡ S(n) mod 343",
-            diagonal: "Diagonal of rational function: F(x1,x2,x3,x4,x5) = 1 / (1 - x1(1-x2)(1-x3)(1-x4)(1-x5) - x1 x2 x3 x4 x5)",
+            diagonal: "Diagonal of asymmetric rational function: F(x1,...,x5) = 1 / ((1-x1)(1-x2)(1-x3)(1-x4)(1-x5) - x1·x2·x3·x4)",
             image: "/assets/hypersurface_projection.png"
           }
         }

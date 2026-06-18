@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-verify_recurrence.py — Verify the order-5 degree-9 minimal recurrence for S₂₀.
+verify_recurrence.py — Verify the order-5 degree-9 left-multiple recurrence for S₂₀.
 
 For each n = 0, ..., N-1, we verify:
   Σ_{j=0}^{5} P_j(n) · S₂₀(n+j) = 0

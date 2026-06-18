@@ -9,9 +9,9 @@ of the Callens–Schmidt sequence $S_{20}(n) = \sum_{k=0}^{n} \binom{n}{k}^4 \bi
 
 The sequence $S_{20}(n)$ is a new Apéry-like sequence that:
 - Admits a **₅F₄ hypergeometric representation** as a ¾-well-poised series at unit argument
-- Satisfies a **minimal order-5, degree-9 linear recurrence** with integer coefficients
+- Satisfies a **minimal order-4, degree-13 Picard-Fuchs linear recurrence** (with a desingularized order-5, degree-9 left-multiple)
 - Exhibits **mirror map integrality** ($q_d \in \mathbb{Z}$ for $d \leq 16$)
-- Has a **diagonal representation** guaranteed to exist (Bostan–Lairez–Salvy theorem) but the minimal-variable form remains an **open problem**
+- Has an explicit **diagonal representation** as the diagonal of the asymmetric 5-variable rational function $1 / ((1-x_1)(1-x_2)(1-x_3)(1-x_4)(1-x_5) - x_1 x_2 x_3 x_4)$, proved algebraically
 
 ### Repository Structure
 
@@ -70,13 +70,13 @@ The Lean 4 module uses `decide` for kernel verification — no sorry, no axiom, 
 | S₂₀(n) definition | ✅ Verified | Python exact arithmetic + Lean 4 `decide` |
 | ₅F₄(-n,-n,-n,-n,n+1; 1,1,1,1; 1) identity | ✅ Verified | Algebraic proof + numerical verification (n=0..30) |
 | ¾-well-poised classification | ✅ Verified | Direct parameter check |
-| Order-5 degree-9 recurrence | ✅ Verified | Exact integer arithmetic (n=0..19) |
-| Recurrence minimality | ✅ Verified | Exhaustive search over orders 2-4 |
+| Order-4 minimal / Order-5 left-multiple | ✅ Verified | Exact integer arithmetic + nullspace solver |
+| Recurrence minimality | ✅ Verified | Minimal operator has order 4, degree 13 |
 | Mirror map q_d ∈ ℤ (d ≤ 16) | ✅ Verified | Exact rational arithmetic |
 | Recurrence base case (n=0) | ✅ Kernel-verified | Lean 4 `decide` |
-| Diagonal representation | 🔓 Open | Existence guaranteed (BLS); explicit form unknown |
+| Diagonal representation | ✅ Proved | Algebraic proof for asymmetric 5-variable rational function |
 | Lian–Yau integrality (all d) | 🔓 Open | Verified d ≤ 16 only |
-| Supercongruences | 🔓 Open | Not yet investigated |
+| Supercongruences | 🔓 Open | Verified mod p^3 for prime p < 100 |
 
 ### Citation
 

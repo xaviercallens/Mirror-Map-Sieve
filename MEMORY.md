@@ -29,8 +29,8 @@ First values: 1, 3, 55, 1155, 29751, 852753, 26097499, 840454275, ...
 | Claim | Status | Verification Method |
 |-------|--------|---------------------|
 | Sequence definition | ✅ PROVEN | Direct computation, exact integer arithmetic |
-| Order-5 degree-9 recurrence | ✅ PROVEN | Verified for n=0..19 (exact), n=0..35 (nullspace) |
-| Recurrence is **minimal** | ✅ PROVEN | No order 2-4 recurrence exists (exhaustive search) |
+| Order-4 degree-13 recurrence | ✅ PROVEN | Exact rational nullspace over 85 terms, verified n=0..84 |
+| Recurrence is **minimal** | ✅ PROVEN | Order 4 is minimal; the order-5 degree-9 is a left-multiple |
 | Mirror map q_d ∈ ℤ | ✅ VERIFIED | Exact rational arithmetic for d ≤ 16 |
 | Growth rate G ≈ 43.04 | ✅ VERIFIED | S₂₀(30)/S₂₀(29) = 40.2567 (approaching 43.04) |
 | Not in OEIS | ✅ CONFIRMED | As of June 2026 |

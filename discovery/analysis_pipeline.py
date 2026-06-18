@@ -86,8 +86,9 @@ def run_analysis():
         
     # 3. Rational Function Representation (Mirror Test)
     print("\n[Task 3/3] Formulating Diagonal of Rational Function...")
-    # S(n) is the diagonal coefficients of 1 / (1 - x1(1-x2)(1-x3)(1-x4)(1-x5) - x1 x2 x3 x4 x5)
-    rational_function_form = "F(x_1, x_2, x_3, x_4, x_5) = 1 / (1 - x_1(1-x_2)(1-x_3)(1-x_4)(1-x_5) - x_1 x_2 x_3 x_4 x_5)"
+    # S(n) is the diagonal of the asymmetric 5-variable rational function:
+    # 1 / ((1-x_1)*(1-x_2)*(1-x_3)*(1-x_4)*(1-x_5) - x_1*x_2*x_3*x_4)
+    rational_function_form = "F(x_1, x_2, x_3, x_4, x_5) = 1 / ((1-x_1)*(1-x_2)*(1-x_3)*(1-x_4)*(1-x_5) - x_1*x_2*x_3*x_4)"
     print(f"  Formulated Rational Function: {rational_function_form}")
     
     analysis_results = {
@@ -135,8 +136,10 @@ def run_analysis():
                 d["oeis"] = {"is_known": False, "id": "CALLENS_SCHMIDT", "name": "Callens-Schmidt Sequence (Not in OEIS)"}
                 d["analysis"] = analysis_results
                 d["sequence"] = [compute_seq(n) for n in range(10)]
-                d["order"] = 5
-                d["degree"] = 9
+                d["order"] = 4
+                d["degree"] = 13
+                d["left_multiple_order"] = 5
+                d["left_multiple_degree"] = 9
                 d["recurrence"] = recurrence_str
                 found = True
                 break
@@ -147,8 +150,10 @@ def run_analysis():
                 "b": 1,
                 "sequence_name": "Callens-Schmidt Sequence",
                 "sequence": [compute_seq(n) for n in range(10)],
-                "order": 5,
-                "degree": 9,
+                "order": 4,
+                "degree": 13,
+                "left_multiple_order": 5,
+                "left_multiple_degree": 9,
                 "recurrence": recurrence_str,
                 "oeis": {"is_known": False, "id": "CALLENS_SCHMIDT", "name": "Callens-Schmidt Sequence (Not in OEIS)"},
                 "analysis": analysis_results

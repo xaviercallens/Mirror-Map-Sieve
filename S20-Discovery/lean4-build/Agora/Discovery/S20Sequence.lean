@@ -6,7 +6,7 @@
 
   This module provides:
   • The definition of S₂₀ via Finset.sum
-  • Kernel-verified (decide) proofs that the order-5 recurrence holds at n=0
+  • Kernel-verified (decide) proofs that the order-5 left-multiple recurrence holds at n=0
   • Kernel-verified first values
 
   STATUS: ✅ Sorry-free, axiom-free, admit-free
@@ -48,8 +48,9 @@ theorem s20_val_5 : S20 5 = 852753 := by decide
 /-!
 ## Order-5 Recurrence — Base Case Verification
 
-The minimal recurrence for S₂₀ has order 5 with polynomial coefficients
-of degree 9. At n=0, the polynomial coefficients reduce to their constant
+The minimal recurrence for S₂₀ has order 4 with polynomial coefficients of
+degree 13. A computationally compact left-multiple has order 5 with polynomial coefficients
+of degree 9. At n=0, the order-5 left-multiple recurrence coefficients reduce to their constant
 terms, giving the following exact integer identity:
 
   P₀(0)·S₂₀(0) + P₁(0)·S₂₀(1) + P₂(0)·S₂₀(2)
@@ -61,7 +62,7 @@ This is verified by the Lean 4 kernel via `decide`.
 /-- The order-5 recurrence for S₂₀ holds at n=0.
     This is a kernel-verified numerical identity — no sorry, no axiom.
     The integer coefficients are the constant terms P_j(0) of the
-    degree-9 polynomial coefficients of the minimal recurrence. -/
+    degree-9 polynomial coefficients of the order-5 left-multiple recurrence. -/
 theorem recurrence_at_0 :
     (-5412650858431135013634958175726842170573378411840) * S20 0 +
     (-6600211789894833600749251782579095561783149274990400) * S20 1 +
