@@ -100,7 +100,7 @@ class S20SDPAPatcher:
 
     def _patched_sdpa(self, query, key, value, attn_mask=None,
                       dropout_p=0.0, is_causal=False, scale=None,
-                      enable_gqa=False):
+                      **kwargs):
         """
         Drop-in replacement for F.scaled_dot_product_attention that injects
         the S20 log-bias into the attention mask.
@@ -132,8 +132,9 @@ class S20SDPAPatcher:
         return self._original_sdpa(
             query, key, value, attn_mask=attn_mask,
             dropout_p=dropout_p, is_causal=is_causal,
-            scale=scale, enable_gqa=enable_gqa
+            scale=scale, **kwargs
         )
+
 
     def activate(self):
         """Monkey-patch F.scaled_dot_product_attention globally."""
@@ -299,12 +300,22 @@ def benchmark_model_sdpa_patch(model_id: str, device: str = "cuda",
     print(f"{'='*60}")
 
     tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
-    model = AutoModelForCausalLM.from_pretrained(
-        model_id,
-        dtype=torch.float16,
+    
+    # Try sdpa first, fall back to eager if not supported
+    load_kwargs = dict(
+        torch_dtype=torch.float16,
         trust_remote_code=True,
-        attn_implementation="sdpa",
-    ).to(device).eval()
+        low_cpu_mem_usage=True,
+    )
+    try:
+        model = AutoModelForCausalLM.from_pretrained(
+            model_id, attn_implementation="sdpa", **load_kwargs
+        ).to(device).eval()
+    except Exception:
+        model = AutoModelForCausalLM.from_pretrained(
+            model_id, **load_kwargs
+        ).to(device).eval()
+
 
     n_params = sum(p.numel() for p in model.parameters())
     print(f"  Params: {n_params/1e6:.0f}M | Device: {device}")
