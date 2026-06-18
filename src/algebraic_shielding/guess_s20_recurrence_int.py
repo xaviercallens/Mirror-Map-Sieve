@@ -26,10 +26,14 @@ import sympy as sp
 HERE = Path(__file__).parent
 
 
-def compute_s20(n: int) -> int:
-    """Exact S(n) = sum_{k=0}^{n} C(n,k)^4 * C(n+k,k)."""
-    return sum(comb(n, k) ** 4 * comb(n + k, k) for k in range(n + 1))
-
+def load_s20_terms(filepath: str) -> list:
+    """Load the first N terms of S(n) from a JSON file."""
+    with open(filepath, "r") as f:
+        data = json.load(f)
+        # Handle cases where data is a dict containing a 'terms' list, or just a list
+        if isinstance(data, dict) and "terms" in data:
+            return data["terms"]
+        return data
 
 def main():
     N = 80
@@ -37,8 +41,13 @@ def main():
     DEG = 9
     N_COEFFS = (ORDER + 1) * (DEG + 1)  # 60 unknowns
 
-    print(f"Computing {N} terms of S(n)...")
-    S = [compute_s20(n) for n in range(N)]
+    data_file = HERE.parent.parent / "data" / "raw" / "s20_terms_raw.json"
+    print(f"Loading {N} terms of S(n) from {data_file}...")
+    S = load_s20_terms(str(data_file))[:N]
+    if len(S) < N:
+        print(f"ERROR: Not enough terms in JSON. Expected {N}, got {len(S)}")
+        sys.exit(1)
+        
     print(f"  S(0..9) = {S[:10]}")
 
     print(f"Building {N - ORDER} × {N_COEFFS} symbolic matrix...")

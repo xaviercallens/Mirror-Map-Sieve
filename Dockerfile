@@ -1,37 +1,28 @@
-# Mirror Map Sieve - Full Environment
-# Includes Python 3.11+, SageMath, and Lean 4
+# Use a base image with Python
+FROM ubuntu:22.04
 
-FROM sagemath/sagemath:10.2
-
-USER root
-
-# Install dependencies for Python and Lean 4
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    curl \
-    git \
-    build-essential \
+    python3 \
     python3-pip \
-    python3-venv \
+    git \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Create user
-RUN useradd -m -s /bin/bash socrate
-USER socrate
-WORKDIR /home/socrate/app
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
-# Install Elan (Lean version manager)
-RUN curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain leanprover/lean4:v4.31.0
-ENV PATH="/home/socrate/.elan/bin:${PATH}"
+# Install Lean 4
+RUN curl -sSf https://leanprover.github.io/lean4_install.sh | sh
+ENV PATH="/root/.elan/bin:${PATH}"
 
-# Copy application
-COPY --chown=socrate:socrate . .
+# Copy the repository
+COPY . /app
+WORKDIR /app
 
-# Setup Python virtual environment
-RUN python3 -m venv /home/socrate/venv
-ENV PATH="/home/socrate/venv/bin:$PATH"
+# Set up Lean project
+RUN cd /app/src/lean_proofs && lake build
 
-# Install requirements
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
-
-CMD ["/bin/bash"]
+# Default command: Run the algebraic shielding solver
+CMD ["python3", "/app/src/algebraic_shielding/guess_s20_recurrence_int.py"]

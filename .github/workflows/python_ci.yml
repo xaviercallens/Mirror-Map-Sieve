@@ -1,0 +1,21 @@
+name: Python CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run algebraic shielding
+        run: python src/algebraic_shielding/guess_s20_recurrence_int.py
+      - name: Run mirror map verification
+        run: python src/mirror_map/verify_mirror_map.py
+      - name: Run congruences verification
+        run: python src/congruences/verify_congruences.py

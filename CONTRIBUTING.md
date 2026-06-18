@@ -1,19 +1,17 @@
-# Contributing to the Mirror Map Sieve
+# Contributing to Mirror-Map-Sieve
 
-We welcome contributions from pure mathematicians, computer scientists, and AI engineers.
-
-## Open Problems
-
-1. **Geometry Validations**: We have extracted the $S_{20}$ Callens-ALIX sequence and proved Lian-Yau integrality up to $d=16$. Further extensions to higher degrees or computing exact Gromov-Witten invariants from these periods are welcome.
-2. **AI Hardware Attention**: Optimizing the `Callens-AL` sparse-block kernel for Triton or writing CUDA/C++ bindings.
-3. **Hypergeometric Search**: Assisting in exploring other $S_{a,b}$ diagonal sequences.
+We welcome contributions to the Mirror-Map-Sieve repository! Whether you're fixing a bug, adding a new supercongruence proof, or improving documentation, your help is appreciated.
 
 ## How to Contribute
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature/your-feature`).
+3. Make your changes and add tests if applicable.
+4. Run the CI workflows locally if possible.
+5. Commit your changes (`git commit -m "feat: your feature"`).
+6. Push to the branch (`git push origin feature/your-feature`).
+7. Open a Pull Request.
 
-1. **Fork the Repository**
-2. **Create a Branch** (`git checkout -b feature/your-feature`)
-3. **Commit your Changes** (`git commit -m 'feat: Add some feature'`)
-4. **Push to the Branch** (`git push origin feature/your-feature`)
-5. **Open a Pull Request**
-
-Please ensure that any mathematical proofs included are verified in Lean 4 with 0 axioms and 0 `sorry` statements.
+## Coding Standards
+- Python code should be typed and documented with docstrings.
+- Lean 4 proofs should compile cleanly with no `sorry` and no extra axioms.
+- Mathematical statements should be accurately reflected in the code and documentation.
