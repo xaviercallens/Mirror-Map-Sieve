@@ -60,10 +60,15 @@ This was computationally discovered up to $p=97$ and subsequently proven algebra
    cd Mirror-Map-Sieve
    ```
 2. **Set up the environment**:
-   Use the provided `Dockerfile` for a pre-configured environment:
+   Use the pre-built Docker container from GHCR (recommended):
+   ```bash
+   docker pull ghcr.io/xaviercallens/mirror-map-sieve:latest
+   docker run -it ghcr.io/xaviercallens/mirror-map-sieve:latest /bin/bash
+   ```
+   *Alternatively, build it locally:*
    ```bash
    docker build -t mirror-map-sieve .
-   docker run -it mirror-map-sieve
+   docker run -it mirror-map-sieve /bin/bash
    ```
 3. **Run the pipeline**:
    - **Algebraic shielding**: `python src/algebraic_shielding/guess_s20_recurrence_int.py`

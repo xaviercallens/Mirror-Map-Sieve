@@ -4,6 +4,14 @@ To reproduce the discovery and verification of the A397213 sequence:
 
 ## 1. Environment Setup
 You can use the provided Docker container to ensure all dependencies (Python, Lean 4, SageMath) are properly installed.
+
+**Option A: Pull from GitHub Container Registry (Recommended)**
+```bash
+docker pull ghcr.io/xaviercallens/mirror-map-sieve:latest
+docker run -it ghcr.io/xaviercallens/mirror-map-sieve:latest /bin/bash
+```
+
+**Option B: Build Locally**
 ```bash
 docker build -t mirror-map-sieve .
 docker run -it mirror-map-sieve /bin/bash
