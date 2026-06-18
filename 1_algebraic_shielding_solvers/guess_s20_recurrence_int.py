@@ -1,3 +1,15 @@
+#!/usr/bin/env python3
+"""
+guess_s20_recurrence_int.py — Q-Nullspace Solver for S20(n)
+
+This script calculates the first 80 terms of the Callens-ALIX sequence S_20(n)
+using exact integer arithmetic, and then constructs a massive symbolic matrix
+to extract the underlying minimal holonomic recurrence via Q-nullspace solving.
+
+Output:
+    extracts the exact 45-digit polynomials P_0(n)...P_5(n) and saves them
+    to extracted_polynomials.json
+"""
 import sys
 from math import comb
 import sympy as sp

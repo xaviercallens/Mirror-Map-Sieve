@@ -1,0 +1,43 @@
+name: Mirror-Map-Sieve CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+        cache: 'pip'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Run Geometry Verifier
+      run: |
+        cd 3_mirror_map_geometry
+        python verify_mirror_map.py 10
+    - name: Run Polynomial Nullspace Solver
+      run: |
+        cd 1_algebraic_shielding_solvers
+        python guess_s20_recurrence_int.py
+
+  lean-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install Elan
+      run: |
+        curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain leanprover/lean4:v4.31.0
+        echo "$HOME/.elan/bin" >> $GITHUB_PATH
+    - name: Build Lean 4 Proofs
+      run: |
+        cd 2_lean4_formal_proofs
+        lake build
