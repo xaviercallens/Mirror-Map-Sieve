@@ -1,0 +1,42 @@
+{
+  "hardware": "CPU",
+  "device": "cpu",
+  "config": {
+    "seq_len": 128,
+    "head_dim": 64,
+    "batch": 1,
+    "heads": 8
+  },
+  "s20_verified": true,
+  "decay_tables_validated": true,
+  "kernels": [
+    {
+      "kernel": "FP16 Baseline",
+      "latency_ms": 0.795,
+      "throughput_tokens_per_sec": 161018.0,
+      "max_row_sum_deviation": 2.4e-07,
+      "status": "\u2705"
+    },
+    {
+      "kernel": "Callens-ALIX (INT64)",
+      "latency_ms": 8.218,
+      "throughput_tokens_per_sec": 15575.0,
+      "max_row_sum_deviation": 4.8e-07,
+      "status": "\u2705"
+    },
+    {
+      "kernel": "Callens-LIA (INT64 long-range)",
+      "latency_ms": 29.187,
+      "throughput_tokens_per_sec": 4385.0,
+      "max_row_sum_deviation": 4.8e-07,
+      "status": "\u2705"
+    },
+    {
+      "kernel": "Callens-AL (INT64 sparse)",
+      "latency_ms": 0.627,
+      "throughput_tokens_per_sec": 204230.0,
+      "max_row_sum_deviation": 2.4e-07,
+      "status": "\u2705"
+    }
+  ]
+}
