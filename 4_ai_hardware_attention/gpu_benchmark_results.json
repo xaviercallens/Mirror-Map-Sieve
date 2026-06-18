@@ -1,0 +1,29 @@
+{
+  "gpu_info": {
+    "gpu_name": "Tesla T4",
+    "memory_total_MiB": 15360,
+    "power_draw_W": 10.35,
+    "power_limit_W": 70.0,
+    "temperature_C": 34
+  },
+  "pytorch_version": "2.9.1+cu129",
+  "kernel_benchmark": [
+    {"seq_len": 64, "sdpa_baseline_ms": 0.02, "sdpa_s20_ms": 0.022, "overhead": 1.081, "correct": true},
+    {"seq_len": 128, "sdpa_baseline_ms": 0.024, "sdpa_s20_ms": 0.029, "overhead": 1.228, "correct": true},
+    {"seq_len": 256, "sdpa_baseline_ms": 0.041, "sdpa_s20_ms": 0.053, "overhead": 1.307, "correct": true},
+    {"seq_len": 512, "sdpa_baseline_ms": 0.092, "sdpa_s20_ms": 0.144, "overhead": 1.559, "correct": true},
+    {"seq_len": 1024, "sdpa_baseline_ms": 0.199, "sdpa_s20_ms": 0.529, "overhead": 2.651, "correct": true}
+  ],
+  "model_benchmark": {
+    "model_id": "microsoft/Phi-3-mini-4k-instruct",
+    "n_params_M": 3821.1,
+    "device": "cuda",
+    "results": [
+      {"seq_len": 64, "baseline_ms": 49.594, "s20_sdpa_ms": 49.09, "overhead": 0.99, "throughput_base_tok_s": 1290, "throughput_s20_tok_s": 1304, "energy_J": 67.944, "avg_power_W": 69.2, "peak_power_W": 69.5, "correct": true},
+      {"seq_len": 128, "baseline_ms": 59.209, "s20_sdpa_ms": 59.151, "overhead": 0.999, "throughput_base_tok_s": 2162, "throughput_s20_tok_s": 2164, "energy_J": 82.343, "avg_power_W": 69.8, "peak_power_W": 70.6, "correct": true},
+      {"seq_len": 256, "baseline_ms": 106.98, "s20_sdpa_ms": 107.385, "overhead": 1.004, "throughput_base_tok_s": 2393, "throughput_s20_tok_s": 2384, "energy_J": 115.536, "avg_power_W": 54.4, "peak_power_W": 73.9, "correct": true},
+      {"seq_len": 512, "baseline_ms": 211.063, "s20_sdpa_ms": 213.151, "overhead": 1.01, "throughput_base_tok_s": 2426, "throughput_s20_tok_s": 2402, "energy_J": 297.296, "avg_power_W": 69.9, "peak_power_W": 70.7, "correct": true},
+      {"seq_len": 1024, "baseline_ms": 488.507, "s20_sdpa_ms": 487.109, "overhead": 0.997, "throughput_base_tok_s": 2096, "throughput_s20_tok_s": 2102, "energy_J": 659.928, "avg_power_W": 67.7, "peak_power_W": 67.8, "correct": true}
+    ]
+  }
+}

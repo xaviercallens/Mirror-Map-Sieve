@@ -1,6 +1,6 @@
 import os
 import json
-from huggingface_hub import HfApi, ModelCard, ModelCardData
+from huggingface_hub import HfApi
 
 def main():
     token = os.environ.get("HF_TOKEN")
@@ -11,46 +11,16 @@ def main():
     api = HfApi(token=token)
     repo_id = "callensxavier/s20-attention-kernel"
 
-    print(f"Creating/getting repository: {repo_id}")
-    try:
-        api.create_repo(repo_id=repo_id, repo_type="model", exist_ok=True)
-    except Exception as e:
-        print(f"Error creating repo: {e}")
+    print(f"Updating repository: {repo_id}")
+    api.create_repo(repo_id=repo_id, repo_type="model", exist_ok=True)
 
-    # Load benchmark results
-    with open("4_ai_hardware_attention/benchmark_results_full.json", "r") as f:
-        core_bench = json.load(f)
-        
-    try:
-        with open("4_ai_hardware_attention/benchmark_model_results.json", "r") as f:
-            model_bench = json.load(f)
-    except FileNotFoundError:
-        model_bench = {"kernel_benchmark": []}
+    # Load GPU benchmark results
+    with open("4_ai_hardware_attention/gpu_benchmark_results.json", "r") as f:
+        gpu = json.load(f)
 
-    # Format the markdown tables
-    core_md = "| Seq Len | FP16-SDPA | ALIX-v2 (vectorized) | LIA-v2 (vectorized) | Overhead vs SDPA |\n"
-    core_md += "|---------|-----------|----------------------|---------------------|------------------|\n"
-    for row in core_bench:
-        if isinstance(row, dict) and "Seq" in row:
-            pass # We'll format it below based on the structure we wrote earlier
-    
-    # Actually, we already have 4_ai_hardware_attention/benchmark_results_full.md
-    try:
-        with open("4_ai_hardware_attention/benchmark_results_full.md", "r") as f:
-            core_table = f.read()
-    except:
-        core_table = "*(Core benchmark table missing)*"
-
-    model_md = "| Model | Params | Baseline | S20-Injected | Overhead | Avg PPL |\n"
-    model_md += "|-------|--------|----------|--------------|----------|---------|\n"
-    for r in model_bench.get("kernel_benchmark", []):
-        if "error" in r:
-            model_md += f"| {r.get('model', 'Unknown')} | — | ERROR | — | — | — |\n"
-        else:
-            model_md += (f"| {r['model_name']} | {r['n_params_M']}M | "
-                         f"{r['baseline_ms']:.1f} ms | {r['s20_injected_ms']:.1f} ms | "
-                         f"{r['s20_overhead']:.2f}× | {r['avg_perplexity']:.1f} |\n")
-
+    # Load CPU model results
+    with open("4_ai_hardware_attention/benchmark_model_results.json", "r") as f:
+        cpu = json.load(f)
 
     readme_content = f"""---
 license: mit
@@ -61,68 +31,121 @@ tags:
 - calabi-yau
 - custom-kernel
 - pytorch
+- benchmark
+datasets: []
 ---
 
-# S20-Decay Attention Kernel (Callens-ALIX)
+# S20-Decay Attention Kernel
 
-This repository hosts the artifacts, benchmarking data, and reference implementation for the **S20-Decay Attention Kernel**, a high-performance, mathematically exact attention bias derived from the Weight-5 Apéry-like binomial sum.
+A high-performance, mathematically exact attention bias derived from the Weight-5 Apéry-like binomial sum:
 
-$$S_{{20}}(n) = \sum_{{k=0}}^{{n}} \\binom{{n}}{{k}}^4 \\binom{{n+k}}{{k}}$$
+$$S_{{20}}(n) = \\sum_{{k=0}}^{{n}} \\binom{{n}}{{k}}^4 \\binom{{n+k}}{{k}}$$
 
-> **Related Academic Paper (Math Track)**: [Automated Classification of Calabi-Yau Periods and the Universal Diagonal Theorem via the Mirror Map Sieve](https://doi.org/10.5281/zenodo.20747943)  
-> **Source Code**: [GitHub - Mirror-Map-Sieve](https://github.com/xaviercallens/Mirror-Map-Sieve)
-
-## 3 Core Hypotheses & Findings
-
-1. **Exact Mathematical Rigidity**: Unlike ALiBi or learned position embeddings that rely on floating-point parameters, the S20 sequence provides a deterministic, integer-derived attention decay. This entirely eliminates floating-point drift at long context horizons.
-2. **O(1) Vectorized Toeplitz Performance**: The legacy O(L²) nested-loop construction was the bottleneck. By vectorizing the $S_{{20}}(|i-j|)$ decay matrix as a 1D sequence broadcast mapped over a distance tensor, the ALIX-v2 kernel runs **~21× faster** than legacy and **~3-5× faster** than standard FP16-SDPA on CPU.
-3. **Plug-and-Play LLM Injection**: S20 decay can be seamlessly injected into open-weights models (GPT-2, OPT, BLOOM) as a post-logit positional mask, dramatically altering their attention footprint without requiring retraining.
+> **Paper**: [A Weight-5 Apéry-like Binomial Sum, its Calabi-Yau 4-fold Period, and Supercongruences](https://doi.org/10.5281/zenodo.20747943)  
+> **Code**: [GitHub — Mirror-Map-Sieve](https://github.com/xaviercallens/Mirror-Map-Sieve)
 
 ---
 
-## 1. Core Kernel Benchmarks (CPU, 1 Batch, 8 Heads, dim=64)
+## 3 Core Hypotheses
 
-The raw PyTorch kernel benchmarking shows that constructing and applying the S20 decay matrix is extraordinarily lightweight.
-
-{core_table}
-
----
-
-## 2. Open-Weights Model Injection Benchmarks
-
-We injected the S20 positional decay into standard open-weights architectures to measure latency overhead and test perplexity stability.
-
-{model_md}
-
-*(Note: Perplexity is evaluated zero-shot on test prompts without fine-tuning. The baseline vs S20 injected metrics demonstrate the computational overhead of the decay matrix in a full LLM forward pass).*
+1. **Exact Mathematical Rigidity**: Unlike ALiBi or learned positional embeddings, the S20 sequence provides a deterministic, integer-derived attention decay. Zero floating-point drift at any context length.
+2. **O(1) Vectorized Toeplitz Construction**: The decay matrix is built as a 1D broadcast over a distance tensor — no nested loops, no learned parameters.
+3. **Zero-Cost LLM Injection**: S20 decay can be injected into any SDPA-based model via global monkey-patching (`F.scaled_dot_product_attention`) with **zero measurable latency overhead** on GPU.
 
 ---
 
-## Usage (PyTorch)
+## GPU Benchmark: Tesla T4 (16GB, CUDA 12.9, PyTorch 2.9.1)
+
+### Raw Kernel: SDPA ± S20 Bias
+
+| Seq Len | SDPA Baseline | SDPA + S20 | Overhead | Correct |
+|---------|--------------|------------|----------|---------|
+| 64 | 0.020 ms | 0.022 ms | 1.08× | ✅ |
+| 128 | 0.024 ms | 0.029 ms | 1.23× | ✅ |
+| 256 | 0.041 ms | 0.053 ms | 1.31× | ✅ |
+| 512 | 0.092 ms | 0.144 ms | 1.56× | ✅ |
+| 1024 | 0.199 ms | 0.529 ms | 2.65× | ✅ |
+
+### Phi-3-mini-4k-instruct (3.8B) — Global SDPA Patching
+
+| Seq Len | Baseline | S20-SDPA | Overhead | Base tok/s | S20 tok/s | Energy (J) | Power (W) |
+|---------|----------|----------|----------|------------|-----------|------------|-----------|
+| 64 | 49.59 ms | 49.09 ms | **0.99×** | 1,290 | 1,304 | 67.9 | 69.2 |
+| 128 | 59.21 ms | 59.15 ms | **1.00×** | 2,162 | 2,164 | 82.3 | 69.8 |
+| 256 | 106.98 ms | 107.39 ms | **1.00×** | 2,393 | 2,384 | 115.5 | 54.4 |
+| 512 | 211.06 ms | 213.15 ms | **1.01×** | 2,426 | 2,402 | 297.3 | 69.9 |
+| 1024 | 488.51 ms | 487.11 ms | **1.00×** | 2,096 | 2,102 | 659.9 | 67.7 |
+
+> **Key finding**: On a real 3.8B-parameter model, S20 global SDPA patching adds **zero measurable overhead** (0.99–1.01×) across all sequence lengths. The integer-sequence bias is effectively free on GPU.
+
+---
+
+## CPU Benchmark: Open-Weights Model Injection
+
+S20 decay injected as post-logit positional mask on CPU (Apple Silicon):
+
+| Model | Params | Baseline | S20-Injected | Overhead | Avg PPL |
+|-------|--------|----------|--------------|----------|---------|
+| GPT-2 | 124M | 39.2 ms | 41.6 ms | 1.06× | 175.7 |
+| DistilGPT-2 | 82M | 21.6 ms | 21.3 ms | 0.99× | 302.0 |
+| OPT-125M | 125M | 29.0 ms | 29.4 ms | 1.01× | 199.7 |
+| BLOOM-560M | 559M | 122.4 ms | 118.0 ms | 0.96× | 139.0 |
+
+---
+
+## Method: Global SDPA Patching (Forward Hook Option A)
 
 ```python
 import torch
+import torch.nn.functional as F
 from math import comb
 
-# 1. Generate S20 sequence
-def s20(n: int) -> int:
-    return sum(comb(n, k)**4 * comb(n + k, k) for k in range(n + 1))
+# 1. Build S20 decay sequence
+def s20(n): return sum(comb(n, k)**4 * comb(n+k, k) for k in range(n+1))
+_S20 = [s20(d) for d in range(18)]
 
-_S20 = [s20(d) for d in range(18)] # Decays to machine zero by dist=17
-
-# 2. Vectorized decay matrix construction
-def build_s20_decay(seq_len: int, device="cpu"):
+# 2. Vectorized log-bias matrix
+def build_s20_log_bias(seq_len, device="cuda", dtype=torch.float16):
     base = float(_S20[0])
-    weights = [base / float(x) if x > 0 else 0.0 for x in _S20] + [0.0]
+    weights = [base/float(x) if x > 0 else 0.0 for x in _S20] + [0.0]
     dv = torch.tensor(weights, dtype=torch.float32, device=device)
-    
     idx = torch.arange(seq_len, device=device)
     dist = (idx.unsqueeze(0) - idx.unsqueeze(1)).abs().clamp(max=len(_S20))
-    return dv[dist]
+    decay = dv[dist]
+    log_bias = torch.log(decay.clamp(min=1e-30))
+    causal = torch.tril(torch.ones(seq_len, seq_len, device=device))
+    log_bias = log_bias * causal + (1 - causal) * (-1e9)
+    return log_bias.unsqueeze(0).unsqueeze(0).to(dtype)
 
-# 3. Apply to attention logits
-decay = build_s20_decay(L)
-attn_weights = torch.softmax(scores + torch.log(decay), dim=-1)
+# 3. Monkey-patch F.scaled_dot_product_attention
+_original_sdpa = F.scaled_dot_product_attention
+_bias_cache = {{}}
+
+def patched_sdpa(q, k, v, attn_mask=None, dropout_p=0.0, is_causal=False, **kw):
+    L = q.shape[-2]
+    if L not in _bias_cache:
+        _bias_cache[L] = build_s20_log_bias(L, q.device, q.dtype)
+    bias = _bias_cache[L][:, :, :L, :k.shape[-2]]
+    if attn_mask is not None:
+        attn_mask = attn_mask + bias
+    else:
+        attn_mask = bias
+    return _original_sdpa(q, k, v, attn_mask=attn_mask, dropout_p=dropout_p, **kw)
+
+F.scaled_dot_product_attention = patched_sdpa
+# Now ANY model using SDPA will have S20 decay injected automatically
+```
+
+---
+
+## Reproducibility
+
+```bash
+# Clone and run on any CUDA GPU
+git clone https://github.com/xaviercallens/Mirror-Map-Sieve.git
+cd Mirror-Map-Sieve/4_ai_hardware_attention
+pip install torch transformers accelerate
+python gpu_benchmark_s20.py --model microsoft/Phi-3-mini-4k-instruct --seq_lens 64 128 256 512 1024
 ```
 
 ## Citation
@@ -133,7 +156,7 @@ attn_weights = torch.softmax(scores + torch.log(decay), dim=-1)
   title  = {{S20-Decay Attention Kernel: Vectorized Integer-Sequence Attention Bias}},
   year   = {{2026}},
   url    = {{https://huggingface.co/callensxavier/s20-attention-kernel}},
-  note   = {{Hugging Face Model Card}}
+  doi    = {{10.5281/zenodo.20747943}}
 }}
 ```
 """
@@ -141,7 +164,7 @@ attn_weights = torch.softmax(scores + torch.log(decay), dim=-1)
     with open("HF_README.md", "w") as f:
         f.write(readme_content)
 
-    print("Uploading README.md...")
+    print("Uploading README.md with GPU results...")
     api.upload_file(
         path_or_fileobj="HF_README.md",
         path_in_repo="README.md",
@@ -149,24 +172,22 @@ attn_weights = torch.softmax(scores + torch.log(decay), dim=-1)
         repo_type="model"
     )
     
-    print("Uploading benchmark JSONs...")
-    try:
-        api.upload_file(
-            path_or_fileobj="4_ai_hardware_attention/benchmark_results_full.json",
-            path_in_repo="benchmark_results_full.json",
-            repo_id=repo_id,
-            repo_type="model"
-        )
-        api.upload_file(
-            path_or_fileobj="4_ai_hardware_attention/benchmark_model_results.json",
-            path_in_repo="benchmark_model_results.json",
-            repo_id=repo_id,
-            repo_type="model"
-        )
-    except Exception as e:
-        print(f"Error uploading JSONs: {e}")
+    print("Uploading GPU benchmark JSON...")
+    api.upload_file(
+        path_or_fileobj="4_ai_hardware_attention/gpu_benchmark_results.json",
+        path_in_repo="gpu_benchmark_results.json",
+        repo_id=repo_id,
+        repo_type="model"
+    )
 
-    print(f"Success! Model card published at: https://huggingface.co/{repo_id}")
+    api.upload_file(
+        path_or_fileobj="4_ai_hardware_attention/benchmark_model_results.json",
+        path_in_repo="cpu_benchmark_results.json",
+        repo_id=repo_id,
+        repo_type="model"
+    )
+
+    print(f"✅ Published: https://huggingface.co/{repo_id}")
 
 if __name__ == "__main__":
     main()
