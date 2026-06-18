@@ -1,29 +1,31 @@
 /-
-  S₂₀ Sequence — Formal Lean 4 Verification (0-axiom, 0-sorry)
-  ==============================================================
-
-  The Callens-ALIX sequence S₂₀(n) = Σ_{k=0}^{n} C(n,k)⁴ · C(n+k,k).
+  Weight-5 Apéry-like Binomial Sum S(n) — Formal Lean 4 Verification
+  ====================================================================
+  S(n) = Σ_{k=0}^{n} C(n,k)⁴ · C(n+k,k)   (catalog index: S₂₀)
 
   This module provides:
-  • The definition of S₂₀ via Finset.sum
-  • Kernel-verified (decide) proofs that the order-5 recurrence holds at n=0
-  • Kernel-verified first values S₂₀(0)..S₂₀(5)
+  • Definition of S(n) via Finset.sum
+  • Kernel-verified (decide) exact values S(0)..S(7)
+  • Kernel-verified base-case of the order-5 recurrence at n=0 and n=1
+  • Formal uniqueness theorem: recurrence consistent with first 6 terms
 
   STATUS: ✅ Sorry-free, axiom-free, admit-free
   All proofs use `decide` — the Lean 4 kernel evaluates the exact integer
   arithmetic and confirms equality. No external oracles.
 
   The polynomial coefficients P_0..P_5 are the FULL ORDER-5, DEGREE-9
-  integer polynomials extracted by the Q-nullspace solver
-  (guess_s20_recurrence_int.py) running on 80 terms of exact integer
-  arithmetic, independently verified by SageMath creative telescoping
-  on GCP (June 2026). See extracted_polynomials.json for all 45-digit
-  invariants.
+  integer polynomials (up to 46 significant digits) extracted by:
+    1. Q-nullspace solver (guess_s20_recurrence_int.py, 80 terms, exact ℤ arithmetic)
+    2. SageMath creative telescoping / Zeilberger algorithm (WZ certificate)
+  Both methods yield identical coefficients. See extracted_polynomials.json.
 
-  Reference: "The Mirror Map Sieve: Automated Classification of Calabi-Yau
-  Periods and the Universal Diagonal Theorem via the Mirror Map Sieve",
-  Xavier Callens, SocrateAI Lab, June 2026.
-  arXiv:XXXX.XXXXX [math.AG]
+  Scope: this file provides kernel-certified COMPUTATION of finite identities.
+  The general recurrence for all n ∈ ℕ is guaranteed by the WZ certificate
+  (Section 3, mirror_map_sieve_arxiv_v3.pdf).
+
+  Reference: "A Weight-5 Apéry-like Binomial Sum, its Calabi–Yau Period,
+  and Supercongruences", Xavier Callens, SocrateAI Lab, 2026.
+  GitHub: https://github.com/xaviercallens/Mirror-Map-Sieve (v1.0.0)
 -/
 
 import Mathlib.Data.Nat.Choose.Basic
@@ -32,7 +34,9 @@ import Mathlib.Tactic
 
 namespace MirrorMapSieve.CallabiYau.S20
 
-/-- The Callens-ALIX sequence:
+/-- The weight-5 Apéry-like binomial sum S(n):
+    S(n) = Σ_{k=0}^{n} C(n,k)⁴ · C(n+k,k).
+    Catalog index S₂₀ in the (A,B)-pair survey (A=4, B=1).
     S₂₀(n) = Σ_{k=0}^{n} C(n,k)⁴ · C(n+k,k)
     
     This is a 3/4-well-poised ₅F₄ hypergeometric sequence whose generating
