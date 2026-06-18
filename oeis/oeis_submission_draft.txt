@@ -34,19 +34,19 @@
 %e a(2) = binomial(2,0)^4 * binomial(2,0) + binomial(2,1)^4 * binomial(3,1) + binomial(2,2)^4 * binomial(4,2) = 1 + 16*3 + 1*6 = 1 + 48 + 6 = 55.
 %e a(3) = binomial(3,0)^4 * binomial(3,0) + binomial(3,1)^4 * binomial(4,1) + binomial(3,2)^4 * binomial(5,2) + binomial(3,3)^4 * binomial(6,3) = 1*1 + 81*4 + 81*10 + 1*20 = 1 + 324 + 810 + 20 = 1155.
 %p a := n -> add(binomial(n,k)^4 * binomial(n+k,k), k=0..n):
-%p seq(a(n), n=0..20); # _Xavier Callens_, Jun 18 2026
+%p seq(a(n), n=0..20);
 %t a[n_] := Sum[Binomial[n,k]^4 * Binomial[n+k,k], {k,0,n}]
-%t Table[a[n], {n, 0, 20}] (* _Xavier Callens_, Jun 18 2026 *)
+%t Table[a[n], {n, 0, 20}]
 %o (Python)
 %o from math import comb
 %o def a(n): return sum(comb(n,k)**4 * comb(n+k,k) for k in range(n+1))
-%o print([a(n) for n in range(20)]) # _Xavier Callens_, Jun 18 2026
+%o print([a(n) for n in range(20)])
 %o (PARI)
 %o a(n) = sum(k=0, n, binomial(n,k)^4 * binomial(n+k,k))
-%o vector(20, n, a(n-1)) \\ _Xavier Callens_, Jun 18 2026
+%o vector(20, n, a(n-1))
 %o (SageMath)
 %o def a(n): return sum(binomial(n,k)^4 * binomial(n+k,k) for k in range(n+1))
-%o [a(n) for n in range(20)] # _Xavier Callens_, Jun 18 2026
+%o [a(n) for n in range(20)]
 %Y Cf. A005259 (Apéry numbers: Sum_{k=0..n} C(n,k)^2*C(n+k,k)^2, weight 4).
 %Y Cf. A006480 (Sum_{k=0..n} C(n,k)^2*C(2k,k), another Apéry-like sum).
 %Y Cf. A093388 (Sum_{k=0..n} C(n,k)^4, weight-4 sum without upper binomial).
