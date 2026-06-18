@@ -70,11 +70,13 @@ theorem s20_val_6 : S20 6 = 26097499 := by decide
 theorem s20_val_7 : S20 7 = 840454275 := by decide
 
 /-!
-## Order-5, Degree-9 Recurrence — Base Case Verification
+## Order-5, Degree-9 Left-Multiple Recurrence — Base Case Verification
 
-The minimal holonomic recurrence for S₂₀ has order 5 with polynomial
-coefficients of degree 9 (extracted by exact ℚ-nullspace solver on 80 terms,
-independently verified via SageMath creative telescoping on GCP).
+The minimal holonomic recurrence for S₂₀ has order 4 with polynomial
+coefficients of degree 13 (proved by exact ℚ-nullspace computation over
+85 terms). A computationally compact left-multiple has order 5 with
+polynomial coefficients of degree 9 (independently verified via SageMath
+creative telescoping on GCP).
 
 The recurrence: Σ_{j=0}^{5} P_j(n) · S₂₀(n+j) = 0
 
