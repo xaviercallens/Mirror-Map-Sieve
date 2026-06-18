@@ -8,8 +8,7 @@
     "degree": 9,
     "form": "sum_{j=0}^{5} P_j(n) * S_20(n+j) = 0",
     "extraction_method": "Q-nullspace solver on 80 terms (exact integer arithmetic, sympy)",
-    "gcp_verification": "Independently verified via SageMath creative telescoping (Zeilberger WZ certificate), June 2026",
-    "gcp_log": "proof_artifacts/sage_zeilberger_gcp.log"
+    "gcp_verification": "Independently verified via SageMath creative telescoping (Zeilberger WZ certificate), June 2026 (see zeilberger_s20.sage)"
   },
   "polynomials": {
     "P_0": {
@@ -135,7 +134,7 @@
     "generated_by": "Double-Loop Discovery Pipeline (SocrateAI Scientific Agora)",
     "local_computation": "Python 3.13 + sympy nullspace, 80 terms, exact integer arithmetic",
     "gcp_verification": "GCP Cloud Build, SageMath container (sagemath/sagemath:latest), June 2026",
-    "lean_version": "leanprover/lean4:v4.14.0",
+    "lean_version": "leanprover/lean4:v4.31.0",
     "mathlib_version": "Mathlib4 (see lakefile.lean)",
     "date": "2026-06-18",
     "license": "MIT"

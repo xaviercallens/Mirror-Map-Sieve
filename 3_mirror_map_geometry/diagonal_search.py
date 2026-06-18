@@ -20,7 +20,7 @@ F(x₁,...,x_m) whose diagonal produces S₂₀(n):
 
 MATHEMATICAL BACKGROUND:
   - S₂₀(n) = Σ_{k=0}^n C(n,k)⁴ C(n+k,k)
-  - First values: 1, 6, 126, 5040, 297990, 22309452, ...
+  - First values: 1, 3, 55, 1155, 29751, 852753, 26097499, ...
   - The (2,2) Apéry case has diagonal: 1/((1-x-y)(1-z-w) - xyzw)
   - The naïve (4,1) guess 1/(1 - x₁(1-x₂)(1-x₃)(1-x₄)(1-x₅) - x₁x₂x₃x₄x₅)
     was FALSIFIED: its diagonal is 2^n.
