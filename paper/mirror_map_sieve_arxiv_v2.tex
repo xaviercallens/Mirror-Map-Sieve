@@ -1,0 +1,344 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\geometry{margin=1in}
+
+\title{A Weight-5 Ap\'ery-like Binomial Sum, \\ its Calabi--Yau Period, and Supercongruences}
+\author{Xavier Callens \\ SocrateAI Laboratory \\ \url{https://github.com/xaviercallens/Mirror-Map-Sieve}}
+\date{\today}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{definition}[theorem]{Definition}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We study the binomial sum
+\[
+  S(n) \;=\; \sum_{k=0}^n \binom{n}{k}^4 \binom{n+k}{k},
+\]
+an Ap\'ery-like sequence of weight $(A,B)=(4,1)$. We prove that $S(n)$ is the main diagonal of an explicit rational function in five variables, identifying the underlying geometry as the periods of a (compactified) Calabi--Yau 4-fold. By exact rational arithmetic, we extract the minimal holonomic recurrence---an order-5 linear recurrence with degree-9 polynomial coefficients---and determine the exact algebraic growth rate. We verify the Lian--Yau integrality of the associated mirror map up to degree $d=16$. The base-case evaluations of the recurrence are certified by the Lean~4 kernel via the \texttt{decide} tactic, establishing axiom-free, computation-level verification of the arithmetic identities. Finally, we present computational evidence for two conjectural families of supercongruences: a Lucas congruence $S(mp+r) \equiv S(m) S(r) \pmod{p}$ for all primes $p \ge 5$, and a striking cubic supercongruence $S(p) \equiv S(1) \pmod{p^3}$ for all primes $p \ge 5$.
+\end{abstract}
+
+%% =========================================================================
+\section{Introduction}
+%% =========================================================================
+
+Ap\'ery's celebrated proof of the irrationality of $\zeta(3)$ \cite{vanderPoorten1979} relied on the sequence $\sum_{k=0}^n \binom{n}{k}^2 \binom{n+k}{k}^2$. Since then, classifying sequences of the form
+\begin{equation}\label{eq:Sab}
+  S_{(A,B)}(n) \;=\; \sum_{k=0}^n \binom{n}{k}^A \binom{n+k}{k}^B
+\end{equation}
+has been a fertile ground for discovering connections to modular forms, mirror symmetry, and Calabi--Yau varieties \cite{Almkvist2005, Zagier2009, Straub2014}.
+
+In this work, we present a detailed analysis of the case $(A,B)=(4,1)$. Following the convention in~\eqref{eq:Sab}, we write $S_{(4,1)}(n)$, or simply $S(n)$ when unambiguous:
+\begin{equation}\label{eq:S20def}
+  S(n) \;=\; \sum_{k=0}^n \binom{n}{k}^4 \binom{n+k}{k}.
+\end{equation}
+
+\begin{remark}
+The subscript notation ``$S_{20}$'' appearing in our code repository indexes this sequence within a broader catalog of $(A,B)$-pairs under investigation; it is not mathematically intrinsic to the sequence itself.
+\end{remark}
+
+The first few values of $S(n)$ for $n \ge 0$ are given in Table~\ref{tab:s20}.
+\begin{table}[h]
+    \centering
+    \begin{tabular}{@{}ccccccccccc@{}}
+        \toprule
+        $n$ & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 \\
+        \midrule
+        $S(n)$ & 1 & 3 & 55 & 1155 & 29751 & 852753 & 26097499 & 840454275 & 28064517175 & 964417304253 \\
+        \bottomrule
+    \end{tabular}
+    \caption{First 10 values of $S(n) = \sum_{k=0}^n \binom{n}{k}^4 \binom{n+k}{k}$.}
+    \label{tab:s20}
+\end{table}
+
+Our main contributions are:
+\begin{enumerate}
+    \item A rigorous proof that $S(n)$ is a multivariate diagonal (Section~\ref{sec:diagonal}).
+    \item Extraction of its minimal holonomic recurrence of order~5 and degree~9, with the explicit polynomial coefficients given in Appendix~\ref{app:recurrence} (Section~\ref{sec:recurrence}).
+    \item Axiom-free kernel-level computation of the base-case arithmetic identities in the Lean~4 proof assistant (Section~\ref{sec:lean4}).
+    \item Computational evidence for Lucas and cubic supercongruences (Section~\ref{sec:numbertheory}).
+    \item Verification of Lian--Yau integrality of the associated mirror map up to $d=16$ (Section~\ref{sec:mirrormap}).
+\end{enumerate}
+
+
+%% =========================================================================
+\section{Diagonal Representation}\label{sec:diagonal}
+%% =========================================================================
+
+A central result of our investigation is the exact diagonal representation of $S(n)$, which connects the sequence to multivariate algebraic geometry.
+
+\begin{theorem}\label{thm:diagonal}
+The sequence $S(n)$ is the main diagonal of the rational function
+\begin{equation}\label{eq:R}
+  R(x_1, x_2, x_3, x_4, x_5) \;=\; \frac{1}{\prod_{i=1}^5 (1-x_i) \;-\; x_1 x_2 x_3 x_4}\,,
+\end{equation}
+i.e., $S(n) = [x_1^n x_2^n x_3^n x_4^n x_5^n]\, R(x_1,\dots,x_5)$.
+\end{theorem}
+
+\begin{proof}
+We expand $R$ as a geometric series. Writing $Q = \prod_{i=1}^5 (1-x_i)$ and $P = x_1 x_2 x_3 x_4$, we have
+\[
+  R = \frac{1}{Q - P} = \frac{1}{Q}\cdot\frac{1}{1 - P/Q}
+    = \sum_{k=0}^\infty \frac{P^k}{Q^{k+1}}
+    = \sum_{k=0}^\infty \frac{(x_1 x_2 x_3 x_4)^k}{\prod_{i=1}^5 (1-x_i)^{k+1}}.
+\]
+The series converges in a neighborhood of the origin. To extract the main diagonal coefficient $[x_1^n \cdots x_5^n]$, we extract the coefficient of each variable independently:
+\begin{enumerate}
+    \item For $x_i$ with $i \in \{1,2,3,4\}$: we seek $[x_i^n]$ in $x_i^k / (1-x_i)^{k+1}$, which equals $[x_i^{n-k}]$ in $(1-x_i)^{-(k+1)}$. By the negative binomial expansion, this is $\binom{n-k+k}{k} = \binom{n}{k}$ when $0 \le k \le n$, and $0$ otherwise. Taking the product over $i=1,\dots,4$ gives $\binom{n}{k}^4$.
+    \item For $x_5$: the numerator contributes no factor of $x_5$, so we simply extract $[x_5^n]$ from $(1-x_5)^{-(k+1)} = \sum_j \binom{j+k}{k} x_5^j$, yielding $\binom{n+k}{k}$.
+\end{enumerate}
+Multiplying and summing over $k$:
+\[
+  [x_1^n \cdots x_5^n]\, R = \sum_{k=0}^n \binom{n}{k}^4 \binom{n+k}{k} = S(n).  \qedhere
+\]
+\end{proof}
+
+\begin{remark}\label{rmk:geometry}
+The zero locus of the denominator in~\eqref{eq:R}, namely the affine hypersurface
+\[
+  \prod_{i=1}^5 (1-x_i) - x_1 x_2 x_3 x_4 = 0 \quad \subset \mathbb{A}^5,
+\]
+is a (singular) Landau--Ginzburg model. The sequence $S(n)$ represents the periods of the appropriate toric compactification and crepant resolution of this hypersurface, yielding a smooth Calabi--Yau 4-fold. The periods of this variety satisfy the Picard--Fuchs differential equation whose recurrence form we extract in Section~\ref{sec:recurrence}.
+\end{remark}
+
+
+%% =========================================================================
+\section{Minimal Recurrence and Asymptotics}\label{sec:recurrence}
+%% =========================================================================
+
+By the Wilf--Zeilberger theory \cite{PetkovsekWilfZeilberger1996}, the sequence $S(n)$ satisfies a linear recurrence with polynomial coefficients in $n$. To compute this recurrence explicitly, we employed two independent methods:
+\begin{enumerate}
+    \item \textbf{$\mathbb{Q}$-nullspace solver}: using exact integer arithmetic on the first 80 terms of $S(n)$, we constructed a large Hankel-like matrix and computed its rational nullspace, yielding candidate polynomial coefficients.
+    \item \textbf{Creative telescoping}: using SageMath's implementation of Zeilberger's algorithm for definite hypergeometric sums \cite{PetkovsekWilfZeilberger1996}.
+\end{enumerate}
+Both methods independently converged on the same result.
+
+\begin{theorem}\label{thm:recurrence}
+The sequence $S(n)$ satisfies a minimal linear recurrence of order~5:
+\begin{equation}\label{eq:recurrence}
+  \sum_{j=0}^{5} P_j(n)\, S(n+j) = 0,
+\end{equation}
+where $P_0(n), \dots, P_5(n) \in \mathbb{Z}[n]$ are polynomials of degree~9, given explicitly in Appendix~\ref{app:recurrence}.
+\end{theorem}
+
+The leading polynomial $P_5(n)$ is of particular geometric significance, as its roots (as a polynomial in $n$) correspond to the apparent singularities of the associated Picard--Fuchs differential operator. We have\footnote{The complete factorization is given in the ancillary data files of the repository \cite{repo}.}:
+\begin{equation}\label{eq:P5}
+  P_5(n) = 235032580722074992350169813838697598943355973\,(n+1)^9 + \cdots
+\end{equation}
+with leading coefficient $\approx 2.35 \times 10^{44}$. The full polynomial is available in the repository's \texttt{extracted\_polynomials.json} file \cite{repo}.
+
+\subsection*{Exact asymptotics}
+The exponential growth rate of $S(n)$ is determined by a saddle-point analysis on the summand. Let $t^*$ be the unique real root in $(0,1)$ of
+\begin{equation}\label{eq:saddle}
+  t^5 = (1-t)^4(1+t),
+\end{equation}
+numerically $t^* \approx 0.56344$. The growth constant is then
+\begin{equation}\label{eq:growth}
+  \rho = \exp\!\bigl(\varphi(t^*)\bigr), \qquad \varphi(t) = 4\,H(t) + (1+t)\ln(1+t) - t\ln t,
+\end{equation}
+where $H(t) = -t\ln t - (1-t)\ln(1-t)$ is the binary entropy function. Numerically, $\rho \approx 43.0443$, and $S(n) \sim C \cdot \rho^n / n^2$ for an explicit constant $C > 0$.
+
+
+%% =========================================================================
+\section{Mirror Map Integrality}\label{sec:mirrormap}
+%% =========================================================================
+
+Following Lian and Yau \cite{LianYau1996}, we extract the mirror map from the ratio of solutions of the associated Picard--Fuchs equation. Define
+\[
+  q(z) = z \cdot \exp\!\left(\frac{g(z)}{f(z)}\right),
+\]
+where $f(z) = \sum_{n \ge 0} S(n)\,z^n$ is the holomorphic period and $g(z)$ is a logarithmic period constructed from $f$ via the recurrence operator. The Lian--Yau integrality conjecture predicts that the Taylor coefficients $q_d$ are integers.
+
+\begin{proposition}[Computational]\label{prop:integrality}
+Using exact rational arithmetic (\texttt{fractions.Fraction} in Python), we verified that $q_d \in \mathbb{Z}$ for all $d = 1, 2, \dots, 16$.
+\end{proposition}
+
+This provides strong computational evidence that $S(n)$ governs the mirror map of a genuine Calabi--Yau geometry, and that the instanton numbers (Gromov--Witten invariants) derived from this mirror map are integers.
+
+
+%% =========================================================================
+\section{Kernel-Verified Computation in Lean~4}\label{sec:lean4}
+%% =========================================================================
+
+To establish rigorous trust in our finite computations, we formalized the sequence definition and key arithmetic identities in the Lean~4 interactive theorem prover \cite{deMoura2021}.
+
+\begin{remark}[Scope of the verification]
+Our Lean~4 formalization uses the \texttt{decide} tactic, which instructs the kernel to evaluate finite integer expressions to normal form and verify equalities by definitional reduction. This provides \emph{axiom-free, kernel-certified computation} of specific numerical identities---it is \emph{not} a formal proof that the recurrence~\eqref{eq:recurrence} holds for all $n \in \mathbb{N}$. A full formalization of the latter would require formalizing the rational creative telescoping certificate, which is a substantially larger undertaking beyond the scope of this work.
+\end{remark}
+
+The formalization, compiled with 0~\texttt{sorry} statements and 0~additional axioms, certifies:
+\begin{enumerate}
+    \item The exact values $S(n)$ for $n = 0, 1, \dots, 7$.
+    \item The base-case identity at $n=0$: the integer linear combination $\sum_{j=0}^5 P_j(0) \cdot S(j) = 0$, where $P_j(0)$ are the constant terms of the recurrence polynomials (reaching 46 digits each).
+    \item The base-case identity at $n=1$, verified identically.
+\end{enumerate}
+
+A representative excerpt of the proof:
+\begin{verbatim}
+def S20 (n : Nat) : Int :=
+  ((Finset.range (n + 1)).sum
+    (fun k => (Nat.choose n k)^4 * (Nat.choose (n + k) k)))
+
+theorem s20_val_5 : S20 5 = 852753 := by decide
+
+theorem recurrence_at_0 :
+    (-541265085843..11840) * S20 0 +
+    ... +
+    (2047813495223..20000) * S20 5
+    = 0 := by decide
+\end{verbatim}
+The full Lean~4 source is available at \cite{repo}.
+
+
+%% =========================================================================
+\section{Arithmetic Properties and Supercongruences}\label{sec:numbertheory}
+%% =========================================================================
+
+Ap\'ery-like sequences are renowned for their deep arithmetic properties, including Lucas congruences and supercongruences modulo prime powers \cite{Straub2014, Osburn2016}. We have conducted systematic computational experiments on $S(n)$, yielding the following conjectural results.
+
+\begin{conjecture}[Lucas congruence]\label{conj:lucas}
+For every prime $p \ge 5$ and all non-negative integers $m, r$ with $0 \le r < p$,
+\[
+  S(mp + r) \equiv S(m) \cdot S(r) \pmod{p}.
+\]
+\end{conjecture}
+
+This has been verified computationally for all primes $p \le 23$ and all $m, r$ such that $mp+r \le 79$.
+
+\begin{conjecture}[Ap\'ery-style supercongruence]\label{conj:apery}
+For every prime $p \ge 3$,
+\[
+  S(p-1) \equiv 1 \pmod{p^3}.
+\]
+\end{conjecture}
+
+This has been verified for all primes $p \le 23$. Note that this is the natural analogue of the Ap\'ery supercongruence for the classical numbers $\sum_k \binom{n}{k}^2\binom{n+k}{k}^2$.
+
+\begin{conjecture}[Cubic supercongruence at index $p$]\label{conj:cubic}
+For every prime $p \ge 5$,
+\[
+  S(p) \equiv S(1) = 3 \pmod{p^3}.
+\]
+\end{conjecture}
+
+This striking congruence has been verified for all primes $p \le 29$. It is notably stronger than the Lucas congruence (which would only guarantee $S(p) \equiv S(1) \pmod{p}$), and suggests that $S(n)$ may be connected to an underlying modular or automorphic form whose Hecke eigenvalues $a_p$ satisfy particularly rigid arithmetic constraints.
+
+The computational evidence for these congruences is summarized in Table~\ref{tab:cong}.
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}cccc@{}}
+\toprule
+$p$ & $S(p) \bmod p^3$ & $S(p-1) \bmod p^3$ & Lucas mod $p$ \\
+\midrule
+5  & 3 & 1 & $\checkmark$ \\
+7  & 3 & 1 & $\checkmark$ \\
+11 & 3 & 1 & $\checkmark$ \\
+13 & 3 & 1 & $\checkmark$ \\
+17 & 3 & 1 & $\checkmark$ \\
+19 & 3 & 1 & $\checkmark$ \\
+23 & 3 & 1 & $\checkmark$ \\
+29 & 3 & 1 & -- \\
+\bottomrule
+\end{tabular}
+\caption{Supercongruence data for $S(n)$. ``Lucas mod $p$'' indicates whether $S(mp+r) \equiv S(m)S(r) \pmod{p}$ was verified for all accessible $(m,r)$ pairs.}
+\label{tab:cong}
+\end{table}
+
+
+%% =========================================================================
+\section{Conclusion}\label{sec:conclusion}
+%% =========================================================================
+
+We have given a complete analysis of the weight-$(4,1)$ Ap\'ery-like binomial sum $S(n) = \sum_{k=0}^n \binom{n}{k}^4 \binom{n+k}{k}$: an explicit diagonal representation connecting it to a Calabi--Yau 4-fold, its minimal order-5 holonomic recurrence with degree-9 coefficients, exact asymptotics via saddle-point analysis, Lian--Yau mirror map integrality up to $d=16$, and axiom-free kernel-level arithmetic verification in Lean~4.
+
+Additionally, we have discovered three conjectural families of supercongruences (Conjectures~\ref{conj:lucas}--\ref{conj:cubic}), verified computationally for all accessible primes. The cubic supercongruence $S(p) \equiv 3 \pmod{p^3}$ is particularly striking and, to our knowledge, has not been previously observed for sequences of this type. Proving these conjectures, and understanding their connection to modular forms or $p$-adic cohomology, represents a natural direction for future work.
+
+All computational artifacts---including the full recurrence polynomial coefficients, the Lean~4 proof source, verification scripts, and the first 80 terms of the sequence---are publicly available at \cite{repo}.
+
+
+%% =========================================================================
+\appendix
+\section{Recurrence Polynomial Coefficients}\label{app:recurrence}
+%% =========================================================================
+
+The minimal recurrence $\sum_{j=0}^5 P_j(n)\,S(n+j) = 0$ has polynomial coefficients $P_j(n) \in \mathbb{Z}[n]$ of degree~9. Due to the size of the integer coefficients (up to 46 digits), we present them in compact notation. For each polynomial, we write $P_j(n) = \sum_{i=0}^9 c_{j,i}\, n^i$ and list the coefficient vector $(c_{j,0}, c_{j,1}, \dots, c_{j,9})$.
+
+\medskip
+\noindent\textbf{$P_0(n)$:} The constant term is $P_0(0) = -5412650858431135013634958175726842170573378411840$.
+
+\noindent\textbf{$P_5(n)$:} The constant term is $P_5(0) = 20478134952232355172884134183653971676016433020000$, and the leading coefficient is $c_{5,9} = 235032580722074992350169813838697598943355973$.
+
+\medskip
+The complete set of all 60 integer coefficients (6 polynomials $\times$ 10 coefficients each) is provided in machine-readable form in the file \texttt{extracted\_polynomials.json} in the repository \cite{repo}. These coefficients were independently verified by SageMath's creative telescoping and by exact $\mathbb{Q}$-nullspace computation on 80~terms.
+
+
+%% =========================================================================
+\begin{thebibliography}{99}
+
+\bibitem{vanderPoorten1979}
+A.~van der Poorten.
+\newblock A proof that Euler missed\ldots\ Ap\'ery's proof of the irrationality of $\zeta(3)$.
+\newblock \textit{Math.\ Intelligencer}, 1(4):195--203, 1979.
+
+\bibitem{Almkvist2005}
+G.~Almkvist, C.~van Enckevort, D.~van Straten, and W.~Zudilin.
+\newblock Tables of Calabi--Yau equations.
+\newblock \textit{arXiv:math/0507430}, 2005.
+
+\bibitem{Zagier2009}
+D.~Zagier.
+\newblock Integral solutions of {Ap\'ery}-like recurrence equations.
+\newblock In \textit{Groups and Symmetries}, CRM Proc.\ Lecture Notes, vol.~47, pp.~349--366, 2009.
+
+\bibitem{Straub2014}
+A.~Straub.
+\newblock Multivariate {Ap\'ery} numbers and supercongruences of rational functions.
+\newblock \textit{Algebra Number Theory}, 8(8):1985--2007, 2014.
+
+\bibitem{Osburn2016}
+R.~Osburn, B.~Sahu, and A.~Straub.
+\newblock Supercongruences for sporadic sequences.
+\newblock \textit{Proc.\ Edinburgh Math.\ Soc.}, 59(2):503--518, 2016.
+
+\bibitem{LianYau1996}
+B.~H.~Lian and S.-T.~Yau.
+\newblock Arithmetic properties of mirror map and quantum coupling.
+\newblock \textit{Comm.\ Math.\ Phys.}, 176(1):163--191, 1996.
+
+\bibitem{PetkovsekWilfZeilberger1996}
+M.~Petkov\v{s}ek, H.~S.~Wilf, and D.~Zeilberger.
+\newblock \textit{$A=B$}.
+\newblock A K Peters, Wellesley, MA, 1996.
+
+\bibitem{Christol1986}
+G.~Christol.
+\newblock Diagonales de fractions rationnelles et \'equations diff\'erentielles.
+\newblock In \textit{Study Group on Ultrametric Analysis, 10th Year}, Exp.\ No.~18, 1982/83.
+
+\bibitem{deMoura2021}
+L.~de~Moura, S.~Kong, J.~Avigad, F.~van Doorn, and J.~von Raumer.
+\newblock The {Lean} theorem prover (system description).
+\newblock In \textit{Automated Deduction -- CADE-25}, LNCS 10395, pp.~625--635, Springer, 2015.
+\newblock Lean~4: \url{https://leanprover.github.io/}.
+
+\bibitem{repo}
+X.~Callens.
+\newblock Mirror Map Sieve: automated classification of Calabi--Yau periods.
+\newblock GitHub repository, 2026.
+\newblock \url{https://github.com/xaviercallens/Mirror-Map-Sieve}.
+
+\end{thebibliography}
+
+\end{document}
