@@ -1,0 +1,68 @@
+{
+  "kernel_benchmark": [
+    {
+      "model_id": "openai-community/gpt2",
+      "model_name": "GPT-2 (124M)",
+      "n_params_M": 124.4,
+      "seq_len": 56,
+      "device": "cpu",
+      "baseline_ms": 39.176,
+      "s20_injected_ms": 41.556,
+      "s20_overhead": 1.061,
+      "avg_perplexity": 175.7,
+      "perplexity_per_prompt": [
+        89.63,
+        202.44,
+        235.02
+      ]
+    },
+    {
+      "model_id": "distilbert/distilgpt2",
+      "model_name": "DistilGPT-2 (82M)",
+      "n_params_M": 81.9,
+      "seq_len": 56,
+      "device": "cpu",
+      "baseline_ms": 21.623,
+      "s20_injected_ms": 21.331,
+      "s20_overhead": 0.987,
+      "avg_perplexity": 302.02,
+      "perplexity_per_prompt": [
+        223.34,
+        339.5,
+        343.22
+      ]
+    },
+    {
+      "model_id": "facebook/opt-125m",
+      "model_name": "OPT-125M",
+      "n_params_M": 125.2,
+      "seq_len": 57,
+      "device": "cpu",
+      "baseline_ms": 29.008,
+      "s20_injected_ms": 29.36,
+      "s20_overhead": 1.012,
+      "avg_perplexity": 199.73,
+      "perplexity_per_prompt": [
+        148.67,
+        265.95,
+        184.57
+      ]
+    },
+    {
+      "model_id": "bigscience/bloom-560m",
+      "model_name": "BLOOM-560M",
+      "n_params_M": 559.2,
+      "seq_len": 48,
+      "device": "cpu",
+      "baseline_ms": 122.361,
+      "s20_injected_ms": 117.968,
+      "s20_overhead": 0.964,
+      "avg_perplexity": 138.99,
+      "perplexity_per_prompt": [
+        177.74,
+        209.88,
+        29.35
+      ]
+    }
+  ]
+}
