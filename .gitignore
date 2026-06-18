@@ -1,0 +1,21 @@
+# Mirror-Map-Sieve — Git Ignore
+.lake/
+*.log
+*.aux
+*.out
+*.toc
+*.synctex.gz
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+*.egg-info/
+dist/
+build/
+*.pdf
+!paper/mirror_map_sieve_arxiv.pdf
+benchmark_results.json
+*.olean
+*.ilean
+*.c
+generated_check.lean
