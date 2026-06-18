@@ -1,0 +1,120 @@
+# Copyright (c) 2026 Xavier Callens / Socrate AI Lab
+# Licensed under Apache 2.0 - see LICENSE file
+# Patent: US-PAT-PEND-2026-0525
+#
+# Local development docker-compose
+
+services:
+  # Socrates — Dialectical Orchestrator
+  socrates:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.agent
+    environment:
+      - AGENT_NAME=socrates
+      - BUDGET_LIMIT=100
+      - PROJECT_BUDGET=500
+      - GALILEO_URL=http://galileo:8080
+      - EULER_URL=http://euler:8080
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "8080:8080"
+    depends_on:
+      - galileo
+      - euler
+    healthcheck:
+      test: ["CMD", "python", "healthcheck.py"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Galileo — Scientific Experimenter
+  galileo:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.agent
+    environment:
+      - AGENT_NAME=galileo
+      - BUDGET_LIMIT=100
+      - PROJECT_BUDGET=500
+      - NVIDIA_NIM_API_KEY=${NVIDIA_NIM_API_KEY:-}
+      - NVIDIA_NIM_API_BASE=${NVIDIA_NIM_API_BASE:-https://integrate.api.nvidia.com/v1}
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "8081:8080"
+    healthcheck:
+      test: ["CMD", "python", "healthcheck.py"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Euler — Mathematical Verifier
+  euler:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.agent
+    environment:
+      - AGENT_NAME=euler
+      - BUDGET_LIMIT=100
+      - PROJECT_BUDGET=500
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "8082:8080"
+    healthcheck:
+      test: ["CMD", "python", "healthcheck.py"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # rusty-SUNDIALS solver
+  solver:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.solver
+    ports:
+      - "8090:8080"
+    environment:
+      - RUST_LOG=info
+
+  # Agora Sentinel — Full Verification Pipeline
+  # POST /verify → Bourbaki → Aristotle → Galois+Euler → Descartes|Champollion
+  sentinel:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.sentinel
+    environment:
+      - SENTINEL_MODE=api
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - Z3_PATH=/usr/bin/z3
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "8100:8080"
+    depends_on:
+      - solver
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Alexandrie Semantic Memory Hub
+  alexandrie:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.alexandrie
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ALEXANDRIE_VAULT_ROOT=/data/vault
+    ports:
+      - "8101:8080"
+    volumes:
+      - alexandrie_data:/data/vault
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  alexandrie_data:
+

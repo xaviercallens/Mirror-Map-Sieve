@@ -1,0 +1,15 @@
+{
+  "pid": "autocorr_signed_upper",
+  "domain": "combinatorics",
+  "v13_status": "CB_TRIPPED",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 1,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.35,
+  "cost_usd": 0.41000000000000003,
+  "elapsed_s": 240.24603662500158,
+  "conjecture_statement": "Let $s = (s_1, s_2, \\\\dots, s_n)$ be a sequence with $s_i \\\\in \\\\{-1, 1\\\\}$. Let its aperiodic autocorrelation be defined as $C_k(s) = \\\\sum_{i=1}^{n-k} s_i s_{i+k}$ for $k \\\\in \\\\{1, 2, \\\\dots, n-1\\\\}$. Then the alternating sum of the absolute values of the autocorrelations is bounded by:\\n\\n$$ \\\\sum_{k=1}^{n-1} (-1)^{k-1} |C_k(s)| \\\\le \\\\left\\\\lfloor \\\\frac{n}{2} \\\\right\\\\rfloor $$",
+  "lean4_sketch": "import Mathlib.Data.Int.Basic\nimport Mathlib.Data.Fin.VecNotation\nimport Mathlib.Data.Finset.Sum\nimport Mathlib.Tactic.Linarith\n\nopen Finset BigOperators\n\n-- A sequence of length n with elements in {-1, 1}\nabbrev BinarySeq (n : \u2115) := {s : Fin n \u2192 \u2124 // \u2200 i, s i = 1 \u2228 s i = -1}\n\n-- Aperiodic autocorrelation C_k(s)\ndef autocorr {n : \u2115} (s : Fin n \u2192 \u2124) (k : \u2115) : \u2124 := \n  if h : k > 0 \u2227 k < n then\n    let N := n - k\n    -- sum over i from 0 to n-k-1\n    \u2211 i : Fin N, s \u27e8i, by linarith [i.isLt, h.2]\u27e9 * s \u27e8i + k, by linarith [i.isLt, h.2]\u27e9\n  else\n    0\n\ntheorem autocorrelation_signed_abs_upper_bound (n : \u2115) (s : BinarySeq n) :\n    (\u2211 k in Ico 1 n, ((-1 : \u2124)^(k-1) * abs (autocorr s.val k))) \u2264 (n : \u2124) / 2 := by\n  sorry\n  -- This conjecture posits that the alternating sum of the absolute values of the",
+  "gap_probability_map": {}
+}

@@ -1,0 +1,316 @@
+{
+  "adler_c1_p1_mushrooms": {
+    "steps": [
+      "Let W_powder = dry mushroom matter (not water).",
+      "Fresh = 90% water \u27f9 10% powder. Dry = 15% water \u27f9 85% powder.",
+      "(a) 10 kg dried: powder = 10 \u00d7 0.85 = 8.5 kg. Fresh needed = 8.5 / 0.10 = 85 kg.",
+      "(b) 12 kg fresh: powder = 12 \u00d7 0.10 = 1.2 kg. Dried = 1.2 / 0.85 = 24/17 \u2248 1.412 kg."
+    ],
+    "answer": "(a) 85 kg; (b) 24/17 \u2248 1.412 kg",
+    "strategy": "mass_conservation",
+    "confidence": 0.98
+  },
+  "adler_c1_p2_age": {
+    "steps": [
+      "Let s = son's age, f = father's age. f = s + 30.",
+      "5 years ago: f - 5 = 4(s - 5) \u27f9 s + 25 = 4s - 20.",
+      "3s = 45 \u27f9 s = 15, f = 45."
+    ],
+    "answer": "Son = 15 years, Father = 45 years",
+    "strategy": "linear_system",
+    "confidence": 0.98
+  },
+  "adler_c1_p3_work": {
+    "steps": [
+      "Alice's rate = 1/6 job/h, Bob's rate = 1/10 job/h.",
+      "Combined rate = 4/15 job/h. (a) Time together = 15/4 = 3.75 h.",
+      "(b) Alice works 2h alone: completes 1/3. Remaining 2/3 at rate 4/15.",
+      "Extra time = (2/3)/(4/15) = 2.5 h. Total = 4.5 h."
+    ],
+    "answer": "(a) 3.75 h; (b) 4.5 h total",
+    "strategy": "rate_analysis",
+    "confidence": 0.97
+  },
+  "adler_c1_p4_mixture": {
+    "steps": [
+      "Let x = liters 20% solution, y = 30-x liters 50% solution.",
+      "0.20x + 0.50(30-x) = 9 \u27f9 -0.30x = -6 \u27f9 x = 20.",
+      "y = 10. Mix: 20 L of 20%, 10 L of 50%."
+    ],
+    "answer": "20 L of 20%, 10 L of 50%",
+    "strategy": "linear_system_mixture",
+    "confidence": 0.98
+  },
+  "adler_c2_p1_gcd_lcm": {
+    "steps": [
+      "Write a = d\u00b7p, b = d\u00b7q with gcd(p,q) = 1.",
+      "lcm(a,b) = d\u00b7p\u00b7q (since gcd(p,q)=1).",
+      "a\u00d7b = d\u00b2pq = d \u00d7 dpq = d \u00d7 lcm(a,b). \u25a1"
+    ],
+    "answer": "a \u00d7 b = gcd(a,b) \u00d7 lcm(a,b) [proved by factoring a = dp, b = dq]",
+    "strategy": "algebraic_factoring",
+    "confidence": 0.97
+  },
+  "adler_c2_p2_divisibility": {
+    "steps": [
+      "Since 10 \u2261 1 (mod 9), we have 10^k \u2261 1 (mod 9) for all k \u2265 0.",
+      "N = \u03a3 a\u1d62\u00b710\u2071 \u2261 \u03a3 a\u1d62 (mod 9).",
+      "Therefore 9|N \u27fa 9|(digit sum). \u25a1"
+    ],
+    "answer": "N \u2261 digit_sum(N) (mod 9); 9|N iff 9|digit_sum(N)",
+    "strategy": "modular_arithmetic",
+    "confidence": 0.98
+  },
+  "adler_c2_p3_primes": {
+    "steps": [
+      "Assume finitely many primes p\u2081,...,p\u2099.",
+      "Let N = p\u2081p\u2082...p\u2099 + 1. N has a prime divisor p.",
+      "p \u2260 p\u1d62 for any i (N \u2261 1 mod p\u1d62). Contradiction. \u25a1"
+    ],
+    "answer": "There are infinitely many primes [Euclid's proof by contradiction]",
+    "strategy": "proof_by_contradiction",
+    "confidence": 0.99
+  },
+  "adler_c2_p4_bezout": {
+    "steps": [
+      "Let S = {ax+by : x,y \u2208 \u2124, ax+by > 0}. Let d' = min(S).",
+      "Show d' | every element of S by division algorithm.",
+      "d' | a and d' | b \u27f9 d' | gcd(a,b) = d; d | d' \u27f9 d = d'. \u25a1"
+    ],
+    "answer": "\u2203 x,y \u2208 \u2124: ax + by = gcd(a,b) [B\u00e9zout's identity, proved by well-ordering]",
+    "strategy": "well_ordering_principle",
+    "confidence": 0.96
+  },
+  "adler_c2_p5_chinese_remainder": {
+    "steps": [
+      "x \u2261 2 (mod 3) \u27f9 x = 3k+2.",
+      "3k+2 \u2261 3 (mod 5) \u27f9 3k \u2261 1 (mod 5) \u27f9 k \u2261 2 (mod 5) \u27f9 k = 5j+2.",
+      "x = 15j+8. 15j+8 \u2261 2 (mod 7) \u27f9 j \u2261 1 (mod 7) \u27f9 x = 105m + 23."
+    ],
+    "answer": "x \u2261 23 (mod 105)",
+    "strategy": "crt_successive_substitution",
+    "confidence": 0.97
+  },
+  "adler_c3_p1_handshakes": {
+    "steps": [
+      "(a) Each handshake = 2-element subset: C(n,2) = n(n-1)/2.",
+      "(b) n(n-1)/2 = 120 \u27f9 n(n-1) = 240 \u27f9 n = 16."
+    ],
+    "answer": "(a) n(n-1)/2; (b) n = 16",
+    "strategy": "combinatorics_counting",
+    "confidence": 0.99
+  },
+  "adler_c3_p2_inclusion_exclusion": {
+    "steps": [
+      "|Chess \u222a Checkers| = 18 + 16 - 12 = 22.",
+      "Neither = 40 - 22 = 18."
+    ],
+    "answer": "18 students",
+    "strategy": "inclusion_exclusion",
+    "confidence": 0.99
+  },
+  "adler_c3_p3_pigeonhole": {
+    "steps": [
+      "Divide unit square into 4 squares of side 1/2.",
+      "5 points into 4 boxes: some box has \u2265 2 points.",
+      "Diameter of 1/2-square = \u221a2/2. \u25a1"
+    ],
+    "answer": "Proved: at least 2 points within distance \u221a2/2 [Pigeonhole, 4 sub-squares]",
+    "strategy": "pigeonhole_principle",
+    "confidence": 0.99
+  },
+  "adler_c3_p4_derangements": {
+    "steps": [
+      "D(n) = n! \u03a3_{k=0}^n (-1)^k/k!  by inclusion-exclusion.",
+      "D(4) = 24(1 - 1 + 1/2 - 1/6 + 1/24) = 24 \u00d7 9/24 = 9."
+    ],
+    "answer": "D(4) = 9",
+    "strategy": "inclusion_exclusion_derangements",
+    "confidence": 0.98
+  },
+  "adler_c4_p1_factoring": {
+    "steps": [
+      "Treat A as polynomial P(x) in x. P(y) = y(y-z)\u00b3 - y(y-z)\u00b3 = 0.",
+      "Factor Theorem: (x-y) | A. By symmetry (y-z) and (z-x) | A.",
+      "Degree 4 \u27f9 A = (x-y)(y-z)(z-x) k(x+y+z). Evaluate at (0,1,2): k=1."
+    ],
+    "answer": "A(x,y,z) = (x-y)(y-z)(z-x)(x+y+z)",
+    "strategy": "factor_theorem_cyclic_symmetry",
+    "confidence": 0.99
+  },
+  "adler_c4_p2_amgm": {
+    "steps": [
+      "Base n=2: (\u221aa-\u221ab)\u00b2 \u2265 0 \u27f9 (a+b)/2 \u2265 \u221a(ab).",
+      "Inductive step: replace a\u2099 with A (arithmetic mean), apply n-1 case.",
+      "Derive A\u207f\u207b\u00b9 \u2265 a\u2081...a\u2099\u208b\u2081 \u27f9 A\u207f \u2265 a\u2081...a\u2099. \u25a1"
+    ],
+    "answer": "AM \u2265 GM proved by induction with substitution trick",
+    "strategy": "induction_amgm",
+    "confidence": 0.97
+  },
+  "adler_c4_p3_quadratic_ineq": {
+    "steps": [
+      "Factor: (x-2)(x-3) < 0.",
+      "Sign analysis: solution is 2 < x < 3."
+    ],
+    "answer": "x \u2208 (2, 3)",
+    "strategy": "factoring_sign_analysis",
+    "confidence": 0.99
+  },
+  "adler_c4_p4_symmetric": {
+    "steps": [
+      "(x+y)\u00b2 = 25 and x\u00b2+y\u00b2 = 13 \u27f9 2xy = 12 \u27f9 xy = 6.",
+      "x, y are roots of t\u00b2-5t+6 = (t-2)(t-3) = 0."
+    ],
+    "answer": "(x,y) = (2,3) or (3,2)",
+    "strategy": "vieta_symmetric",
+    "confidence": 0.99
+  },
+  "adler_c4_p5_cauchy_schwarz": {
+    "steps": [
+      "Let f(t) = \u03a3(a\u1d62t+b\u1d62)\u00b2 \u2265 0.",
+      "Discriminant \u2264 0: 4(\u03a3a\u1d62b\u1d62)\u00b2 - 4(\u03a3a\u1d62\u00b2)(\u03a3b\u1d62\u00b2) \u2264 0.",
+      "Therefore (\u03a3a\u1d62b\u1d62)\u00b2 \u2264 (\u03a3a\u1d62\u00b2)(\u03a3b\u1d62\u00b2). \u25a1"
+    ],
+    "answer": "Cauchy-Schwarz inequality proved via discriminant of non-negative quadratic",
+    "strategy": "discriminant_method",
+    "confidence": 0.99
+  },
+  "adler_c5_p1_arcsin_eq": {
+    "steps": [
+      "y + z = \u03c0/2 \u27f9 sin(y) = cos(z) = \u221a(1-4x\u00b2).",
+      "x = \u221a(1-4x\u00b2) with x > 0. Square: 5x\u00b2 = 1 \u27f9 x = 1/\u221a5."
+    ],
+    "answer": "x = 1/\u221a5 \u2248 0.4472",
+    "strategy": "trig_substitution",
+    "confidence": 0.99
+  },
+  "adler_c5_p2_trig_identity": {
+    "steps": [
+      "sin(2\u03b8) = sin(\u03b8+\u03b8) = sin \u03b8 cos \u03b8 + cos \u03b8 sin \u03b8 = 2 sin \u03b8 cos \u03b8. \u25a1"
+    ],
+    "answer": "sin(2\u03b8) = 2sin(\u03b8)cos(\u03b8) [proved via addition formula]",
+    "strategy": "addition_formula",
+    "confidence": 1.0
+  },
+  "adler_c5_p3_law_cosines": {
+    "steps": [
+      "c\u00b2 = a\u00b2 + b\u00b2 - 2ab cos C = 49 + 100 - 70 = 79. c = \u221a79.",
+      "sin A = 7 sin(60\u00b0)/\u221a79 \u2248 0.682 \u27f9 A \u2248 43.0\u00b0.",
+      "B = 180\u00b0 - 60\u00b0 - 43.0\u00b0 \u2248 77.0\u00b0."
+    ],
+    "answer": "c = \u221a79 \u2248 8.89; A \u2248 43.0\u00b0; B \u2248 77.0\u00b0",
+    "strategy": "law_of_cosines_sines",
+    "confidence": 0.97
+  },
+  "adler_c5_p4_product_to_sum": {
+    "steps": [
+      "Apply product formula for odd prime n=7:",
+      "\u220f_{k=1}^{3} sin(k\u03c0/7) = \u221a7 / 2\u00b3 = \u221a7/8."
+    ],
+    "answer": "\u221a7/8 \u2248 0.3307",
+    "strategy": "chebyshev_product_formula",
+    "confidence": 0.93
+  },
+  "adler_c6_p1_optimization": {
+    "steps": [
+      "Area A(x) = x(P/2 - x). A'(x) = P/2 - 2x = 0 \u27f9 x = P/4.",
+      "A'' = -2 < 0: maximum. Square with side P/4, area = P\u00b2/16.",
+      "Alternatively: AM-GM gives xy \u2264 ((x+y)/2)\u00b2 = (P/4)\u00b2."
+    ],
+    "answer": "Maximum area = P\u00b2/16 (achieved by square with side P/4)",
+    "strategy": "calculus_amgm",
+    "confidence": 0.99
+  },
+  "adler_c6_p2_limit": {
+    "steps": [
+      "Taylor: sin x = x - x\u00b3/6 + O(x\u2075).",
+      "(sin x - x)/x\u00b3 = -1/6 + O(x\u00b2) \u2192 -1/6."
+    ],
+    "answer": "-1/6",
+    "strategy": "taylor_series",
+    "confidence": 0.99
+  },
+  "adler_c6_p3_integral": {
+    "steps": [
+      "IBP: u = x, dv = sin x dx \u27f9 [-x cos x]\u2080^\u03c0 + \u222b\u2080^\u03c0 cos x dx.",
+      "= \u03c0 + [sin x]\u2080^\u03c0 = \u03c0 + 0 = \u03c0."
+    ],
+    "answer": "\u03c0",
+    "strategy": "integration_by_parts",
+    "confidence": 0.99
+  },
+  "adler_c6_p4_derivative_app": {
+    "steps": [
+      "V = (4/3)\u03c0r\u00b3 \u27f9 dV/dt = 4\u03c0r\u00b2 dr/dt.",
+      "10 = 4\u03c0(25) dr/dt \u27f9 dr/dt = 1/(10\u03c0) cm/s."
+    ],
+    "answer": "dr/dt = 1/(10\u03c0) \u2248 0.0318 cm/s",
+    "strategy": "related_rates",
+    "confidence": 0.99
+  },
+  "adler_c7_p1_conditional": {
+    "steps": [
+      "(a) C(3,2)/C(5,2) = 3/10.",
+      "(b) Given 1st is red: 2 red remain from 4 total \u27f9 P = 2/4 = 1/2."
+    ],
+    "answer": "(a) 3/10; (b) 1/2",
+    "strategy": "conditional_probability",
+    "confidence": 0.99
+  },
+  "adler_c7_p2_bayes": {
+    "steps": [
+      "P(T) = 0.95\u00d70.01 + 0.10\u00d70.99 = 0.1085.",
+      "P(D|T) = 0.0095 / 0.1085 \u2248 0.0876 \u2248 8.76%."
+    ],
+    "answer": "\u2248 8.76% chance of disease given positive test",
+    "strategy": "bayes_theorem",
+    "confidence": 0.98
+  },
+  "adler_c7_p3_birthday": {
+    "steps": [
+      "P(no match, n people) = 365!/((365-n)! \u00d7 365^n).",
+      "n=22: ~47.6% match. n=23: ~50.7% match."
+    ],
+    "answer": "23 people",
+    "strategy": "birthday_paradox",
+    "confidence": 0.99
+  },
+  "adler_c8_p1_geometric_series": {
+    "steps": [
+      "Sum = 1/(1-1/2) = 2.",
+      "General convergence: |r| < 1 \u27f9 S = a/(1-r)."
+    ],
+    "answer": "Sum = 2; converges for |r| < 1",
+    "strategy": "geometric_series_formula",
+    "confidence": 0.99
+  },
+  "adler_c8_p2_fibonacci": {
+    "steps": [
+      "Char. eq.: r\u00b2 = r + 1 \u27f9 r = \u03c6 = (1+\u221a5)/2 or \u03c8 = (1-\u221a5)/2.",
+      "F(n) = A\u03c6\u207f + B\u03c8\u207f. F(0)=0: B=-A. F(1)=1: A\u221a5=1 \u27f9 A=1/\u221a5.",
+      "F(n) = (\u03c6\u207f - \u03c8\u207f)/\u221a5. \u25a1"
+    ],
+    "answer": "F(n) = (\u03c6\u207f - \u03c8\u207f)/\u221a5 [Binet's formula, proved via characteristic roots]",
+    "strategy": "characteristic_roots",
+    "confidence": 0.99
+  },
+  "adler_c8_p3_telescoping": {
+    "steps": [
+      "1/(k(k+1)) = 1/k - 1/(k+1). Telescoping sum = 1 - 1/(n+1) = n/(n+1)."
+    ],
+    "answer": "n/(n+1)",
+    "strategy": "partial_fractions_telescoping",
+    "confidence": 1.0
+  },
+  "adler_c8_p4_induction_sum": {
+    "steps": [
+      "Base n=1: 1 = 1\u00d72\u00d73/6 = 1. \u2713",
+      "Assume 1\u00b2+...+k\u00b2 = k(k+1)(2k+1)/6.",
+      "Add (k+1)\u00b2: factor out (k+1), simplify to (k+1)(k+2)(2k+3)/6. \u25a1"
+    ],
+    "answer": "1\u00b2 + 2\u00b2 + ... + n\u00b2 = n(n+1)(2n+1)/6 [proved by induction]",
+    "strategy": "mathematical_induction",
+    "confidence": 0.99
+  }
+}

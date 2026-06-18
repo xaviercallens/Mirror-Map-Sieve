@@ -1,0 +1,31 @@
+{
+  "pid": "mrb_constant",
+  "domain": "number_theory",
+  "v16_verdict": "REFUTED",
+  "v16_confidence": 0.0,
+  "sorry_count": 0,
+  "sorry_count_after_archimedes": 0,
+  "sorry_count_final": 0,
+  "archimedes_reduction": 0,
+  "pre_decomp_lemmas": 3,
+  "sharding_tier": "",
+  "sharding_region": "",
+  "hypotheses_applied": [
+    "H1_PRE_DECOMP_3L"
+  ],
+  "conjecture_statement": "Let $\\lambda(n)$ denote the Liouville function, defined as $\\lambda(n) = (-1)^{\\Omega(n)}$ where $\\Omega(n)$ is the number of prime factors of $n$ counted with multiplicity. For any integer $N \\ge 1$, the following identity holds: $$\\sum_{n=1}^{N} \\lambda(n) \\left\\lfloor \\frac{N}{n} \\right\\rfloor = \\lfloor \\sqrt{N} \\rfloor$$",
+  "lean4_sketch": "import Mathlib.NumberTheory.ArithmeticFunction\nimport Mathlib.Data.Nat.Sqrt\nimport Mathlib.Tactic.NormNum\nimport Mathlib.Algebra.BigOperators.Ring\n\nopen Nat BigOperators\n\n-- The identity to be proven, framed as a conjecture.\n-- While this is a known theorem in Mathlib (`sum_liouville_mul_dvd_eq_sqrt`),\n-- we present its proof sketch following the specified decomposition plan.\ntheorem mrb_constant (N : \u2115) (hN : N > 0) :\n  (\u2211 n in Finset.Icc 1 N, (liouville n : \u2124) * (N / n)) = Nat.sqrt N := by\n\n  -- Sub-Lemma 3 \u2014 HARD\n  -- Apply the relevant multiplicative identity. The key is that the Dirichlet convolution\n  -- of the Liouville function \u03bb and the function 1 is the indicator function for perfect squares.\n  have h_char : \u2200 m : \u2115, m > 0 \u2192 (\u2211 d in m.divisors, liouville d) = if IsSquare m then 1 else 0 := by\n    intro m hm\n    -- The proof relies on the fact that \u03bb is completely multiplicative.\n    -- Its Dirichlet inverse is |\u03bc|, so \u03bb * 1 = \u03b4, where \u03b4 is the indicator for squares.\n    -- This is a standard result in Mathlib, `ArithmeticFunction.sum_liouville_eq_isSquare`.\n    rw [ArithmeticFunction.sum_liouville_eq_isSquare m]\n    simp\n\n  -- Main proof body: swap the order of summation.\n  -- This rewrites the sum in a form where `h_char` can be applied.\n  -- This step corresponds to `ArithmeticFunction.sum_mul_nat_div_eq_sum_sum_div`.\n  rw [ArithmeticFunction.sum_mul_nat_div_eq_sum_sum_div (liouville : \u2115 \u2192 \u2124) (\u03bb _, 1) N]\n  simp only [mul_one]\n\n  -- Apply the identity from h_char to the inner sum.\n  -- We use `sum_congr` to substitute inside the summation.\n  rw [sum_congr (Finset.Icc_rfl) (\u03bb m hm => by simp [h_char m (Finset.Icc_mem_of_mem_le hm (le_refl m))])]\n\n  -- Sub-Lemma 1 \u2014 MEDIUM\n  -- Establish the divisibility structure, which here translates to counting the squares.\n  -- The sum of `if IsSquare m then 1 else 0` is the count of squares in the range.\n  have h_div : (\u2211 m in Finset.Icc 1 N, if IsSquare m then (1:\u2124) else 0) = (Finset.filter IsSquare (Finset.Icc 1 N))",
+  "lean4_sketch_archimedes": "import Mathlib.NumberTheory.ArithmeticFunction\nimport Mathlib.Data.Nat.Sqrt\nimport Mathlib.Data.Nat.Square\nimport Mathlib.Algebra.BigOperators.Ring\n\nopen Nat BigOperators ArithmeticFunction\n\n-- The identity to be proven, framed as a conjecture.\n-- While this is a known theorem in Mathlib (`sum_liouville_mul_dvd_eq_sqrt`),\n-- we present its proof sketch following the specified decomposition plan.\ntheorem mrb_constant (N : \u2115) (hN : N > 0) :\n  (\u2211 n in Finset.Icc 1 N, liouville n * (N / n : \u2124)) = (Nat.sqrt N : \u2124) := by\n\n  -- Main proof body: swap the order of summation.\n  -- This rewrites the sum in a form where a multiplicative identity can be applied.\n  -- The identity is `\u2211_{n\u2264N} f(n) * (\u2211_{k\u2264N/n} g(k)) = \u2211_{n\u2264N} (f*g)(n)`.\n  -- Let f = liouville (\u03bb), g = zeta (1). Then `\u2211_{k\u2264N/n} g(k)` is `N/n`.\n  -- This step corresponds to `ArithmeticFunction.sum_convolution`.\n  rw [\u2190 sum_convolution liouville (zeta : ArithmeticFunction \u2124) N]\n\n  -- Sub-Lemma 3 \u2014 HARD\n  -- Apply the relevant multiplicative identity. The key is that the Dirichlet convolution\n  -- of the Liouville function \u03bb and the function 1 (zeta) is the indicator function for perfect squares.\n  -- This is `sum_zeta_mul_liouville_eq_isSquare_apply` in Mathlib.\n  rw [Finset.sum_congr rfl fun m _ => by rw [mul_comm, sum_zeta_mul_liouville_eq_isSquare_apply]]\n\n  -- Sub-Lemma 1 \u2014 MEDIUM\n  -- Establish the divisibility structure, which here translates to counting the squares.\n  -- The sum of `if IsSquare m then 1 else 0` is the count of squares in the range.\n  rw [sum_ite_eq_card_filter]\n\n  -- The number of squares in the range `1` to `N` is `sqrt N`.\n  rw [Nat.card_filter_isSquare_Icc_one]\n\n  -- Final type coercion.\n  simp",
+  "research_brief": "",
+  "v15_sorry": 2,
+  "domain_prior": 0.05,
+  "gap_probability_map": {},
+  "sorry_guillotine_applied": false,
+  "cost_usd": 0.57,
+  "elapsed_s": 138.5,
+  "problem_id": "mrb_constant",
+  "status": "FAILED (UNRECOVERABLE)",
+  "galileo_valid": false,
+  "galileo_message": "Failed to extract python closed form",
+  "galileo_diff": "N/A"
+}

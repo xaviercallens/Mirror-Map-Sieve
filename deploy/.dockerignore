@@ -1,0 +1,4 @@
+*.md
+*.yaml
+*.sh
+deploy_*

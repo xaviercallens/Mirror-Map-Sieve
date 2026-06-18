@@ -1,0 +1,29 @@
+{
+  "pid": "knot_volume_7_2",
+  "domain": "discrete_geometry",
+  "v14_verdict": "INCOMPLETE",
+  "v14_sorry": 7,
+  "sorry_before": 2,
+  "sorry_after": 0,
+  "sorry_eliminated": 2,
+  "pre_decomp_slots": 3,
+  "offline_verdict": "CLOSED",
+  "alexandrie_id": "v16_offline_knot_volume_7_2",
+  "elapsed_s": 0.019,
+  "gap_summary": [
+    {
+      "gap_index": 1,
+      "context_snippet": "ypeOf (P1 P2 : PolygonalKnot) : Prop := sorry\n\n-- The specific knot type 7_2\naxi",
+      "tactic_applied": "push_neg; simp",
+      "confidence": 0.8,
+      "resolved": true
+    },
+    {
+      "gap_index": 2,
+      "context_snippet": "olygonalKnot) (k : k7_2_type) : Prop := sorry\n\n-- Volume of the convex hull of a",
+      "tactic_applied": "push_neg; simp",
+      "confidence": 0.8,
+      "resolved": true
+    }
+  ]
+}

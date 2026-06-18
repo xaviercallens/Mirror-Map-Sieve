@@ -1,0 +1,105 @@
+# Copyright (c) 2026 Xavier Callens / Socrate AI Lab
+# Licensed under Apache 2.0 - see LICENSE file
+#
+# HorizonMath GPU Execution Container — SymBrain v12
+# Target: NVIDIA H100 on Google Cloud Run (gen2)
+#
+# Usage (via Cloud Run Job):
+#   gcloud run jobs create horizonmath-v12-top10 \
+#     --image <IMAGE> \
+#     --region us-central1 \
+#     --gpu 1 --gpu-type nvidia-h100-80gb \
+#     --max-retries 0 --task-timeout 7200
+
+# ============================================================
+# Base: NVIDIA CUDA 12.4 + Python 3.12
+# ============================================================
+FROM nvidia/cuda:12.2.2-cudnn8-runtime-ubuntu22.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    CUDA_VISIBLE_DEVICES=all
+
+# System dependencies + Python 3.12 via deadsnakes PPA
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    software-properties-common \
+    ca-certificates \
+    curl \
+    git \
+    jq \
+    libopenblas-dev \
+    liblapack-dev \
+    && add-apt-repository ppa:deadsnakes/ppa -y \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+    python3.12 \
+    python3.12-dev \
+    python3.12-venv \
+    && rm -rf /var/lib/apt/lists/* \
+    && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1 \
+    && update-alternatives --install /usr/bin/python  python  /usr/bin/python3.12 1
+
+# Bootstrap pip for Python 3.12 (deadsnakes does not include python3-pip)
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.12 \
+    && python -m pip install --upgrade pip setuptools wheel
+
+# ============================================================
+# Python dependencies
+# ============================================================
+WORKDIR /app
+
+COPY pyproject.toml ./
+# nvidia-ml-py replaces deprecated pynvml; torch pinned to 2.2 for CUDA 12.2 compatibility
+RUN pip install \
+    "google-genai>=1.0.0" \
+    "numpy>=1.24.0" \
+    "scipy==1.13.1" \
+    "sympy==1.12" \
+    "mpmath==1.3.0" \
+    "pydantic>=2.0.0" \
+    "httpx>=0.24.0" \
+    "rich>=13.0.0" \
+    "structlog>=23.1.0" \
+    "fastapi>=0.100.0" \
+    "uvicorn>=0.22.0" \
+    "nvidia-ml-py>=12.535.77" \
+    "torch==2.2.2" \
+    "accelerate>=0.30.0" \
+    "transformers>=4.41.0" \
+    "datasets>=2.14.0" \
+    "google-cloud-storage>=2.14.0" \
+    "google-cloud-logging>=3.10.0"
+
+# ============================================================
+# Copy project source
+# ============================================================
+COPY agents/ agents/
+COPY core/ core/
+COPY alexandrie/ alexandrie/
+COPY verifiers/ verifiers/
+COPY solvers/ solvers/
+COPY scripts/ scripts/
+COPY nvidia/ nvidia/
+# olympiad package — required by GaloisAgent tools
+COPY olympiad/ olympiad/
+
+# Copy HorizonMath dataset and numerics scripts
+COPY docs/ docs/
+# Bundle HorizonMath numerics under /app/numerics/ for GPU discovery
+COPY scratch/HorizonMath/numerics/ /app/numerics/
+
+# GPU entrypoint — the HorizonMath Top 10 pipeline
+COPY scripts/run_horizonmath_gpu.py /app/run_horizonmath_gpu.py
+
+# Security: non-root user
+RUN groupadd -r agora && useradd -r -g agora -m agora \
+    && chown -R agora:agora /app
+USER agora
+
+ENV PYTHONPATH=/app
+ENV STRUCTLOG_FORMAT=json
+
+# Cloud Run GPU entrypoint
+ENTRYPOINT ["python", "/app/run_horizonmath_gpu.py"]

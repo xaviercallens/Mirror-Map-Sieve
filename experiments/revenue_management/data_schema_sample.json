@@ -1,0 +1,52 @@
+[
+  {
+    "year": 1949,
+    "month": "Jan",
+    "day": 1,
+    "capacity": 250,
+    "base_demand": 128,
+    "base_price_economy": 269.5,
+    "base_price_business": 1046.91,
+    "no_show_prob": 0.1482
+  },
+  {
+    "year": 1949,
+    "month": "Jan",
+    "day": 2,
+    "capacity": 150,
+    "base_demand": 87,
+    "base_price_economy": 151.17,
+    "base_price_business": 591.57,
+    "no_show_prob": 0.0549
+  },
+  {
+    "year": 1949,
+    "month": "Jan",
+    "day": 3,
+    "capacity": 250,
+    "base_demand": 119,
+    "base_price_economy": 224.75,
+    "base_price_business": 814.27,
+    "no_show_prob": 0.0594
+  },
+  {
+    "year": 1949,
+    "month": "Jan",
+    "day": 4,
+    "capacity": 150,
+    "base_demand": 137,
+    "base_price_economy": 234.74,
+    "base_price_business": 722.85,
+    "no_show_prob": 0.2955
+  },
+  {
+    "year": 1949,
+    "month": "Jan",
+    "day": 5,
+    "capacity": 200,
+    "base_demand": 114,
+    "base_price_economy": 255.36,
+    "base_price_business": 783.64,
+    "no_show_prob": 0.0998
+  }
+]

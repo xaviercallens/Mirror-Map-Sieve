@@ -1,0 +1,74 @@
+# ============================================================
+# SymBrain v12 — Cloud Build with GCS Layer Cache
+# Cold build:  ~10 min   (first time, no cache)
+# Warm build:  ~90 s     (pip/torch layers cached in AR)
+#
+# Cache strategy:
+#   - horizonmath-gpu:buildcache  stores the full layer stack in AR
+#   - --cache-from pulls it before build; docker reuses unchanged layers
+#   - After build, the cache tag is updated for the next run
+# ============================================================
+
+steps:
+  # ── Step 1: Pull cache image (best-effort; ignore failure on first run) ──
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'pull-cache'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        docker pull us-central1-docker.pkg.dev/gen-lang-client-0625573011/symbrain-v12/horizonmath-gpu:buildcache \
+          || echo "No cache found – cold build"
+
+  # ── Step 2: Build with cache-from ──────────────────────────────────────
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build'
+    waitFor: ['pull-cache']
+    args:
+      - 'build'
+      - '-f'
+      - 'deploy/docker/Dockerfile.horizonmath'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/gen-lang-client-0625573011/symbrain-v12/horizonmath-gpu:latest'
+      - '--cache-from'
+      - 'us-central1-docker.pkg.dev/gen-lang-client-0625573011/symbrain-v12/horizonmath-gpu:buildcache'
+      - '--platform'
+      - 'linux/amd64'
+      - '--build-arg'
+      - 'BUILDKIT_INLINE_CACHE=1'
+      - '.'
+    timeout: '1500s'
+
+  # ── Step 3: Push versioned tag ─────────────────────────────────────────
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-latest'
+    waitFor: ['build']
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/gen-lang-client-0625573011/symbrain-v12/horizonmath-gpu:latest'
+
+  # ── Step 4: Tag as buildcache and push ────────────────────────────────
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'tag-cache'
+    waitFor: ['push-latest']
+    args:
+      - 'tag'
+      - 'us-central1-docker.pkg.dev/gen-lang-client-0625573011/symbrain-v12/horizonmath-gpu:latest'
+      - 'us-central1-docker.pkg.dev/gen-lang-client-0625573011/symbrain-v12/horizonmath-gpu:buildcache'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-cache'
+    waitFor: ['tag-cache']
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/gen-lang-client-0625573011/symbrain-v12/horizonmath-gpu:buildcache'
+
+images:
+  - 'us-central1-docker.pkg.dev/gen-lang-client-0625573011/symbrain-v12/horizonmath-gpu:latest'
+  - 'us-central1-docker.pkg.dev/gen-lang-client-0625573011/symbrain-v12/horizonmath-gpu:buildcache'
+
+options:
+  machineType: 'E2_HIGHCPU_32'
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: '1800s'

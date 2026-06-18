@@ -1,0 +1,14 @@
+{
+  "pid": "mrb_constant",
+  "domain": "number_theory",
+  "v14_verdict": "REFUTED",
+  "v14_sorry": 3,
+  "sorry_before": 0,
+  "sorry_after": 0,
+  "sorry_eliminated": 0,
+  "pre_decomp_slots": 3,
+  "offline_verdict": "ALREADY_OK",
+  "alexandrie_id": "v16_offline_mrb_constant",
+  "elapsed_s": 0.017,
+  "gap_summary": []
+}

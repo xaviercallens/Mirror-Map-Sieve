@@ -1,0 +1,31 @@
+{
+  "name": "xavier",
+  "description": "Human researcher — final decision authority on publication, axiom creation, and budget escalation. The Agora's principal investigator.",
+  "role": "HUMAN_GATEWAY",
+  "type": "human",
+  "version": "1.0.0",
+  "capabilities": [
+    "approve_publication",
+    "approve_axiom_creation",
+    "approve_budget_escalation",
+    "provide_intuition",
+    "set_research_direction",
+    "review_quorum_verdict"
+  ],
+  "contact": {
+    "method": "notification",
+    "channels": ["terminal", "email"],
+    "email": "callensxavier@gmail.com"
+  },
+  "guardrails": {
+    "auto_approve_below_usd": 5.0,
+    "auto_approve_sorry_free": true,
+    "require_review_for": [
+      "new_axiom",
+      "budget_over_10usd",
+      "publication",
+      "mathlib_pr",
+      "axiom_deprecation"
+    ]
+  }
+}

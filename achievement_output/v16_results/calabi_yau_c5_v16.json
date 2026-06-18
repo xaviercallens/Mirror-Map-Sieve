@@ -1,0 +1,31 @@
+{
+  "pid": "calabi_yau_c5",
+  "domain": "special_functions",
+  "v16_verdict": "REFUTED",
+  "v16_confidence": 0.0,
+  "sorry_count": 1,
+  "sorry_count_after_archimedes": 1,
+  "sorry_count_final": 0,
+  "archimedes_reduction": 0,
+  "pre_decomp_lemmas": 3,
+  "sharding_tier": "",
+  "sharding_region": "",
+  "hypotheses_applied": [
+    "H1_PRE_DECOMP_3L"
+  ],
+  "conjecture_statement": "\\sum_{n=0}^{\\infty} \\frac{\\Gamma(n + 1/5)}{\\Gamma(n + 2)} = \\frac{5}{4} \\Gamma(1/5)",
+  "lean4_sketch": "import Analysis.SpecialFunctions.Gamma.Basic\nimport Analysis.Summation.Sum_expand_telescoping\nimport Tactic.Positivity\n\nopen scoped Topology Real\n\ntheorem calabi_yau_c5 : \u2211' (n : \u2115), Real.Gamma (n + 1/5) / Real.Gamma (n + 2) = (5/4) * Real.Gamma (1/5) := by\n  let f n := Real.Gamma (n + 1/5) / Real.Gamma (n + 1)\n\n  -- Sub-Lemma 1: Positivity of the terms, which implies they are non-zero.\n  have calabi_yau_c5_sub1 : \u2200 n, 0 < Real.Gamma (n + 1/5) / Real.Gamma (n + 2) := by\n    intro n\n    have h_num_pos : 0 < Real.Gamma (n + 1/5) := by\n      apply Real.Gamma_pos_of_pos; linarith\n    have h_den_pos : 0 < Real.Gamma (n + 2) := by\n      apply Real.Gamma_pos_of_pos; linarith\n    exact div_pos h_num_pos h_den_pos\n\n  -- Sub-Lemma 2: Summability of the series and convergence of the telescoping term to 0.\n  have calabi_yau_c5_sub2 : Summable (fun n \u21a6 Real.Gamma (n + 1/5) / Real.Gamma (n+2)) \u2227 Filter.Tendsto f Filter.atTop (nhds 0) := by\n    -- Both claims follow from the asymptotic behavior `Real.Gamma (x + a) / Real.Gamma (x + b) ~ x^(a-b)` as x \u2192 \u221e.\n    -- For the sum, the term is `~ n^(1/5 - 2) = n^(-9/5)`. Since 9/5 > 1, the series converges by comparison with a p-series.\n    -- For the limit, the term `f n` is `~ n^(1/5 - 1) = n^(-4/5)`. Since -4/5 < 0, the sequence tends to 0.\n    sorry\n\n  -- Sub-Lemma 3: The recurrence relation that reveals the telescoping nature of the sum.\n  have calabi_yau_c5_sub3 : \u2200 n, (4/5) * (Real.Gamma (n + 1/5) / Real.Gamma (n + 2)) = f n - f (n + 1) := by\n    intro n\n    unfold f\n    rw [Real.Gamma_succ_eq (n + 1/5), Real.Gamma_succ_eq (n + 1)]\n    field_simp [Real.Gamma_ne_zero_of_pos (by linarith), Real.Gamma_ne_zero_of_pos (by linarith)]\n    ring\n\n  -- Final Assembly: Combine the sub-lemmas to evaluate the sum.\n  have h_sum_tele : \u2211' n, (f n - f (n + 1)) = f 0 := by\n    exact tsum_eq_sub_of_telescoping_atTop f calabi_yau_c5_sub2.2\n\n  have h_sum_scaled : \u2211' n, (4/5) * (Real.Gamma (n + 1/5) / Real.Gamma (n + 2)) = f 0 := by\n    exact (tsum_co",
+  "lean4_sketch_archimedes": "import Mathlib.Analysis.SpecialFunctions.Gamma.Basic\nimport Mathlib.Analysis.SpecialFunctions.Pow.Real\nimport Mathlib.Analysis.Summation.Telescope\nimport Mathlib.Analysis.Asymptotics.Asymptotics\nimport Mathlib.Tactic.Positivity\n\nopen scoped Topology Real\n\ntheorem calabi_yau_c5 : \u2211' (n : \u2115), Real.Gamma (n + 1/5) / Real.Gamma (n + 2) = (5/4) * Real.Gamma (1/5) := by\n  let f n := Real.Gamma (n + 1/5) / Real.Gamma (n + 1)\n\n  have calabi_yau_c5_sub1 : \u2200 n, 0 < Real.Gamma (n + 1/5) / Real.Gamma (n + 2) := by\n    intro n\n    have h_num_pos : 0 < Real.Gamma (n + 1/5) := by\n      apply Real.Gamma_pos_of_pos; linarith\n    have h_den_pos : 0 < Real.Gamma (n + 2) := by\n      apply Real.Gamma_pos_of_pos; linarith\n    exact div_pos h_num_pos h_den_pos\n\n  have calabi_yau_c5_sub2 : Summable (fun n \u21a6 Real.Gamma (n + 1/5) / Real.Gamma (n+2)) \u2227 Filter.Tendsto f Filter.atTop (nhds 0) := by\n    constructor\n    \u00b7 let a (n : \u2115) := Real.Gamma (n + 1 / 5) / Real.Gamma (n + 2)\n      let b (n : \u2115) := ((n : \u211d) + 1) ^ (-(9/5 : \u211d))\n      have h_b_summable : Summable b := by\n        apply summable_one_div_nat_add_one_rpow.mpr\n        norm_num\n      have h_isBigO : a =O[Filter.atTop] b := by\n        have h_gamma_bigO := Real.Gamma_isBigO_rpow_sub_atTop (1/5) 2\n        have h_nat_bigO : (fun n : \u2115 \u21a6 Real.Gamma (n + 1/5) / Real.Gamma (n + 2)) =O[Filter.atTop] (fun n : \u2115 \u21a6 (n : \u211d) ^ (-(9/5 : \u211d))) :=\n          h_gamma_bigO.comp_tendsto Filter.tendsto_nat_cast_atTop_atTop\n        have h_equiv : (fun n : \u2115 \u21a6 (n : \u211d) ^ (-(9/5 : \u211d))) ~[Filter.atTop] b :=\n          (Asymptotics.isEquivalent_rpow_add_const_rpow 1 (-(9/5))).symm\n        exact h_nat_bigO.trans_isEquivalent h_equiv\n      exact Summable.of_isBigO h_isBigO h_b_summable\n    \u00b7 have h_f_bigO := (Real.Gamma_isBigO_rpow_sub_atTop (1/5) 1).comp_tendsto Filter.tendsto_nat_cast_atTop_atTop\n      simp only [add_sub_cancel'] at h_f_bigO\n      have h_tendsto_rpow : Filter.Tendsto (fun n : \u2115 \u21a6 (n : \u211d) ^ (-(4/5 : \u211d))) Filter.atTop (nhds 0) := by\n        apply tendsto_rpow_neg_atTop\n        norm_num\n      exact h_f_bigO.tendsto_zero h_tendsto_rpow\n\n  have calabi_yau_c5_sub3 : \u2200 n, (4/5) * (Real.Gamma (n + 1/5) / Real.Gamma (n + 2)) = f n - f (n + 1) := by\n    intro n\n    unfold f\n    rw [Real.Gamma_add_one (n + 1/5), Real.Gamma_add_one (n + 1)]\n    field_simp [Real.Gamma_ne_zero (by linarith), Real.Gamma_ne_zero (by linarith)]\n    ring\n\n  have h_sum_tele : \u2211' n, (f n - f (n + 1)) = f 0 := by\n    exact tsum_telescope f calabi_yau_c5_sub2.2\n\n  rw [\u2190 mul_left_inj (show (4/5 : \u211d) \u2260 0 by norm_num)]\n  rw [tsum_mul_left calabi_yau_c5_sub2.1]\n  simp_rw [calabi_yau_c5_sub3]\n  rw [h_sum_tele]\n  unfold f\n  field_simp [Real.Gamma_one]\n  ring",
+  "research_brief": "",
+  "v15_sorry": 4,
+  "domain_prior": 0.25,
+  "gap_probability_map": {},
+  "sorry_guillotine_applied": false,
+  "cost_usd": 0.57,
+  "elapsed_s": 136.89,
+  "problem_id": "calabi_yau_c5",
+  "status": "FAILED (UNRECOVERABLE)",
+  "galileo_valid": false,
+  "galileo_message": "Validation failed",
+  "galileo_diff": "N/A"
+}

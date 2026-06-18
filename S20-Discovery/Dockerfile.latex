@@ -1,0 +1,17 @@
+FROM texlive/texlive:latest
+
+WORKDIR /paper
+
+# Copy from the S20-Discovery/paper/ directory (not gitignored)
+COPY S20-Discovery/paper/experimental_mathematics_note_v2.tex ./
+
+# Compile twice for cross-references
+RUN echo "======================================================================" && \
+    echo "  LATEX COMPILATION — S₂₀ PAPER v2" && \
+    echo "======================================================================" && \
+    pdflatex -interaction=nonstopmode experimental_mathematics_note_v2.tex && \
+    pdflatex -interaction=nonstopmode experimental_mathematics_note_v2.tex && \
+    echo "" && \
+    echo "✅ PDF compiled: $(ls -lh experimental_mathematics_note_v2.pdf | awk '{print $5}')"
+
+CMD ["cat", "experimental_mathematics_note_v2.pdf"]

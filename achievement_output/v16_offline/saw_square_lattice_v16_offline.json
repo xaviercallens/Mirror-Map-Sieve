@@ -1,0 +1,14 @@
+{
+  "pid": "saw_square_lattice",
+  "domain": "stat_mechanics",
+  "v14_verdict": "INCOMPLETE",
+  "v14_sorry": 0,
+  "sorry_before": 0,
+  "sorry_after": 0,
+  "sorry_eliminated": 0,
+  "pre_decomp_slots": 3,
+  "offline_verdict": "ALREADY_OK",
+  "alexandrie_id": "v16_offline_saw_square_lattice",
+  "elapsed_s": 0.018,
+  "gap_summary": []
+}

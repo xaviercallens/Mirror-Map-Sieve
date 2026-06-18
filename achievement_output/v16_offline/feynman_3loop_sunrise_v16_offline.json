@@ -1,0 +1,29 @@
+{
+  "pid": "feynman_3loop_sunrise",
+  "domain": "mathematical_physics",
+  "v14_verdict": "REFUTED",
+  "v14_sorry": 8,
+  "sorry_before": 2,
+  "sorry_after": 0,
+  "sorry_eliminated": 2,
+  "pre_decomp_slots": 3,
+  "offline_verdict": "CLOSED",
+  "alexandrie_id": "v16_offline_feynman_3loop_sunrise",
+  "elapsed_s": 0.017,
+  "gap_summary": [
+    {
+      "gap_index": 1,
+      "context_snippet": "reeLoopSunriseFinitePart (t : \u211d) : \u211d := sorry\\\n\\\n-- Let f be the unique newform",
+      "tactic_applied": "norm_cast; omega",
+      "confidence": 0.82,
+      "resolved": true
+    },
+    {
+      "gap_index": 2,
+      "context_snippet": "ght4_newform : CuspForm (Gamma0 6) 4 := sorry -- Existence and uniqueness would",
+      "tactic_applied": "omega",
+      "confidence": 0.92,
+      "resolved": true
+    }
+  ]
+}

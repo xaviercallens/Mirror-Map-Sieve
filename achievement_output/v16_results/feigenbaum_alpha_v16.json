@@ -1,0 +1,31 @@
+{
+  "pid": "feigenbaum_alpha",
+  "domain": "continuum_physics",
+  "v16_verdict": "REFUTED",
+  "v16_confidence": 0.0,
+  "sorry_count": 4,
+  "sorry_count_after_archimedes": 4,
+  "sorry_count_final": 1,
+  "archimedes_reduction": 0,
+  "pre_decomp_lemmas": 3,
+  "sharding_tier": "",
+  "sharding_region": "",
+  "hypotheses_applied": [
+    "H1_PRE_DECOMP_3L"
+  ],
+  "conjecture_statement": "Let $\\mathcal{C}(I, \\mathbb{R})$ be the Banach space of continuous real-valued functions on the interval $I=[-1, 1]$ with the supremum norm $||\\cdot||_\\infty$. Let $f_0(x) = 1-x^2$ be a parabolic map in this space. Define the Feigenbaum renormalization operator $T_a : \\mathcal{C}(I, \\mathbb{R}) \\to \\mathcal{C}(I, \\mathbb{R})$ by $(T_a f)(x) = a f(f(x/a))$, restricted to a suitable domain. Let $\\mathcal{B}_r(f_0)$ be the closed ball of radius $r=10^{-2}$ centered at $f_0$. There exists a unique constant $\\alpha \\in [2.5, 2.51]$ for which the operator $T_\\alpha$ possesses a unique fixed point $g \\in \\mathcal{B}_r(f_0)$.",
+  "lean4_sketch": "import Mathlib.Analysis.NormedSpace.Banach\nimport Mathlib.Topology.MetricSpace.FixedPoint\nimport Mathlib.Data.Real.Basic\n\nopen Metric Set\n\n-- Let C_I be the space of continuous functions on [-1, 1]\nabbrev C_I := C[Set.Icc (-1) 1, \u211d]\n\n-- Define the renormalization operator T_a. The precise definition requires careful\n-- handling of function domains, as f(x/a) must be well-defined. We sketch the operator\n-- assuming these subtleties can be resolved, for instance, for functions defined on all of \u211d.\nnoncomputable def T (a : \u211d) (f : C_I) : C_I :=\n  -- This is a simplified definition. A rigorous one would need to handle that for x in [-1,1],\n  -- x/a might be outside [-1,1], and f(y) might be outside [-1,1].\n  let f_ext := fun y:\u211d \u21a6 if y \u2208 Set.Icc (-1) 1 then f \u27e8y, by sorry\u27e9 else 1-y^2\n  { toFun := fun x \u21a6 a * f_ext (f_ext (x/a)),\n    continuous_toFun := by sorry -- proof of continuity is non-trivial\n  }\n\n-- Define the specific parabola f\u2080(x) = 1 - x\u00b2\nnoncomputable def f\u2080 : C_I :=\n  { toFun := fun x \u21a6 1 - x.val^2,\n    continuous_toFun := by continuity }\n\n-- Define the ball B around f\u2080 with radius r = 1/100\nnoncomputable def B : Set C_I := ball f\u2080 (1/100)\n\n-- The main conjecture\ntheorem feigenbaum_alpha : \u2203 a \u2208 Set.Icc (2.5) 2.51, \u2203! g \u2208 B, T a g = g := by\n  -- The proof strategy is to show that for some `a` in the given interval,\n  -- T_a is a contraction on the closed set B, which is a complete metric space.\n  -- The existence and uniqueness of a fixed point then follows from the Banach Fixed-Point Theorem.\n\n  -- Sub-Lemma 1 \u2014 Establish the key inequality: T_a is a contraction for a in the interval.\n  have feigenbaum_alpha_sub1 : \u2203 k < 1, \u2200 a \u2208 Set.Icc (2.5) 2.51, IsContractionWith k (T a) B := by\n    -- This is the core analytical challenge, requiring bounds on the operator's Lipschitz constant.\n    -- It would involve estimating ||a f(f(x/a)) - a g(g(x/a))||_\u221e using the mean value theorem\n    -- and properties of functions in the ball B.\n    sorry\n\n  -- Sub-Lemma 2 \u2014 P",
+  "lean4_sketch_archimedes": "import Mathlib.Analysis.NormedSpace.Basic\nimport Mathlib.Topology.MetricSpace.FixedPoint\nimport Mathlib.Data.Real.Basic\nimport Mathlib.Topology.ContinuousFunction.Basic\nimport Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic\nimport Mathlib.Topology.MetricSpace.Basic\nimport Mathlib.Analysis.NormedSpace.CompleteSpace\n\nopen Metric Set ContinuousMap\n\nabbrev C_I := C(\u211d, \u211d) |>.restrict (Set.Icc (-1) 1)\n\nnoncomputable def T (a : \u211d) (f : C_I) : C_I :=\n  let f_ext : \u211d \u2192 \u211d := fun y \u21a6 if y \u2208 Set.Icc (-1) 1 then f \u27e8y, by simp\u27e9 else 1 - y^2\n  { toFun := fun x \u21a6 a * f_ext (f_ext (x.1 / a)),\n    continuous_toFun := by\n      apply Continuous.mul (a := a)\n      \u00b7 exact continuous_const\n      \u00b7 apply Continuous.comp\n        \u00b7 exact continuous_if_const _ _ (continuous_const) (continuous_pow 2)\n        \u00b7 apply Continuous.comp\n          \u00b7 exact continuous_if_const _ _ (continuous_const) (continuous_pow 2)\n          \u00b7 exact continuous_div continuous_id continuous_const (by norm_num) }\n\nnoncomputable def f\u2080 : C_I :=\n  { toFun := fun x \u21a6 1 - x.1^2,\n    continuous_toFun := by continuity }\n\nnoncomputable def B : Set C_I := ball f\u2080 (1/100)\n\ntheorem feigenbaum_alpha_sub1 : \u2203 k < 1, \u2200 a \u2208 Set.Icc (2.5) 2.51, IsContractionWith k (T a) B := by\n  sorry\n\ntheorem feigenbaum_alpha : \u2203 a \u2208 Set.Icc (2.5) 2.51, \u2203! g \u2208 B, T a g = g := by\n  obtain \u27e8k, hk\u2081, hk\u2082\u27e9 := feigenbaum_alpha_sub1\n  have : \u2200 a \u2208 Set.Icc (2.5) 2.51, IsClosed B := by\n    intro a ha\n    exact isClosed_ball\n\n  have : \u2200 a \u2208 Set.Icc (2.5) 2.51, CompleteSpace B := by\n    intro a ha\n    exact completeSpace_ball\n\n  have : \u2200 a \u2208 Set.Icc (2.5) 2.51, Nonempty B := by\n    intro a ha\n    use f\u2080\n    simp [B, dist_eq_norm, norm_sub_rev, sub_self, norm_zero, half_pos (by norm_num)]\n\n  rcases exists_unique_fixed_point (T 2.5) (hk\u2082 2.5 (by norm_num)) (this 2.5 (by norm_num))\n    (this 2.5 (by norm_num)) (this 2.5 (by norm_num)) with \u27e8g, hg\u2081, hg\u2082\u27e9\n  use 2.5\n  constructor\n  \u00b7 norm_num\n  use g\n  constructor\n  \u00b7 exact hg\u2081\n  \u00b7 exact hg\u2082",
+  "research_brief": "",
+  "v15_sorry": 2,
+  "domain_prior": 0.1,
+  "gap_probability_map": {},
+  "sorry_guillotine_applied": false,
+  "cost_usd": 0.42,
+  "elapsed_s": 177.6,
+  "problem_id": "feigenbaum_alpha",
+  "status": "FAILED (UNRECOVERABLE)",
+  "galileo_valid": false,
+  "galileo_message": "Validation failed",
+  "galileo_diff": "N/A"
+}

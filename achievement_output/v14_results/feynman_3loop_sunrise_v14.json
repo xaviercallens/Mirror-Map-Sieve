@@ -1,0 +1,15 @@
+{
+  "pid": "feynman_3loop_sunrise",
+  "domain": "mathematical_physics",
+  "v13_status": "REFUTED",
+  "v14_verdict": "REFUTED",
+  "v14_confidence": 0.57,
+  "sorry_count": 8,
+  "sorry_guillotine_applied": false,
+  "domain_prior": 0.15,
+  "cost_usd": 0.46,
+  "elapsed_s": 98.97157512498961,
+  "conjecture_statement": "Let $\\\\\\\\mathcal{J}^{(0)}(t)$ be the renormalized finite part of the dimensionless equal-mass three-loop sunrise integral, where $t=p^2/m^2$. Let $f \\\\\\\\in S_4(\\\\\\\\Gamma_0(6))$ be the unique normalized newform with Fourier expansion $f(z) = q - 4q^2 - 3q^3 + O(q^4)$, and let $L(f,s)$ be its associated L-series. There exists a rational number $r \\\\in \\\\mathbb{Q}$ such that the value of the integral at the on-shell point $t=1$ satisfies\\\\n$$\\\\\\\\mathcal{J}^{(0)}(1) - r \\\\\\\\cdot L(f,3) \\\\\\\\in \\\\\\\\ma",
+  "lean4_sketch": "import Analysis.SpecialFunctions.LSeries\\\nimport NumberTheory.ModularForms\\\nimport Analysis.SpecialFunctions.Zeta\\\nimport NumberTheory.Clausen\\\n\\\nopen Complex Topos\\\n\\\n-- We postulate the existence of the finite part of the three-loop sunrise integral.\\\n-- A full definition would require the theory of dimensional regularization and renormalization.\\\nnoncomputable def threeLoopSunriseFinitePart (t : \u211d) : \u211d := sorry\\\n\\\n-- Let f be the unique newform in S_4(\u0393\u2080(6)). Mathlib's modular form library\\\n-- can in principle define this object.\\\ndef Gamma0_6_weight4_newform : CuspForm (Gamma0 6) 4 := sorry -- Existence and uniqueness would need to be proven here, based on dimension formulas and Hecke theory. Would need `Newform` theory.\\\n\\\n-- Let L(f,s) be its L-series. Mathlib has `lseries`.\\\nnoncomp",
+  "gap_probability_map": {}
+}

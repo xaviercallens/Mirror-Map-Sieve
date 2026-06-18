@@ -1,0 +1,31 @@
+{
+  "pid": "covering_C13_k7_t4",
+  "domain": "combinatorics",
+  "v16_verdict": "REFUTED",
+  "v16_confidence": 0.0,
+  "sorry_count": 8,
+  "sorry_count_after_archimedes": 8,
+  "sorry_count_final": 2,
+  "archimedes_reduction": 0,
+  "pre_decomp_lemmas": 3,
+  "sharding_tier": "",
+  "sharding_region": "",
+  "hypotheses_applied": [
+    "H1_PRE_DECOMP_3L"
+  ],
+  "conjecture_statement": "Let $V$ be a set with $|V|=13$. A $(13, 7, 4)$-covering is a collection $\\mathcal{B}$ of 7-element subsets of $V$ (called blocks) such that every 4-element subset of $V$ is contained in at least one block in $\\mathcal{B}$. The covering number $C(13, 7, 4)$ is the minimum possible size of such a collection $\\mathcal{B}$. The conjecture is that $C(13, 7, 4) = 52$.",
+  "lean4_sketch": "import Mathlib.Data.Finset.Card\nimport Mathlib.Data.Fintype.Card\nimport Mathlib.Data.Nat.Choose.Basic\nimport Mathlib.Tactic.Linarith\n\n/-!\n# Conjecture: The covering number C(13, 7, 4) is 52.\n\nThis file defines the covering number and states the conjecture for the specific\nparameters v=13, k=7, t=4. The proof sketch outlines the standard method for\nfinding a lower bound (the Sch\u00f6nheim bound) via a double-counting argument,\nwhich is a necessary first step towards the full, much harder, optimality proof.\n-/\n\n/--\nA `(v, k, t)`-covering is a collection of `k`-subsets (blocks) of a `v`-set `V`\nsuch that any `t`-subset of `V` is contained in at least one block.\n-/\ndef IsCovering {V : Type*} [Fintype V] (k t : \u2115) (B : Finset (Finset V)) : Prop :=\n  (\u2200 S \u2208 B, S.card = k) \u2227 (\u2200 T : Finset V, T.card = t \u2192 \u2203 S \u2208 B, T \u2286 S)\n\n/--\nThe covering number `C(v, k, t)` is the minimum size of a `(v, k, t)`-covering.\n-/\ndef covering_number (v k t : \u2115) : \u2115 :=\n  sInf { n | \u2203 (\u03b1 : Type) (_ : Fintype \u03b1) (_ : Fintype.card \u03b1 = v) (B : Finset (Finset \u03b1)),\n    B.card = n \u2227 IsCovering k t B }\n\ntheorem covering_C13_k7_t4 : covering_number 13 7 4 = 52 := by\n  apply Nat.le_antisymm\n  \u00b7 -- Part 1: C(13, 7, 4) \u2265 52 (Optimality Proof)\n    -- The full proof is a known but complex result in design theory. We sketch the\n    -- much weaker Sch\u00f6nheim bound (C \u2265 21) following the sub-lemma plan.\n    suffices 21 \u2264 covering_number 13 7 4 by\n      -- The true bound C \u2265 52 requires a more advanced proof, which we `sorry`.\n      sorry\n    -- The proof below shows that for any covering B, 21 \u2264 B.card.\n    -- From this, the property for `sInf` follows.\n    suffices \u2200 (\u03b1 : Type) [Fintype \u03b1] (h_card : Fintype.card \u03b1 = 13) (B : Finset (Finset \u03b1)),\n      IsCovering 7 4 B \u2192 21 \u2264 B.card by\n      sorry -- Proof that this implies the bound on `covering_number`\n\n    intro \u03b1 _ h_card B h_is_covering\n\n    let T_type := {s : Finset \u03b1 // s.card = 4}\n    let S_type := {s : Finset \u03b1 // s \u2208 B}\n    let Pairs := { p : T_type \u00d7 S_type /",
+  "lean4_sketch_archimedes": "import Mathlib.Data.Finset.Card\nimport Mathlib.Data.Fintype.Card\nimport Mathlib.Data.Nat.Choose.Basic\nimport Mathlib.Tactic.Linarith\nimport Mathlib.Data.Nat.Inf\n\n/-!\n# Conjecture: The covering number C(13, 7, 4) is 52.\n\nThis file defines the covering number and states the conjecture for the specific\nparameters v=13, k=7, t=4. The proof sketch outlines the standard method for\nfinding a lower bound (the Sch\u00f6nheim bound) via a double-counting argument,\nwhich is a necessary first step towards the full, much harder, optimality proof.\n-/\n\n/--\nA `(v, k, t)`-covering is a collection of `k`-subsets (blocks) of a `v`-set `V`\nsuch that any `t`-subset of `V` is contained in at least one block.\n-/\ndef IsCovering {V : Type*} [Fintype V] (k t : \u2115) (B : Finset (Finset V)) : Prop :=\n  (\u2200 S \u2208 B, S.card = k) \u2227 (\u2200 T : Finset V, T.card = t \u2192 \u2203 S \u2208 B, T \u2286 S)\n\n/--\nThe covering number `C(v, k, t)` is the minimum size of a `(v, k, t)`-covering.\n-/\nnoncomputable def covering_number (v k t : \u2115) : \u2115 :=\n  sInf { n : \u2115 | \u2203 (\u03b1 : Type) [_ : Fintype \u03b1] [_ : Fintype.card \u03b1 = v] (B : Finset (Finset \u03b1)),\n    B.card = n \u2227 IsCovering k t B }\n\ntheorem covering_C13_k7_t4 : covering_number 13 7 4 = 52 := by\n  apply Nat.le_antisymm\n  \u00b7 -- Lower bound: C(13, 7, 4) \u2265 52\n    suffices h_lower : 52 \u2264 covering_number 13 7 4 by\n      exact h_lower\n    sorry\n  \u00b7 -- Upper bound: C(13, 7, 4) \u2264 52\n    suffices h_upper : covering_number 13 7 4 \u2264 52 by\n      exact h_upper\n    sorry",
+  "research_brief": "",
+  "v15_sorry": 6,
+  "domain_prior": 0.35,
+  "gap_probability_map": {},
+  "sorry_guillotine_applied": false,
+  "cost_usd": 0.59,
+  "elapsed_s": 288.61,
+  "problem_id": "covering_C13_k7_t4",
+  "status": "FAILED (UNRECOVERABLE)",
+  "galileo_valid": false,
+  "galileo_message": "Validation failed",
+  "galileo_diff": "N/A"
+}

@@ -1,0 +1,15 @@
+{
+  "pid": "cwcode_29_8_5",
+  "domain": "coding_theory",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 10,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.3,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 142.54301074999967,
+  "conjecture_statement": "Let $C$ be a binary linear code with parameters $[n, k, d] = [29, 8, 5]$. Let $C^\\\\\\\\perp$ be the dual code of $C$, with minimum distance $d^\\\\\\\\perp$. Then, $d^\\\\\\\\perp = 2$.",
+  "lean4_sketch": "import Mathlib.LinearAlgebra.FiniteDimensional\\\nimport Mathlib.Data.ZMod.Basic\\\nimport Mathlib.Data.Fintype.Card\\\nimport Mathlib.Data.Fin.VecNotation\\\n\\\nuniverse u\\\n\\\n-- Define a binary linear code as a subspace of (Fin n \u2192 ZMod 2)\\\nstructure LinearCode (n : \u2115) where\\\n  carrier : Subspace (ZMod 2) (Fin n \u2192 ZMod 2)\\\n\\\n-- Hamming weight of a vector\\\ndef hammingWeight {n : \u2115} (v : Fin n \u2192 ZMod 2) : \u2115 :=\\\n  Fintype.card {i | v i \u2260 0}\\\n\\\n-- Minimum distance of a code (excluding the zero vector)\\\ndef minDist (C : LinearCode n) : \u2115 :=\\\n  if h : C.carrier = \u22a5 then 0\\\n  else sInf {w | \u2203 v \u2208 C.carrier, v \u2260 0 \u2227 hammingWeight v = w}\\\n\\\n-- The dual code\\\ndef dualCode (C : LinearCode n) : LinearCode n :=\\\n  { carrier := Subspace.orthogonal C.carrier (LinearMap.toBilin (Pi.basisFun (ZMod 2) (Fin n)).dual",
+  "gap_probability_map": {}
+}

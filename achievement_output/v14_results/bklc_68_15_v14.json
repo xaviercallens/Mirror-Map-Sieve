@@ -1,0 +1,15 @@
+{
+  "pid": "bklc_68_15",
+  "domain": "coding_theory",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 3,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.3,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 156.62259641700075,
+  "conjecture_statement": "Let $C_{\\\\\\\\text{GRS}}$ be a Generalized Reed-Solomon code over the finite field $\\\\\\\\mathbb{F}_{16}$ with parameters $[n,k,d] = [17, 3, 15]$. Let $\\\\\\\\phi: \\\\\\\\mathbb{F}_{16} \\\\\\\\to (\\\\\\\\mathbb{F}_2)^4$ be an isomorphism of $\\\\\\\\mathbb{F}_2$-vector spaces. The binary code $C_{\\\\\\\\text{bin}} = \\\\\\\\{ (\\\\\\\\phi(c_0), \\\\\\\\dots, \\\\phi(c_{16})) \\\\\\\\mid (c_0, \\\\\\\\dots, c_{16}) \\\\\\\\in C_{\\\\\\\\text{GRS}} \\\\\\\\} \\\\\\\\subset (\\\\\\\\mathbb{F}_2)^{68}$ has minimum Hamming distance $d(C_{\\\\\\\\text{bin}}) = 15$.",
+  "lean4_sketch": "import Mathlib.Data.Fintype.Card\\\nimport Mathlib.FieldTheory.Finite.Basic\\\nimport Mathlib.LinearAlgebra.Basis\\\nimport Mathlib.Code.LinearCode\\\n\\\n-- Conjectured setup\\\nnamespace Bklc6815\\\n\\\n-- Let F be the finite field with 16 elements.\\\nvariable (F : Type) [Field F] [Fintype F] (hF : Fintype.card F = 16)\\\n\\\n-- A GRS code is a type of evaluation code.\\\n-- We postulate its existence and key properties as it is not yet defined in Mathlib.\\\n-- A full proof would require constructing evaluation codes.\\\n-- Parameters: n=17, k=3, over F\\\n\\\n-- We model the code as a subspace of (Fin 17 \u2192 F)\\\nvariable (C_GRS : Subspace F (Fin 17 \u2192 F))\\\n\\\n-- Axiom 1: Dimension is 3\\\nvariable (h_dim : Fintype.card C_GRS = (Fintype.card F) ^ 3)\\\n\\\n-- Axiom 2: It is an MDS code, so its distance is n-k+1 = 17-3+1 = 15\\\n",
+  "gap_probability_map": {}
+}

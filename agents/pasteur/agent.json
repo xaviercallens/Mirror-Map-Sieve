@@ -1,0 +1,8 @@
+{
+  "name": "pasteur",
+  "description": "Biological heuristics (empty at the moment)",
+  "endpoints": {
+    "rpc": "https://pasteur-service-xyz.a.run.app/rpc"
+  },
+  "model": "gemini-2.5-pro"
+}

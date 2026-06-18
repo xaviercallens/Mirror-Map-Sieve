@@ -1,0 +1,31 @@
+{
+  "pid": "elliptic_curve_rank_torsion_z7z",
+  "domain": "number_theory",
+  "v16_verdict": "REFUTED",
+  "v16_confidence": 0.0,
+  "sorry_count": 4,
+  "sorry_count_after_archimedes": 4,
+  "sorry_count_final": 2,
+  "archimedes_reduction": 0,
+  "pre_decomp_lemmas": 3,
+  "sharding_tier": "",
+  "sharding_region": "",
+  "hypotheses_applied": [
+    "H1_PRE_DECOMP_3L"
+  ],
+  "conjecture_statement": "Let $E$ be the elliptic curve defined by $y^2+xy+y=x^3-x^2-2x-1$, which has conductor $N=26$ and torsion subgroup $E(\\mathbb{Q})_{\\text{tors}} \\cong \\mathbb{Z}/7\\mathbb{Z}$. Let $L(E, s) = \\sum_{n=1}^\\infty a_n(E) n^{-s}$ be its Hasse-Weil L-function. Let $\\lambda(n)$ be the Liouville function, defined as $\\lambda(n) = (-1)^{\\Omega(n)}$ where $\\Omega(n)$ is the number of prime factors of $n$ counted with multiplicity. Then for any $\\epsilon > 0$, the summatory function $S_E(X) = \\sum_{n=1}^{\\lfloor X \\rfloor} \\lambda(n) a_n(E)$ is bounded by $S_E(X) = O(X^{3/4 + \\epsilon})$.",
+  "lean4_sketch": "import Mathlib.NumberTheory.ArithmeticFunction\nimport Mathlib.NumberTheory.Liouville\nimport Mathlib.Analysis.SpecialFunctions.PerronFormula\nimport Mathlib.Topology.Basic\n\n/- \n  We define the context for the elliptic curve 26a1. In a full formalization,\n  `a_n_E` would be the coefficients of the L-series of the curve.\n  For this sketch, we postulate its existence and key properties.\n-/\ndef E_26a1_coeffs (n : \u2115) : \u2124 := sorry\n\n-- Main Conjecture\ntheorem elliptic_curve_rank_torsion_z7z : \n    \u2200 \u03b5 > 0, \u2203 C, \u2200 x \u2265 1, \n      |(\u2211 n in Finset.range (Nat.floor x + 1), if n=0 then 0 else (liouville n) * (E_26a1_coeffs n))| \u2264 C * x^(3/4 + \u03b5) := by\n  intros \u03b5 h\u03b5\n  -- The proof of such a deep conjecture is far beyond current mathematics.\n  -- We sketch a hypothetical approach using standard analytic number theory tools,\n  -- aligning with the provided lemma decomposition plan.\n\n  -- First, establish the multiplicative structure of the summed function.\n  -- This corresponds to Sub-Lemma 1.\n  have elliptic_curve_rank__sub1 : ArithmeticFunction.IsMultiplicative (fun n => (liouville n) * (E_26a1_coeffs n)) := by\n    -- The Liouville function is completely multiplicative.\n    have h_liouville_mult : ArithmeticFunction.IsCompletelyMultiplicative liouville := by exact liouville.isCompletelyMultiplicative\n    -- The coefficients a_n(E) are multiplicative.\n    have h_an_mult : ArithmeticFunction.IsMultiplicative E_26a1_coeffs := sorry -- This is a standard property of L-functions of elliptic curves.\n    -- The product of a completely multiplicative and a multiplicative function is multiplicative.\n    apply ArithmeticFunction.IsMultiplicative.mul_of_completely_multiplicative h_liouville_mult h_an_mult\n    -- Note: Mathlib's `mul` for arithmetic functions is pointwise multiplication.\n\n  -- Second, we need the fundamental bound on the coefficients a_p, which is Deligne's proof\n  -- of the Ramanujan-Petersson conjecture for weight 2 forms. This acts as a 'reduction' step.\n  -- This correspond",
+  "lean4_sketch_archimedes": "import Mathlib.NumberTheory.ArithmeticFunction\nimport Mathlib.NumberTheory.Liouville\nimport Mathlib.Analysis.SpecialFunctions.PerronFormula\nimport Mathlib.Topology.Basic\n\n/- \n  We define the context for the elliptic curve 26a1. In a full formalization,\n  `a_n_E` would be the coefficients of the L-series of the curve.\n  For this sketch, we postulate its existence and key properties.\n-/\ndef E_26a1_coeffs (n : \u2115) : \u2124 := sorry\n\n-- Main Conjecture\ntheorem elliptic_curve_rank_torsion_z7z : \n    \u2200 \u03b5 > 0, \u2203 C, \u2200 x \u2265 1, \n      |(\u2211 n in Finset.range (Nat.floor x + 1), if n=0 then 0 else (liouville n) * (E_26a1_coeffs n))| \u2264 C * x^(3/4 + \u03b5) := by\n  intros \u03b5 h\u03b5\n  -- The proof of such a deep conjecture is far beyond current mathematics.\n  -- We sketch a hypothetical approach using standard analytic number theory tools,\n  -- aligning with the provided lemma decomposition plan.\n\n  -- First, establish the multiplicative structure of the summed function.\n  -- This corresponds to Sub-Lemma 1.\n  have elliptic_curve_rank__sub1 : ArithmeticFunction.IsMultiplicative (fun n => (liouville n) * (E_26a1_coeffs n)) := by\n    -- The Liouville function is completely multiplicative.\n    have h_liouville_mult : ArithmeticFunction.IsCompletelyMultiplicative liouville := by exact liouville.isCompletelyMultiplicative\n    -- The coefficients a_n(E) are multiplicative.\n    have h_an_mult : ArithmeticFunction.IsMultiplicative E_26a1_coeffs := sorry -- This is a standard property of L-functions of elliptic curves.\n    -- The product of a completely multiplicative and a multiplicative function is multiplicative.\n    apply ArithmeticFunction.IsMultiplicative.mul_of_completely_multiplicative h_liouville_mult h_an_mult\n    -- Note: Mathlib's `mul` for arithmetic functions is pointwise multiplication.\n\n  -- Second, we need the fundamental bound on the coefficients a_p, which is Deligne's proof\n  -- of the Ramanujan-Petersson conjecture for weight 2 forms. This acts as a 'reduction' step.\n  -- This correspond",
+  "research_brief": "",
+  "v15_sorry": 2,
+  "domain_prior": 0.05,
+  "gap_probability_map": {},
+  "sorry_guillotine_applied": false,
+  "cost_usd": 0.62,
+  "elapsed_s": 361.17,
+  "problem_id": "elliptic_curve_rank_torsion_z7z",
+  "status": "FAILED (UNRECOVERABLE)",
+  "galileo_valid": false,
+  "galileo_message": "Failed to extract python closed form",
+  "galileo_diff": "N/A"
+}

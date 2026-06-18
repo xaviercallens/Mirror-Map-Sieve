@@ -1,0 +1,16 @@
+# Copyright (c) 2026 Xavier Callens / Socrate AI Lab
+# Licensed under Apache 2.0 - see LICENSE file
+
+[workspace]
+resolver = "2"
+members = [
+    "core",
+    "solvers",
+    "discovery/rust_ramsey"
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+authors = ["Xavier Callens <callensxavier@gmail.com>"]
+license = "Apache-2.0"

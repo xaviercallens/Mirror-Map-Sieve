@@ -1,0 +1,15 @@
+{
+  "pid": "torsional_rigidity_square",
+  "domain": "special_functions",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 4,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.25,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 230.64388916699681,
+  "conjecture_statement": "Let $S = \\\\sum_{n,m \\\\in 2\\\\mathbb{N}-1} \\\\frac{1}{n^2 m^2 (n^2+m^2)}$. The value of this sum is given by the identity: \\n$$ S = \\\\frac{\\\\pi^6}{2048} \\\\left( \\\\frac{16}{3} - \\\\frac{1024}{\\\\pi^5} \\\\sum_{k=1, k \\\\text{ odd}}}^{\\\\infty} \\\\frac{\\\\tanh(k\\\\pi/2)}{k^5} \\\\right) $$",
+  "lean4_sketch": "import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series\nimport Mathlib.Analysis.Fourier.FourierSeries\nimport Mathlib.Analysis.Calculus.ParametricIntegral\n\nopen Nat Real BigOperators Filter Topology\n\n/- \n  Let S be the double summation over odd natural numbers n, m of 1 / (n^2 * m^2 * (n^2 + m^2)).\n  This conjecture states that S can be expressed in terms of a single, faster-converging series\n  involving the hyperbolic tangent function. This identity is motivated by equating two distinct\n  series representations for the torsional rigidity of a square domain. \n-/\ntheorem torsional_rigidity_sum_identity : \n  let S := \u2211' (n : {k : \u2115 // Odd k}), \u2211' (m : {k : \u2115 // Odd k}), \n    1 / ((n.val : \u211d)^2 * (m.val : \u211d)^2 * ((n.val : \u211d)^2 + (m.val : \u211d)^2))\n  let S_tanh := \u2211' (k : {j : \u2115 // Odd j}), ",
+  "gap_probability_map": {}
+}

@@ -1,0 +1,27 @@
+# Cloud Build config: compile LaTeX paper and capture PDF
+steps:
+  # Step 1: Build the LaTeX container and compile
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'latex-build', '-f', 'S20-Discovery/Dockerfile.latex', '.']
+
+  # Step 2: Extract the compiled PDF from the container
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # Create container, copy PDF out, remove container
+        docker create --name latex-extract latex-build
+        docker cp latex-extract:/paper/experimental_mathematics_note_v2.pdf ./experimental_mathematics_note_v2.pdf
+        docker rm latex-extract
+        ls -lh experimental_mathematics_note_v2.pdf
+
+# Save the compiled PDF as a build artifact
+artifacts:
+  objects:
+    location: 'gs://agora-autoresearch-001_cloudbuild/s20-paper/'
+    paths: ['experimental_mathematics_note_v2.pdf']
+
+timeout: '600s'
+options:
+  machineType: 'E2_HIGHCPU_8'

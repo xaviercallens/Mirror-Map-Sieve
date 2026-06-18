@@ -1,0 +1,9 @@
+steps:
+- name: 'ubuntu'
+  entrypoint: 'bash'
+  args: ['-c', 'mkdir -p /workspace/home && chmod 777 /workspace/home']
+- name: 'sagemath/sagemath:latest'
+  entrypoint: 'sage'
+  args: ['discovery/sage_creative_telescoping.py']
+  env:
+  - 'HOME=/workspace/home'

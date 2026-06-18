@@ -1,0 +1,15 @@
+{
+  "pid": "elliptic_k_moment_4",
+  "domain": "special_functions",
+  "v13_status": "CB_TRIPPED",
+  "v14_verdict": "REFUTED",
+  "v14_confidence": 0.57,
+  "sorry_count": 1,
+  "sorry_guillotine_applied": false,
+  "domain_prior": 0.25,
+  "cost_usd": 0.46,
+  "elapsed_s": 208.56407545899856,
+  "conjecture_statement": "Let $K(k) = \\\\int_0^{\\\\pi/2} (1 - k^2 \\\\sin^2\\\\theta)^{-1/2} d\\\\theta$ be the complete elliptic integral of the first kind, and let $K'(k) = K(\\\\sqrt{1-k^2})$ be its complementary counterpart. The following identity holds:$$3 \\\\int_0^1 k \\\\, K(k)^4 \\\\, dk = \\\\int_0^1 k \\\\, K(k)^2 K'(k)^2 \\\\, dk$$",
+  "lean4_sketch": "import analysis.special_functions.elliptic_integrals\nimport analysis.special_functions.integrals\n\nopen real filter measure_theory set\n\n-- Define the complementary elliptic integral K'(k)\nnoncomputable def elliptic_K' (k : \u211d) : \u211d :=\n  if h : 1 - k^2 \u2265 0 then elliptic_integrals.K (sqrt (1 - k^2)) else 0\n\n-- Conjecture: A structural identity for the 4th moment of K(k)\ntheorem elliptic_moment_4_structural_conjecture :\n  3 * (\u222b k in (0)..1, k * (elliptic_integrals.K k)^4) = \u222b k in (0)..1, k * (elliptic_integrals.K k)^2 * (elliptic_K' k)^2 := \nbegin\n  -- The proof of this identity is highly non-trivial and is considered a research-level problem.\n  -- It is believed to follow from the properties of the Picard-Fuchs differential\n  -- equation satisfied by K(k), which is a hypergeometric differenti",
+  "gap_probability_map": {}
+}

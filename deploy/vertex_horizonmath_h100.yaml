@@ -1,0 +1,23 @@
+# Vertex AI Custom Training — 10 independent H100 jobs (one per problem)
+# Vertex AI master pool must have replica_count=1
+# We submit 10 separate jobs, one per HorizonMath problem
+workerPoolSpecs:
+  - machineSpec:
+      machineType: a3-highgpu-1g
+      acceleratorType: NVIDIA_H100_80GB
+      acceleratorCount: 1
+    replicaCount: 1
+    containerSpec:
+      imageUri: us-central1-docker.pkg.dev/gen-lang-client-0625573011/symbrain-v12/horizonmath-gpu:latest
+      env:
+        - name: GEMINI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: socrate-secrets
+              key: GEMINI_API_KEY
+        - name: HF_TOKEN
+          value: "REDACTED"
+        - name: GCS_BUCKET
+          value: gs://symbrain-v12-results
+        - name: CLOUD_RUN_TASK_COUNT
+          value: "10"

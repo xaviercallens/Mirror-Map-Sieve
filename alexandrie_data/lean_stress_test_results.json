@@ -1,0 +1,20 @@
+{
+  "timestamp": 1781637678.299148,
+  "raw_eval": {
+    "success": true,
+    "time_s": 3.452617883682251,
+    "theorems": [
+      "n=5",
+      "n=10",
+      "n=15"
+    ]
+  },
+  "shielded_proof": {
+    "success": true,
+    "time_s": 3.4325709342956543,
+    "theorems": [
+      "general_n"
+    ]
+  },
+  "ratio": 1.005840214163181
+}

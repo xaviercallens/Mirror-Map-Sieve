@@ -1,0 +1,15 @@
+{
+  "pid": "crossing_number_kn",
+  "domain": "combinatorics",
+  "v13_status": "REFUTED",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 2,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.35,
+  "cost_usd": 0.41000000000000003,
+  "elapsed_s": 154.33252720799646,
+  "conjecture_statement": "Let $\\\\text{cr}(K_n)$ denote the crossing number of the complete graph on $n$ vertices. For any integer $n \\\\ge 3$, the following inequality holds: \\\\\\\\$$ \\\\text{cr}(K_{n+1}) \\\\ge \\\\text{cr}(K_n) + {\\\\lfloor n/2 \\\\rfloor \\\\choose 2} \\\\left\\\\lfloor \\\\frac{n-1}{2} \\\\right\\\\rfloor. \\\\$$",
+  "lean4_sketch": "import Mathlib.Data.Nat.Choose.Basic\nimport Mathlib.Tactic\n\n-- We postulate the existence of the crossing number function for the complete graph K_n.\n-- In a full formalization, this would be defined as the minimum number of crossings\n-- over all planar drawings of K_n.\nopaque cr_K (n : \u2115) : \u2115\n\n-- Postulate a basic, known property that cr_K is non-decreasing.\naxiom cr_K_mono : Monotone cr_K\n\n/-- The conjectured incremental lower bound for `cr(K_{n+1}) - cr(K_n)`.\nThis value is equivalent to `Z(n+1) - Z(n)`, where `Z` is the conjectured\nformula for `cr(K_n)`. -/\ndef incremental_crossing_lower_bound (n : \u2115) : \u2115 :=\n  (Nat.choose (n / 2) 2) * ((n - 1) / 2)\n\n/--\nThis conjecture states that the crossing number of the complete graph satisfies\na sharp inductive inequality. If true, it implies the ",
+  "gap_probability_map": {}
+}

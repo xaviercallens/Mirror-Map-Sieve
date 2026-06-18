@@ -1,0 +1,37 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-f'
+      - 'Dockerfile'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/gen-lang-client-0625573011/symbrain-v12/openroom:latest'
+      - '.'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/gen-lang-client-0625573011/symbrain-v12/openroom:latest'
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'open-room'
+      - '--image'
+      - 'us-central1-docker.pkg.dev/gen-lang-client-0625573011/symbrain-v12/openroom:latest'
+      - '--region'
+      - 'us-central1'
+      - '--allow-unauthenticated'
+      - '--min-instances'
+      - '0'
+
+images:
+  - 'us-central1-docker.pkg.dev/gen-lang-client-0625573011/symbrain-v12/openroom:latest'
+
+options:
+  machineType: 'E2_HIGHCPU_32'
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: '1800s'

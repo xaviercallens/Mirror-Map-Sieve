@@ -1,0 +1,9 @@
+{
+  "model_name": "SymBrain-v11-Dieudonne-Cloud-141B",
+  "quantization": "FP8_E4M3",
+  "vram_allocated_gb": 160,
+  "dopaminergic_rpe_enabled": true,
+  "hippocampal_replay_buffer_size": 1024,
+  "max_latency_ms": 400.0,
+  "intended_hardware": "3x NVIDIA L4 GPUs / 1x NVIDIA H100"
+}

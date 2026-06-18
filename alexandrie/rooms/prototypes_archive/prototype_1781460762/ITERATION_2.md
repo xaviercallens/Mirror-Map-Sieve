@@ -1,0 +1,20 @@
+### **MEMORY (End of Iteration 2)**
+
+*   **State:** The second numeric validation protocol (NV-02) is complete. The system's Verification Kernel successfully prevented a collision within a more complex simulated environment, validating the architectural refinements of this iteration. The prototype now moves beyond trivial geometric primitives.
+*   **Architecture:** The `AnatomicalSafetyModel` (ASM) has been re-architected from a simple list of primitives to a hierarchical **Octree** data structure. This provides a multi-resolution representation of the surgical space, enabling efficient collision queries against more complex anatomies. Furthermore, the concept of a static **Safety Margin** (`safety_margin_mm`) has been introduced into the kernel, creating a computationally inexpensive buffer to account for minor physiological motion, directly addressing a critical flaw from Iteration 1.
+*   **Validation NV-02 Summary:**
+    *   **ASM:** An Octree was constructed representing a cavity with a critical no-go zone (e.g., a major artery) surrounded by a 2mm safety margin.
+    *   **Test Case 1 (Pass):** An intended tool path that passed through the safety margin but *not* the critical zone was correctly identified as `UNSAFE`.
+    *   **Test Case 2 (Pass):** An intended tool path that approached but did not breach the safety margin was correctly identified as `SAFE`.
+    *   **Performance (Pass):** The `verify_move` execution time against the Octree-based ASM was measured and confirmed to be within the required real-time performance budget (<5ms), validating this architecture's efficiency.
+*   **Next Steps:** The core verification logic is hardening. The next critical dependencies are the "aperture" and "actuator" of the system: generating the ASM from real-world data and translating the kernel's binary safety verdict into nuanced physical feedback.
+
+***
+
+### **LESSONS_LEARNT (Iteration 2)**
+
+1.  **From an Algorithm to a Toolchain.** The success of the Octree model immediately shifts the bottleneck from the verification algorithm itself to the data pipeline that feeds it. For NV-02, the Octree was manually defined. For this system to be viable, we must establish a trusted, automated toolchain to convert pre-operative 3D scans (e.g., CT, MRI) into a geometrically accurate and validated ASM Octree. The new critical path is now a problem of medical imaging, segmentation, and mesh-to-voxel conversion. The safety of the entire system depends on the "ground truth" of this conversion.
+
+2.  **Safety Margins are a Necessary Compromise, Not a Solution.** Introducing a static safety margin was a pragmatic solution to the static world assumption. However, it is fundamentally a trade-off. We make a region probabilistically safer by making it entirely unusable, reducing the surgeon's workspace. It works for predictable, minor motion (breathing, heartbeat), but fails for major, unexpected tissue deformation. This iteration proves that true dynamic safety will require incorporating real-time sensor data (e.g., endoscopic video, intraoperative ultrasound) to update the ASM *during* the procedure. The current architecture proves the *need* for this, which will be the focus of a future, much more complex iteration.
+
+3.  **Verification is Not Feedback.** The kernel now produces a correct, performant, and binary `SAFE`/`UNSAFE` verdict. This is a go/no-go gate. It is not the force-feedback guarantee promised in the specification. The next immediate engineering challenge (Iteration 3) is to translate this binary decision into a continuous, stable, and intuitive repulsive force. The system must not simply halt motion; it must generate a force vector proportional to the *proximity* and *direction* of the nearest unsafe voxel. This is a shift from a computational geometry problem to a control theory problem: how to synthesize a force field from the ASM data that the surgeon can feel and intuitively work against without instability or oscillation.

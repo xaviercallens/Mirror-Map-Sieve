@@ -1,0 +1,77 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: deepseek-prover-v2
+  namespace: default
+  labels:
+    app: deepseek-prover
+    version: "1.0.0"
+    agora-agent: "true"
+  annotations:
+    # INTERNAL_ONLY — only callable from other Agora services
+    run.googleapis.com/ingress: internal
+    run.googleapis.com/description: "DeepSeek-Prover-V2-7B — Lean 4 theorem prover (T4 + AWQ 4-bit)"
+    # GPU specification
+    run.googleapis.com/gpu-type: nvidia-t4
+spec:
+  template:
+    metadata:
+      annotations:
+        # ── Cost Optimization: Scale to Zero ──────────────────────────────
+        autoscaling.knative.dev/minScale: "0"        # ZERO idle cost
+        autoscaling.knative.dev/maxScale: "1"         # Single instance budget cap
+        run.googleapis.com/cpu-throttling: "false"    # Full CPU during inference
+        # ── Startup: Allow warm-up time for model loading ─────────────────
+        run.googleapis.com/startup-cpu-boost: "true"
+        run.googleapis.com/execution-environment: gen2
+    spec:
+      containerConcurrency: 2                         # Sequential inference
+      timeoutSeconds: 300                             # 5min max per request
+      containers:
+        - image: gcr.io/${PROJECT_ID}/deepseek-prover-v2:1.0.0
+          resources:
+            limits:
+              cpu: "4"
+              memory: "16Gi"
+              nvidia.com/gpu: "1"                     # Single T4 GPU
+          env:
+            - name: MODEL_ID
+              value: "deepseek-ai/DeepSeek-Prover-V2-7B"
+            - name: QUANTIZE
+              value: "awq"                            # 4-bit quantization for T4
+            - name: GPU_MEMORY_UTILIZATION
+              value: "0.90"
+            - name: MAX_TOKENS
+              value: "1024"
+            - name: PREWARM
+              value: "true"                           # Load model on startup
+            - name: PORT
+              value: "8080"
+            # Premium escalation key (optional, for 671B fallback)
+            - name: DEEPSEEK_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: deepseek-api-key
+                  key: latest
+          ports:
+            - containerPort: 8080
+          # ── Probes: generous timeouts for GPU model loading ─────────────
+          startupProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 30                      # 5min startup budget
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10

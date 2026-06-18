@@ -1,0 +1,15 @@
+{
+  "pid": "townes_soliton",
+  "domain": "mathematical_physics",
+  "v13_status": "CB_TRIPPED",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 2,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.15,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 92.91424408300372,
+  "conjecture_statement": "Let $G=(V,E)$ be a finite simple connected graph with $n=|V|$ vertices and $m=|E|$ edges. Let $L$ be the normalized graph Laplacian of $G$. For a given mass $M>0$, consider the energy functional $E: \\\\mathbb{R}^n \\\\to \\\\mathbb{R}$ defined by $E(u) = \\\\frac{1}{2} \\\\sum_{(i,j) \\\\in E} (u_i - u_j)^2 - \\\\frac{1}{4} \\\\sum_{v \\\\in V} u_v^4$, restricted to the sphere $S_M = \\\\{ u \\\\in \\\\mathbb{R}^n : \\\\|u\\\\|_2^2 = M \\\\}$. Let $\\\\mathcal{N}(G,M)$ denote the number of distinct critical points of $E$ on $",
+  "lean4_sketch": "import Mathlib.Combinatorics.SimpleGraph.Connectivity\nimport Mathlib.Analysis.Calculus.FDeriv.Manifold\nimport Mathlib.Geometry.Manifold.Instances.Sphere\nimport Mathlib.Topology.Homology.Simplicial\n\n/- We model the space of functions on the vertices of G as a finite-dimensional real vector space. -/\nvariable {V : Type*} [Fintype V] [DecidableEq V]\nvariable (G : SimpleGraph V)\n\n/- The energy functional for the discrete nonlinear Schr\u00f6dinger equation (DNLS). -/\nnoncomputable def dnlsEnergy (u : V \u2192 \u211d) : \u211d :=\n  (1/2) * (\u2211 e in G.edgeSet, (u e.val.1 - u e.val.2)^2) - (1/4) * (\u2211 v, (u v)^4)\n\n/- The set of critical points of the energy functional on the sphere of mass M. -/\nnoncomputable def dnlsCriticalPoints (M : \u211d) : Set (V \u2192 \u211d) :=\n  let S_M := { u : V \u2192 \u211d | \u2211 v, (u v)^2 = M }\n  { u \u2208 S_M | Is",
+  "gap_probability_map": {}
+}

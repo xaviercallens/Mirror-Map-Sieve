@@ -1,0 +1,10 @@
+{
+  "model_name": "SymBrain-v7-Galois-Einstein-Cloud-141B",
+  "quantization": "FP8_E4M3",
+  "vram_allocated_gb": 160,
+  "aatt_aligned": true,
+  "nccp_numa_coherent": true,
+  "max_latency_ms": 300.0,
+  "mcts_max_nodes": 250,
+  "intended_hardware": "2x Nvidia H100 / L4 Serverless Pool"
+}

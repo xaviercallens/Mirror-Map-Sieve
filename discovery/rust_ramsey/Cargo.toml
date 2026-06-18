@@ -1,0 +1,18 @@
+[package]
+name = "ramsey_search"
+version = "0.1.0"
+edition = "2021"
+description = "High-performance Ramsey number search with delta evaluation"
+authors = ["Xavier Callens <xcallens@socrate-ai.com>"]
+license = "Apache-2.0"
+
+[dependencies]
+rand = "0.8"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+clap = { version = "4.0", features = ["derive"] }
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1

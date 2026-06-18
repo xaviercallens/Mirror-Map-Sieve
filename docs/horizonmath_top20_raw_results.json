@@ -1,0 +1,172 @@
+[
+  {
+    "problem_id": "feigenbaum_delta",
+    "solvability": 3,
+    "domain": "continuum_physics",
+    "euler_confidence": 0.7,
+    "sorry_count": 22,
+    "cost_usd": 0.33000000000000007,
+    "elapsed_s": 31.402970542010735,
+    "warm_start_used": true
+  },
+  {
+    "problem_id": "feigenbaum_alpha",
+    "solvability": 3,
+    "domain": "continuum_physics",
+    "euler_confidence": 0.7,
+    "sorry_count": 22,
+    "cost_usd": 0.31000000000000005,
+    "elapsed_s": 4.069555082998704,
+    "warm_start_used": false
+  },
+  {
+    "problem_id": "euler_mascheroni_closed_form",
+    "solvability": 3,
+    "domain": "number_theory",
+    "euler_confidence": 0.7,
+    "sorry_count": 22,
+    "cost_usd": 0.31000000000000005,
+    "elapsed_s": 3.546571500002756,
+    "warm_start_used": false
+  },
+  {
+    "problem_id": "saw_square_lattice",
+    "solvability": 3,
+    "domain": "statistical_mechanics",
+    "euler_confidence": 0.7,
+    "sorry_count": 22,
+    "cost_usd": 0.31000000000000005,
+    "elapsed_s": 3.5376884159923065,
+    "warm_start_used": false
+  },
+  {
+    "problem_id": "saw_triangular_lattice",
+    "solvability": 3,
+    "domain": "statistical_mechanics",
+    "euler_confidence": 0.7,
+    "sorry_count": 22,
+    "cost_usd": 0.31000000000000005,
+    "elapsed_s": 4.006322041997919,
+    "warm_start_used": false
+  },
+  {
+    "problem_id": "saw_simple_cubic",
+    "solvability": 3,
+    "domain": "statistical_mechanics",
+    "euler_confidence": 0.7,
+    "sorry_count": 22,
+    "cost_usd": 0.31000000000000005,
+    "elapsed_s": 3.2746138750080718,
+    "warm_start_used": false
+  },
+  {
+    "problem_id": "knot_volume_6_3",
+    "solvability": 3,
+    "domain": "discrete_geometry",
+    "euler_confidence": 0.7,
+    "sorry_count": 22,
+    "cost_usd": 0.31000000000000005,
+    "elapsed_s": 4.163186416000826,
+    "warm_start_used": false
+  },
+  {
+    "problem_id": "A21_10_binary_code",
+    "solvability": 3,
+    "domain": "coding_theory",
+    "euler_confidence": 0.7,
+    "sorry_count": 22,
+    "cost_usd": 0.31000000000000005,
+    "elapsed_s": 4.300388707997627,
+    "warm_start_used": false
+  },
+  {
+    "problem_id": "w5_watson_integral",
+    "solvability": 2,
+    "domain": "statistical_mechanics",
+    "euler_confidence": 0.7,
+    "sorry_count": 22,
+    "cost_usd": 0.33000000000000007,
+    "elapsed_s": 3.869575959004578,
+    "warm_start_used": true
+  },
+  {
+    "problem_id": "w6_watson_integral",
+    "solvability": 2,
+    "domain": "statistical_mechanics",
+    "euler_confidence": 0.7,
+    "sorry_count": 22,
+    "cost_usd": 0.33000000000000007,
+    "elapsed_s": 3.1267106250015786,
+    "warm_start_used": true
+  },
+  {
+    "problem_id": "bessel_moment_c5_0",
+    "solvability": 2,
+    "domain": "special_functions",
+    "euler_confidence": 0.7,
+    "sorry_count": 22,
+    "cost_usd": 0.33000000000000007,
+    "elapsed_s": 3.485131249995902,
+    "warm_start_used": true
+  },
+  {
+    "problem_id": "bessel_moment_c5_1",
+    "solvability": 2,
+    "domain": "special_functions",
+    "euler_confidence": 0.7,
+    "sorry_count": 22,
+    "cost_usd": 0.33000000000000007,
+    "elapsed_s": 3.4618982920073904,
+    "warm_start_used": true
+  },
+  {
+    "problem_id": "elliptic_k_moment_4",
+    "solvability": 2,
+    "domain": "special_functions",
+    "euler_confidence": 0.7,
+    "sorry_count": 22,
+    "cost_usd": 0.33000000000000007,
+    "elapsed_s": 3.4124433329998283,
+    "warm_start_used": true
+  },
+  {
+    "problem_id": "autocorr_signed_upper",
+    "solvability": 2,
+    "domain": "combinatorics",
+    "euler_confidence": 0.7,
+    "sorry_count": 22,
+    "cost_usd": 0.33000000000000007,
+    "elapsed_s": 3.4421589999983553,
+    "warm_start_used": true
+  },
+  {
+    "problem_id": "calabi_yau_c5",
+    "solvability": 2,
+    "domain": "continuum_physics",
+    "euler_confidence": 0.7,
+    "sorry_count": 22,
+    "cost_usd": 0.33000000000000007,
+    "elapsed_s": 3.7228769999928772,
+    "warm_start_used": true
+  },
+  {
+    "problem_id": "anderson_lyapunov_exponent",
+    "solvability": 2,
+    "domain": "spectral_theory",
+    "euler_confidence": 0.7,
+    "sorry_count": 22,
+    "cost_usd": 0.33000000000000007,
+    "elapsed_s": 3.3166912499873433,
+    "warm_start_used": true
+  },
+  {
+    "problem_id": "autocorr_upper",
+    "solvability": 1,
+    "domain": "combinatorics",
+    "euler_confidence": 0.7,
+    "sorry_count": 22,
+    "cost_usd": 0.33000000000000007,
+    "elapsed_s": 3.208765332994517,
+    "warm_start_used": false
+  }
+]

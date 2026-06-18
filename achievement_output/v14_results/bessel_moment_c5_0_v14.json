@@ -1,0 +1,15 @@
+{
+  "pid": "bessel_moment_c5_0",
+  "domain": "special_functions",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.65,
+  "sorry_count": 0,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.25,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 189.08307233300002,
+  "conjecture_statement": "{'conjecture_generator': ConjectureResult(conjectures=[Conjecture(statement='Let $K_0(x)$ and $I_0(x)$ be the modified Bessel functions of the second and first kind of order zero, respectively. The following identity holds: $$\\\\int_0^\\\\infty x I_0(x) K_0(x)^5 \\\\,dx = \\\\frac{4}{25} \\\\int_0^\\\\infty x K_0(x)^5 \\\\,dx$$', natural_language=\"This conjecture proposes a precise, simple rational relationship between two highly non-trivial integrals involving powers of the modified Bessel function $K_0(x)$",
+  "lean4_sketch": "",
+  "gap_probability_map": {}
+}

@@ -1,0 +1,31 @@
+{
+  "pid": "hensley_hausdorff_dim",
+  "domain": "number_theory",
+  "v16_verdict": "REFUTED",
+  "v16_confidence": 0.0,
+  "sorry_count": 2,
+  "sorry_count_after_archimedes": 2,
+  "sorry_count_final": 0,
+  "archimedes_reduction": 0,
+  "pre_decomp_lemmas": 3,
+  "sharding_tier": "",
+  "sharding_region": "",
+  "hypotheses_applied": [
+    "H1_PRE_DECOMP_3L"
+  ],
+  "conjecture_statement": "Let $\\delta(d) := \\dim_H(\\{ x \\in [0,1] \\setminus \\mathbb{Q} \\mid \\forall k \\ge 1, \\gcd(a_k(x), d) = 1 \\})$, where $a_k(x)$ are the partial quotients of the continued fraction expansion of $x$. For a square-free integer $d = p_1 \\cdots p_r$ with distinct prime factors, let $\\theta(d) = 2\\delta(d) - 1$. Then the function $\\theta(d)$ is asymptotically multiplicative in the following sense: for any fixed $r \\ge 2$,\n$$ \\lim_{\\min(p_1, \\dots, p_r) \\to \\infty} \\frac{\\theta(p_1 \\cdots p_r)}{\\theta(p_1) \\cdots \\theta(p_r)} = 1 $$",
+  "lean4_sketch": "import Mathlib.NumberTheory.ContinuedFractions.Basic\nimport Mathlib.Analysis.SpecialFunctions.Zeta.Basic\nimport Mathlib.Topology.MetricSpace.HausdorffDimension\nimport Mathlib.NumberTheory.ArithmeticFunction\n\nopen Filter Topology Real Set\n\n-- Define the set of numbers whose partial quotients are all coprime to d.\ndef ContinuedFraction.DigitsCoprime (d : \u2115) : Set \u211d :=\n  { x | \u00ac IsRat x \u2227 \u2200 k \u2265 1, Nat.gcd (ContinuedFractions.continuedFraction x).get k d = 1 }\n\n-- Formal definition of the Hausdorff dimension of this set.\nnoncomputable def hensleyDim (d : \u2115) : \u211d\u22650\u221e :=\n  hausdorffDimension (ContinuedFraction.DigitsCoprime d)\n\n-- The transformation used in the conjecture.\nnoncomputable def theta (d : \u2115) : \u211d :=\n  2 * (hensleyDim d).toReal - 1\n\n-- The conjecture statement.\ntheorem hensley_hausdorff_dim (d_seq : \u2115 \u2192 \u2115) (h_prime : \u2200 n, (d_seq n).Prime) (h_inj : Function.Injective d_seq) :\n    \u2200 r : \u2115, r \u2265 2 \u2192\n    Tendsto (fun (n : \u2115) =>\n      let p i := d_seq (n + i) -- A sequence of distinct primes tending to infinity\n      let d := Finset.prod (Finset.range r) (fun i => p i)\n      let num := theta d\n      let den := Finset.prod (Finset.range r) (fun i => theta (p i))\n      num / den)\n    atTop (\ud835\udcdd 1) := by\n  intro r hr\n  -- The full proof is a major research problem requiring the theory of transfer operators.\n  -- The provided sub-lemma plan can be interpreted as steps to analyze an approximation\n  -- of the pressure function, which determines the dimension.\n\n  -- Let s_d be an approximation to \u03b4(d) given by the root of Z(2s, A_d) = 1,\n  -- where Z is a Dirichlet-series-like sum over the allowed digits A_d.\n\n  -- Sub-Lemma 1: Establish the arithmetic structure of the set of allowed digits.\n  -- Using M\u00f6bius inversion, the sum over coprime digits can be related to sums over multiples.\n  have hensley_hausdorff_di_sub1 : \u2200 (s : \u211d) (d : \u2115), d > 0 \u2192\n      (\u2211' n : {k:\u2115 // Nat.gcd k d = 1}, (n.val : \u211d)^(-s)) =\n      (\u2211' k : {m:\u2115 // m \u2223 d}, ArithmeticFunction.moebius k.val * (k.val :",
+  "lean4_sketch_archimedes": "import Mathlib.NumberTheory.ContinuedFractions.Basic\nimport Mathlib.Analysis.SpecialFunctions.Zeta.Basic\nimport Mathlib.Topology.MetricSpace.HausdorffDimension\nimport Mathlib.NumberTheory.ArithmeticFunction\n\nopen Filter Topology Real Set\n\n-- Define the set of numbers whose partial quotients are all coprime to d.\ndef ContinuedFraction.DigitsCoprime (d : \u2115) : Set \u211d :=\n  { x | \u00ac IsRat x \u2227 \u2200 k \u2265 1, Nat.gcd (ContinuedFractions.continuedFraction x).get k d = 1 }\n\n-- Formal definition of the Hausdorff dimension of this set.\nnoncomputable def hensleyDim (d : \u2115) : \u211d\u22650\u221e :=\n  hausdorffDimension (ContinuedFraction.DigitsCoprime d)\n\n-- The transformation used in the conjecture.\nnoncomputable def theta (d : \u2115) : \u211d :=\n  2 * (hensleyDim d).toReal - 1\n\n-- The conjecture statement.\ntheorem hensley_hausdorff_dim (d_seq : \u2115 \u2192 \u2115) (h_prime : \u2200 n, (d_seq n).Prime) (h_inj : Function.Injective d_seq) :\n    \u2200 r : \u2115, r \u2265 2 \u2192\n    Tendsto (fun (n : \u2115) =>\n      let p i := d_seq (n + i) -- A sequence of distinct primes tending to infinity\n      let d := Finset.prod (Finset.range r) (fun i => p i)\n      let num := theta d\n      let den := Finset.prod (Finset.range r) (fun i => theta (p i))\n      num / den)\n    atTop (\ud835\udcdd 1) := by\n  intro r hr\n  -- The full proof is a major research problem requiring the theory of transfer operators.\n  -- The provided sub-lemma plan can be interpreted as steps to analyze an approximation\n  -- of the pressure function, which determines the dimension.\n\n  -- Let s_d be an approximation to \u03b4(d) given by the root of Z(2s, A_d) = 1,\n  -- where Z is a Dirichlet-series-like sum over the allowed digits A_d.\n\n  -- Sub-Lemma 1: Establish the arithmetic structure of the set of allowed digits.\n  -- Using M\u00f6bius inversion, the sum over coprime digits can be related to sums over multiples.\n  have hensley_hausdorff_di_sub1 : \u2200 (s : \u211d) (d : \u2115), d > 0 \u2192\n      (\u2211' n : {k:\u2115 // Nat.gcd k d = 1}, (n.val : \u211d)^(-s)) =\n      (\u2211' k : {m:\u2115 // m \u2223 d}, ArithmeticFunction.moebius k.val * (k.val :",
+  "research_brief": "",
+  "v15_sorry": 1,
+  "domain_prior": 0.05,
+  "gap_probability_map": {},
+  "sorry_guillotine_applied": false,
+  "cost_usd": 0.62,
+  "elapsed_s": 955.01,
+  "problem_id": "hensley_hausdorff_dim",
+  "status": "FAILED (UNRECOVERABLE)",
+  "galileo_valid": false,
+  "galileo_message": "Validation failed",
+  "galileo_diff": "N/A"
+}

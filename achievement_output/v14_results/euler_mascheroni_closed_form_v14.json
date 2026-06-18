@@ -1,0 +1,15 @@
+{
+  "pid": "euler_mascheroni_closed_form",
+  "domain": "number_theory",
+  "v13_status": "REFUTED",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.65,
+  "sorry_count": 0,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.05,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 247.45320504200936,
+  "conjecture_statement": "{'conjecture_generator': ConjectureResult(conjectures=[Conjecture(statement='Let $\\\\\\\\mathcal{F}$ be the field generated over $\\\\\\\\mathbb{Q}$ by the set of constants $\\\\{ \\\\\\\\pi, e, \\\\\\\\log p \\\\\\\\mid p \\\\\\\\text{ is prime} \\\\} \\\\\\\\cup \\\\{ \\\\\\\\zeta(n) \\\\\\\\mid n \\\\\\\\in \\\\\\\\mathbb{Z}, n \\\\\\\\ge 2 \\\\\\\\}$. It is conjectured that the Euler-Mascheroni constant $\\\\\\\\gamma$ is not an element of $\\\\\\\\mathcal{F}$. Formally, $\\\\\\\\gamma \\\\\\\\notin \\\\\\\\mathcal{F}$.', natural_language=\"The Euler-Mascheroni consta",
+  "lean4_sketch": "",
+  "gap_probability_map": {}
+}

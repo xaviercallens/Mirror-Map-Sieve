@@ -1,0 +1,66 @@
+{
+  "target": "R(3,3,4) >= 52",
+  "n": 51,
+  "num_trials": 5,
+  "steps_per_trial": 1000000,
+  "success": false,
+  "best_violations_overall": 408,
+  "elapsed_s": 658.29,
+  "trials": [
+    {
+      "success": false,
+      "n": 51,
+      "best_violations": 416,
+      "best_step": 306568,
+      "final_violations": 416,
+      "total_steps": 1000000,
+      "accepted_ratio": 0.190191,
+      "improved": 749,
+      "elapsed_s": 132.09
+    },
+    {
+      "success": false,
+      "n": 51,
+      "best_violations": 424,
+      "best_step": 312450,
+      "final_violations": 424,
+      "total_steps": 1000000,
+      "accepted_ratio": 0.178303,
+      "improved": 700,
+      "elapsed_s": 132.18
+    },
+    {
+      "success": false,
+      "n": 51,
+      "best_violations": 408,
+      "best_step": 325105,
+      "final_violations": 408,
+      "total_steps": 1000000,
+      "accepted_ratio": 0.174652,
+      "improved": 801,
+      "elapsed_s": 131.63
+    },
+    {
+      "success": false,
+      "n": 51,
+      "best_violations": 424,
+      "best_step": 273509,
+      "final_violations": 424,
+      "total_steps": 1000000,
+      "accepted_ratio": 0.192288,
+      "improved": 714,
+      "elapsed_s": 131.48
+    },
+    {
+      "success": false,
+      "n": 51,
+      "best_violations": 408,
+      "best_step": 301503,
+      "final_violations": 408,
+      "total_steps": 1000000,
+      "accepted_ratio": 0.176138,
+      "improved": 683,
+      "elapsed_s": 130.9
+    }
+  ]
+}

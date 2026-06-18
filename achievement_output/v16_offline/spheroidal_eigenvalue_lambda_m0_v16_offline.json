@@ -1,0 +1,14 @@
+{
+  "pid": "spheroidal_eigenvalue_lambda_m0",
+  "domain": "spectral_theory",
+  "v14_verdict": "INCOMPLETE",
+  "v14_sorry": 1,
+  "sorry_before": 0,
+  "sorry_after": 0,
+  "sorry_eliminated": 0,
+  "pre_decomp_slots": 3,
+  "offline_verdict": "ALREADY_OK",
+  "alexandrie_id": "v16_offline_spheroidal_eigenvalue_lambda_m0",
+  "elapsed_s": 0.019,
+  "gap_summary": []
+}

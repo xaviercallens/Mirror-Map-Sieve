@@ -1,0 +1,41 @@
+\contentsline {section}{\numberline {1}Introduction}{2}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Ramsey Theory Background}{2}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}The Target: $R(3,3,4)$}{2}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Our Approach and Contributions}{2}{subsection.1.3}%
+\contentsline {section}{\numberline {2}Problem Formulation}{3}{section.2}%
+\contentsline {section}{\numberline {3}Search Algorithm}{3}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Simulated Annealing}{3}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}SA Schedule Parameters}{4}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}$O(n^2)$ Violation Delta}{4}{subsection.3.3}%
+\contentsline {paragraph}{Triangle delta.}{4}{section*.2}%
+\contentsline {paragraph}{$K_4$ delta.}{4}{section*.3}%
+\contentsline {subsection}{\numberline {3.4}Delta Correctness Verification}{4}{subsection.3.4}%
+\contentsline {section}{\numberline {4}Results}{5}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Scaling Behavior}{5}{subsection.4.1}%
+\contentsline {section}{\numberline {5}Bug Archaeology}{5}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Bug v1: Stale Adjacency Sets}{5}{subsection.5.1}%
+\contentsline {paragraph}{Context.}{5}{section*.5}%
+\contentsline {paragraph}{The bug.}{6}{section*.6}%
+\contentsline {paragraph}{Symptom.}{6}{section*.7}%
+\contentsline {paragraph}{Detection.}{6}{section*.8}%
+\contentsline {subsection}{\numberline {5.2}Bug v2: Edge-Local Counting}{6}{subsection.5.2}%
+\contentsline {paragraph}{Context.}{6}{section*.9}%
+\contentsline {paragraph}{The bug.}{6}{section*.10}%
+\contentsline {paragraph}{Symptom.}{6}{section*.11}%
+\contentsline {paragraph}{Detection.}{6}{section*.12}%
+\contentsline {subsection}{\numberline {5.3}The False Positives}{6}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Lessons Learned}{6}{subsection.5.4}%
+\contentsline {section}{\numberline {6}Lean 4 Formalization}{7}{section.6}%
+\contentsline {subsection}{\numberline {6.1}$R(3,3) \ge 6$ via $C_5$}{7}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Verification Summary}{8}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Framework for Encoding Discovered Colorings}{8}{subsection.6.3}%
+\contentsline {section}{\numberline {7}Limitations and Future Work}{8}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Limitations of Simulated Annealing}{8}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Algebraic Constructions}{8}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}SAT Encoding}{9}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}GPU-Parallel Breakout Local Search}{9}{subsection.7.4}%
+\contentsline {section}{\numberline {8}Related Work}{9}{section.8}%
+\contentsline {paragraph}{Known bounds for $R(3,3,4)$.}{9}{section*.15}%
+\contentsline {paragraph}{Computational methods for Ramsey numbers.}{9}{section*.16}%
+\contentsline {paragraph}{Radziszowski's dynamic survey.}{9}{section*.17}%
+\contentsline {section}{\numberline {9}Conclusion}{9}{section.9}%

@@ -1,0 +1,15 @@
+{
+  "pid": "mzv_decomposition_c5",
+  "domain": "number_theory",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 6,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.05,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 166.73457987500296,
+  "conjecture_statement": "Let $I_k^d = \\\\{(k_1, \\\\dots, k_d) \\\\in \\\\mathbb{Z}^d \\\\mid \\\\sum_{i=1}^d k_i = k, k_1 > 1, k_i \\\\ge 1 \\\\}$. The sum of all admissible multiple zeta values of weight 5 with depth greater than or equal to 2 is equal to $2\\\\zeta(5)$. Formally, $$ \\\\sum_{d=2}^{4} \\\\sum_{\\\\mathbf{k} \\\\in I_5^d} \\\\zeta(\\\\mathbf{k}) = 2\\\\zeta(5) $$",
+  "lean4_sketch": "import Mathlib.Analysis.SpecialFunctions.Zeta\nimport Mathlib.Data.Real.Basic\n\n-- We postulate the existence of a Multiple Zeta Value function and its fundamental properties.\n-- A full formalization would require a significant library development.\n\n-- Represents \u03b6(k\u2081, ..., k\u1d63) for k = [k\u2081, ..., k\u1d63]\nopaque mzv (k : List \u2115) : \u211d\n\n-- Postulate: The sum of depth-2 MZVs of weight 5 is \u03b6(5).\n-- This is a specific instance of the Sum Formula.\ntheorem mzv_sum_formula_d2_w5 : mzv [4,1] + mzv [3,2] + mzv [2,3] = Real.zeta 5 := sorry\n\n-- Postulate: Duality relations for weight 5.\n-- These are instances of the general Duality Theorem.\ntheorem mzv_duality_311_eq_23 : mzv [3,1,1] = mzv [2,3] := sorry\ntheorem mzv_duality_221_eq_32 : mzv [2,2,1] = mzv [3,2] := sorry\ntheorem mzv_duality_2111_eq_41 : mzv [2,1",
+  "gap_probability_map": {}
+}

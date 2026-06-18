@@ -1,0 +1,15 @@
+{
+  "pid": "saw_simple_cubic",
+  "domain": "statistical_mechanics",
+  "solvability": 3,
+  "source": "missing",
+  "pre_decomp_lemmas": 3,
+  "sorry_galois": 3,
+  "sorry_final": 1,
+  "arch_reduction": 2,
+  "verdict": "INCOMPLETE",
+  "euler_confidence": 0.7,
+  "cost_usd": 0.3,
+  "elapsed_s": 637.52,
+  "alexandrie_id": "v16_dryrun_saw_simple_cubic"
+}

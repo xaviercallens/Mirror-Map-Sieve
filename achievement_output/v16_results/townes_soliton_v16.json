@@ -1,0 +1,31 @@
+{
+  "pid": "townes_soliton",
+  "domain": "mathematical_physics",
+  "v16_verdict": "REFUTED",
+  "v16_confidence": 0.0,
+  "sorry_count": 4,
+  "sorry_count_after_archimedes": 4,
+  "sorry_count_final": 1,
+  "archimedes_reduction": 0,
+  "pre_decomp_lemmas": 3,
+  "sharding_tier": "",
+  "sharding_region": "",
+  "hypotheses_applied": [
+    "H1_PRE_DECOMP_3L"
+  ],
+  "conjecture_statement": "Let $H^1(\\mathbb{R}^2)$ be the standard Sobolev space. There exists a unique (up to translation and phase) positive, radially symmetric solution $Q \\in H^1(\\mathbb{R}^2)$ to the nonlinear elliptic equation $-\\Delta u + u - u^3 = 0$. This solution, the Townes soliton, is a ground state, meaning it minimizes the action functional $S(u) = \\frac{1}{2} \\int_{\\mathbb{R}^2} |\\nabla u|^2 dx + \\frac{1}{2} \\int_{\\mathbb{R}^2} |u|^2 dx - \\frac{1}{4} \\int_{\\mathbb{R}^2} |u|^4 dx$ among all non-trivial solutions.",
+  "lean4_sketch": "import Mathlib.Analysis.InnerProductSpace.Spectrum\nimport Mathlib.Analysis.HilbertSpace.SelfAdjoint\n\nnoncomputable section\n\nopen Set\n\n-- We work in an abstract Hilbert space H, representing H\u00b9(\u211d\u00b2).\nvariable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace \u211d H] [CompleteSpace H]\n\n-- The abstract form of the equation is Lu + N(u) = 0, where L is linear and N is nonlinear.\n-- L represents the linear operator -\u0394 + I.\n-- N represents the nonlinear term -u\u00b3.\n\n-- The theorem asserts existence of a non-trivial solution Q.\ntheorem townes_soliton_existence (L : H \u2192L[\u211d] H) (N : H \u2192 H)\n  (h_is_equation : \u2200 u, -laplacian u + u - u^3 = L u + N u) :\n  \u2203 Q : H, Q \u2260 0 \u2227 L Q + N Q = 0 := by\n\n  -- Sub-Lemma 1: Prove the operator L = -\u0394 + I is self-adjoint.\n  -- This is a foundational property derived from the self-adjointness of the Laplacian,\n  -- allowing the use of spectral theory.\n  have h_sa : IsSelfAdjoint L := by\n    -- The proof requires Green's identities (integration by parts) on \u211d\u00b2,\n    -- which is not yet formalized in Mathlib for Sobolev spaces.\n    -- The tactic `IsSelfAdjoint.adjoint_eq` would be the entry point.\n    sorry\n\n  -- Sub-Lemma 2: Establish a key property of L's spectrum.\n  -- The spectrum of L = -\u0394 + I on L\u00b2(\u211d\u00b2) is [1, \u221e). This implies L is a positive\n  -- definite operator, which is crucial for the coercivity of the energy functional.\n  have h_spec : (Set.Ici 1) \u2286 spectrum \u211d L := by\n    -- This would be proven by showing that for any \u03bb \u2265 1, the operator (L - \u03bbI) is not\n    -- invertible. For \u03bb = 1, L - 1*I = -\u0394, which is not invertible.\n    -- The tactic `spectrum.mem_iff` is relevant here.\n    sorry\n\n  -- Sub-Lemma 3: Apply the key variational estimate.\n  -- The existence proof relies on controlling the nonlinear term. This is accomplished\n  -- via the Gagliardo-Nirenberg inequality, which bounds the L\u2074 norm by the H\u00b9 norm.\n  have h_energy : \u2203 C > 0, \u2200 u : H, \u2016N u\u2016 \u2264 C * \u2016u\u2016_H1 ^ 3 := by\n    -- This is an abstract statement of the Gagliardo-Nirenberg ",
+  "lean4_sketch_archimedes": "import Mathlib.Analysis.InnerProductSpace.Basic\nimport Mathlib.Analysis.HilbertSpace.SelfAdjoint\nimport Mathlib.Analysis.NormedSpace.OperatorNorm\nimport Mathlib.Analysis.Spectrum\nimport Mathlib.Analysis.SpecialFunctions.Pow.Real\n\nnoncomputable section\n\nopen Set Filter Function\n\nvariable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace \u211d H] [CompleteSpace H]\n\ntheorem townes_soliton_existence (L : H \u2192L[\u211d] H) (N : H \u2192 H)\n  (h_is_equation : \u2200 u, -\u2191(laplacian \u211d) u + u - u ^ (3 : \u211d) = L u + N u) :\n  \u2203 Q : H, Q \u2260 0 \u2227 L Q + N Q = 0 := by\n  sorry",
+  "research_brief": "",
+  "v15_sorry": 2,
+  "domain_prior": 0.15,
+  "gap_probability_map": {},
+  "sorry_guillotine_applied": false,
+  "cost_usd": 0.57,
+  "elapsed_s": 117.17,
+  "problem_id": "townes_soliton",
+  "status": "FAILED (UNRECOVERABLE)",
+  "galileo_valid": false,
+  "galileo_message": "Validation failed",
+  "galileo_diff": "N/A"
+}

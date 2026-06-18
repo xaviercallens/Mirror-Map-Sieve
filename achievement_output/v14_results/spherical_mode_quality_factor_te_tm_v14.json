@@ -1,0 +1,15 @@
+{
+  "pid": "spherical_mode_quality_factor_te_tm",
+  "domain": "spectral_theory",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 6,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.2,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 187.90516379200562,
+  "conjecture_statement": "Let $z_{l,n}$ be the $n$-th positive zero of the spherical Bessel function of the first kind $j_l(x)$, for integers $l \\\\ge 1, n \\\\ge 1$. Define the total normalized excess loss for a given angular momentum number $l$ as the convergent series $S_l := \\\\\\\\sum_{n=1}^\\\\\\\\infty \\\\\\\\frac{l(l+1)}{z_{l,n}^2 - l(l+1)}$. Then the sequence $(S_l)_{l \\\\ge 1}$ is strictly increasing and satisfies the sharp bound $S_l < \\\\\\\\frac{l}{2} + \\\\\\\\frac{1}{4}$.",
+  "lean4_sketch": "import Mathlib.Analysis.SpecialFunctions.Bessel\\\nimport Mathlib.Topology.Instances.Real\\\n\\\nopen Real SpecialFunctions\\\n\\\n-- We postulate the existence and properties of the n-th zero of the l-th spherical Bessel function.\\\n-- A full formalization would require developing the theory of zeros of these functions.\\\naxiom sphericalBessel_zero_exists (l n : \u2115) (hl : l \u2265 1) (hn : n \u2265 1): \u2203! z, (sphericalBesselJ l z = 0) \u2227 z > 0 \u2227\\\n  (\u2200 y, 0 < y \u2227 y < z \u2192 sphericalBesselJ l y \u2260 0 \u2192 \u2200 m < n, Classical.choose (sphericalBessel_zero_exists l m hl (by linarith)) < y)\\\n\\\n-- Define z_{l,n} using the axiom\\\ndef z (l n : \u2115) (hl : l \u2265 1) (hn : n \u2265 1) : Real := Classical.choose (sphericalBessel_zero_exists l n hl hn)\\\n\\\n-- We would need to prove properties of z_{l,n}, such as z_{l,n}^2 > l*(l+1)\\\n-- This is ",
+  "gap_probability_map": {}
+}

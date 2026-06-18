@@ -1,0 +1,31 @@
+{
+  "pid": "euler_mascheroni_closed_form",
+  "domain": "number_theory",
+  "v16_verdict": "REFUTED",
+  "v16_confidence": 0.0,
+  "sorry_count": 0,
+  "sorry_count_after_archimedes": 0,
+  "sorry_count_final": 0,
+  "archimedes_reduction": 0,
+  "pre_decomp_lemmas": 3,
+  "sharding_tier": "",
+  "sharding_region": "",
+  "hypotheses_applied": [
+    "H1_PRE_DECOMP_3L"
+  ],
+  "conjecture_statement": "{'conjecture_generator': {'error': '[Errno 21] Is a directory'}, 'proof_sketcher': SketchResult(sketches=[ProofSketch(lean4_code='/-\\n  Copyright (c) 2026 Xavier Callens / Socrate AI Lab\\n  Auto-generated proof sketch by Galois agent (SymBrain v4)\\n  Status: DRAFT \u2014 requires formal verification by Euler\\n-/\\nimport Mathlib.Analysis.NormedSpace.Basic\\nimport Mathlib.Analysis.Calculus.Deriv.Basic\\nimport Mathlib.Topology.MetricSpace.Basic\\nimport Mathlib.LinearAlgebra.Matrix.NonsingularInverse\\n\\n",
+  "lean4_sketch": "",
+  "lean4_sketch_archimedes": "import Mathlib.Analysis.SpecialFunctions.Gamma.Basic\nimport Mathlib.Analysis.SpecialFunctions.Gamma.Deriv\nimport Mathlib.Analysis.SpecialFunctions.Digamma\nimport Mathlib.MeasureTheory.Integral.IntervalIntegral\nimport Mathlib.Analysis.NormedSpace.Basic\n\nopen Real Set MeasureTheory\n\ntheorem deriv_Gamma_one_eq_integral : deriv Gamma 1 = \u222b x in Ioi 0, exp (-x) * log x := by\n  have h := deriv_Gamma_integral (a := 1) (ha := by norm_num)\n  simp [Gamma_eq_integral, one_div] at h\n  exact h\n\ntheorem euler_mascheroni_closed_form :\n  eulerMascheroni = -\u222b x in Ioi 0, exp (-x) * log x := by\n  rw [Real.digamma_one.symm]\n  rw [neg_inj]\n  rw [Real.digamma_eq_deriv_log_Gamma, Real.Gamma_one, div_one]\n  rw [deriv_Gamma_one_eq_integral]",
+  "research_brief": "",
+  "v15_sorry": 2,
+  "domain_prior": 0.05,
+  "gap_probability_map": {},
+  "sorry_guillotine_applied": false,
+  "cost_usd": 0.42,
+  "elapsed_s": 5.39,
+  "problem_id": "euler_mascheroni_closed_form",
+  "status": "FAILED (UNRECOVERABLE)",
+  "galileo_valid": false,
+  "galileo_message": "Failed to extract python closed form",
+  "galileo_diff": "N/A"
+}

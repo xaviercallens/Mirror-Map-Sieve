@@ -1,0 +1,9 @@
+{
+  "name": "ramanujan_ext",
+  "description": "Srinivasa Ramanujan — intuitive leaps validated by computation. Specializes in numerical witnesses, tensor computations, competition mathematics.",
+  "role": "NUMERIC_ORACLE",
+  "endpoints": {
+    "rpc": "https://ramanujan-ext-service-xyz.a.run.app/rpc"
+  },
+  "model": "gemini-2.5-pro"
+}

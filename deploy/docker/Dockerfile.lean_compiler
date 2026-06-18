@@ -1,0 +1,37 @@
+# Copyright (c) 2026 Xavier Callens / Socrate AI Lab
+# Licensed under Apache 2.0 - see LICENSE file
+#
+# Lean 4 Compiler Cloud Run Image
+# Uses python:3.12-slim, installs elan and FastAPI wrapper
+
+FROM python:3.12-slim
+
+# Install system dependencies (curl and git are needed by elan / lake)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    git \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install elan
+RUN curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | \
+    bash -s -- -y --default-toolchain leanprover/lean4:v4.14.0
+
+# Add elan to PATH
+ENV PATH="/root/.elan/bin:${PATH}"
+
+# Install Python dependencies
+RUN pip install --no-cache-dir fastapi uvicorn pydantic
+
+WORKDIR /app/verifiers/lean4
+COPY verifiers/lean4/lakefile.lean verifiers/lean4/lake-manifest.json verifiers/lean4/lean-toolchain ./
+COPY verifiers/lean4/Agora/ ./Agora/
+RUN lake exe cache get
+
+WORKDIR /app
+COPY deploy/docker/cloudrun_lean_compiler.py /app/main.py
+
+ENV PORT=8080
+EXPOSE 8080
+
+ENTRYPOINT ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]

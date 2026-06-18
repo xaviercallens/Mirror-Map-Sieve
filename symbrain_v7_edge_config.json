@@ -1,0 +1,10 @@
+{
+  "model_name": "SymBrain-v7-Galois-Einstein-Edge-7B",
+  "quantization": "INT4_AWQ",
+  "vram_allocated_gb": 8,
+  "aatt_aligned": true,
+  "nccp_numa_coherent": true,
+  "max_latency_ms": 50.0,
+  "mcts_max_nodes": 12,
+  "intended_hardware": "Nvidia Jetson Orin Nano / Apple Silicon Edge"
+}

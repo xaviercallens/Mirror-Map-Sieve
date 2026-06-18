@@ -1,0 +1,15 @@
+{
+  "pid": "schur_6",
+  "domain": "combinatorics",
+  "v13_status": "CB_TRIPPED",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 3,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.35,
+  "cost_usd": 0.41000000000000003,
+  "elapsed_s": 121.13950649999606,
+  "conjecture_statement": "Let $N_6(c)$ be the least integer $N$ such that for any coloring $f: \\\\{1, \\\\dots, N\\\\} \\\\to \\\\{1, \\\\dots, c\\\\}$, there exist $x_1, \\\\dots, x_6 \\\\in \\\\{1, \\\\dots, N\\\\}$ satisfying $f(x_1) = f(x_2) = \\\\dots = f(x_6)$ and $x_1+x_2+x_3=x_4+x_5+x_6$. Then the asymptotic growth rate of $N_6(c)$ is given by $N_6(c) = \\\\Theta(c^{3/2})$.",
+  "lean4_sketch": "import Mathlib.Analysis.Asymptotics.Asymptotics\nimport Mathlib.Data.Finset.Card\nimport Mathlib.Data.Nat.Basic\nimport Mathlib.Tactic\n\nopen Finset Asymptotics Filter\nopen scoped BigOperators Nat\n\n/-- A finite set of natural numbers `S` has a Schur-6 solution if there exist\n    elements (not necessarily distinct) `x, y, z, a, b, c` in `S` such that `x+y+z = a+b+c`. -/\ndef HasSchur6Solution (S : Finset \u2115) : Prop := \n  \u2203 x y z a b c, x \u2208 S \u2227 y \u2208 S \u2227 z \u2208 S \u2227 a \u2208 S \u2227 b \u2208 S \u2227 c \u2208 S \u2227 x + y + z = a + b + c\n\n/-- The Schur-6 number for `c` colors, `Schur6Number c`, is the smallest `n` such that any\n    `c`-coloring of `{1, ..., n}` admits a monochromatic Schur-6 solution. -/\nnoncomputable def Schur6Number (c : \u2115) : \u2115 :=\n  if c = 0 then 0 else sInf { n : \u2115 | n > 0 \u2227 \u2200 f : (Icc 1 n) \u2192 (Fin c), \u2203 i : Fi",
+  "gap_probability_map": {}
+}

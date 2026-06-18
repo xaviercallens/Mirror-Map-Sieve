@@ -1,0 +1,17 @@
+### `MEMORY: (End of Iteration 5)`
+
+*   **State:** Numeric Validation protocol NV-05 is complete. This iteration has fundamentally hardened the system's safety architecture by addressing the non-deterministic elements identified in Iteration 4. The prototype's Verification Kernel now provides absolute, mathematically provable safety guarantees even in the presence of sensor uncertainty.
+
+*   **Architecture:**
+    1.  **Formally Verified Policy Automaton (FVPA):** The heuristic logic for switching between model fidelities has been replaced by a provably correct state machine, the `ModelSelector`. This automaton's transition rules (based on distance, force gradients, etc.) have been formally modeled and verified in a theorem prover, and the resulting certified code was integrated into the kernel. This mathematically guarantees that the system always uses a model of sufficient resolution for its current physical context.
+    2.  **Q-Arithmetic Interval-Based Observer:** The `TissuePropertyEstimator`, which produced probabilistic values, has been excised. In its place, an `IntervalBasedObserver` now operates on exact rational numbers (Q-arithmetic). Instead of estimating a single property value, it uses sensor data to calculate a rigorous *interval* that is guaranteed to contain the true physical value. The safety models now compute over these intervals, ensuring that any approved action is provably safe for all possible tissue properties within that range, including the worst-case boundaries.
+
+***
+
+### `LESSONS_LEARNT: (Iteration 5)`
+
+1.  **Formal Verification Is a Unifying Architectural Principle.** The successful verification of the FVPA demonstrates that formal methods are not just for static algorithms but can be applied to dynamic, stateful policies. This forced a level of rigor that exposed subtle flaws in the previous heuristic approach. The key lesson is that the act of preparing a system for formal proof is itself a powerful design tool that eliminates ambiguity. The architecture is stronger not just because we have a proof, but because building the proof forced us to create a better, more explicit design.
+
+2.  **Computability over Precision.** The shift from floating-point estimations to Q-arithmetic intervals was a paradigm shift. We have traded illusory precision for absolute certainty. A probabilistic estimate like "stiffness is 2.5 ± 0.2" is less valuable than the deterministic guarantee that "stiffness is within the exact rational interval [2.31, 2.68]." This re-establishes the system's deterministic foundation. However, this came at a significant computational cost. The complexity of interval arithmetic, especially in the high-fidelity physics model, is now the primary performance bottleneck. The next iteration must focus on optimizing these interval computations without compromising the mathematical guarantees.
+
+3.  **The New Boundary of Trust is the Physical Sensor.** We have pushed the boundary of formal guarantees from the software kernel all the way to the physical interface. The system is provably safe *given the sensor data it receives*. The remaining source of unverified behavior is the sensor itself. A hardware failure or a calibration error that provides data outside of its specified noise bounds could invalidate the interval calculations. This implies that future work must either incorporate formal models of sensor fault modes or implement redundant, cross-validating sensor arrays to create a new,

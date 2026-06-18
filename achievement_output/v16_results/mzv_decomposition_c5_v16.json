@@ -1,0 +1,31 @@
+{
+  "pid": "mzv_decomposition_c5",
+  "domain": "number_theory",
+  "v16_verdict": "REFUTED",
+  "v16_confidence": 0.0,
+  "sorry_count": 4,
+  "sorry_count_after_archimedes": 4,
+  "sorry_count_final": 0,
+  "archimedes_reduction": 0,
+  "pre_decomp_lemmas": 3,
+  "sharding_tier": "",
+  "sharding_region": "",
+  "hypotheses_applied": [
+    "H1_PRE_DECOMP_3L"
+  ],
+  "conjecture_statement": "Let $\\omega_5 = e^{2\\pi i / 5}$ be a principal 5th root of unity and let $\\operatorname{Li}_k(z) = \\sum_{n=1}^\\infty \\frac{z^n}{n^k}$ be the polylogarithm of order $k$. For any integer $k \\ge 2$, the sum of the polylogarithm values at all 5th roots of unity is a rational multiple of the Riemann zeta function at $k$, given by the identity: $$\\sum_{j=0}^{4} \\operatorname{Li}_k(\\omega_5^j) = 5^{1-k} \\zeta(k)$$",
+  "lean4_sketch": "import Mathlib.Analysis.SpecificFunctions.Polylog.Basic\nimport Mathlib.Analysis.SpecificFunctions.Zeta\nimport Mathlib.NumberTheory.Cyclotomic.RootsOfUnity\nimport Mathlib.Data.Complex.Basic\nimport Mathlib.Algebra.BigOperators.Group.Fin\nimport Mathlib.Tactic.NormNum\nimport Mathlib.Tactic.Ring\n\nopen BigOperators Finset Nat Complex\n\n-- For concreteness, we state the theorem for k=5, matching the problem name `c5`.\n-- The proof strategy is identical for any integer k \u2265 2.\ntheorem mzv_decomposition_c5 : \u2211 j : Fin 5, polylog 5 (cis (2 * Real.pi * j / 5)) = (1 / (5:\u2102)^4) * zeta 5 := by\n  -- The proof relies on expanding the polylogarithm and swapping the order of summation.\n  -- The key insight is how the sum over roots of unity filters the summation index.\n\n  -- First, expand the polylogarithm definition and swap the sums.\n  simp_rw [polylog_eq_tsum_of_le_one (le_of_eq (abs_cis _))]\n  rw [Finset.sum_tsum_comm]\n  -- The expression becomes \u2211' (n\u22651), (1/n\u2075) * \u2211 (j:Fin 5), (cis(2\u03c0j/5))\u207f\n  simp_rw [\u2190 Finset.mul_sum]\n  -- We can rewrite cis(2\u03c0j/5) as (cis(2\u03c0/5))\u02b2\n  have h_cis_pow : \u2200 j : Fin 5, cis (2 * Real.pi * j / 5) = cis (2 * Real.pi / 5) ^ (j : \u2115) := by\n    intro j\n    rw [\u2190 Complex.cis_mul, Real.mul_comm]\n    congr\n\n  simp_rw [h_cis_pow, \u2190 zpow_coe_nat, \u2190 zpow_mul]\n  -- The expression is now \u2211' (n\u22651), (1/n\u2075) * \u2211 (j:Fin 5), (cis(2\u03c0/5))^(j*n)\n\n  -- We now establish the three sub-lemmas according to the plan.\n\n  -- Sub-Lemma 1: Establish the divisibility structure of the inner sum.\n  -- The sum over roots of unity is 5 if 5 divides the exponent, and 0 otherwise.\n  have mzv_decomposition_c5_sub1 : \u2200 n : \u2115, n \u2265 1 \u2192 \u2211 j : Fin 5, (cis (2 * Real.pi / 5)) ^ (j * n : \u2115) = if 5 \u2223 n then (5 : \u2102) else 0 := by\n    intro n hn\n    rw [sum_fin_eq_sum_range, \u2190 zpow_coe_nat, \u2190 mul_comm]\n    -- This is a standard result in Mathlib: `sum_rootOfUnity_pow`\n    convert sum_rootOfUnity_pow (n := 5) (k := n) (by norm_num : 1 < 5) using 1\n    simp [rootOfUnity]\n\n  -- Sub-Lemma 2: A specific numeric",
+  "lean4_sketch_archimedes": "import Mathlib.Analysis.SpecialFunctions.ZetaValues\nimport Mathlib.NumberTheory.Cyclotomic.RootsOfUnity\nimport Mathlib.Topology.Algebra.InfiniteSum.Basic\nimport Mathlib.Data.Complex.Basic\nimport Mathlib.Algebra.BigOperators.Group.Fin\nimport Mathlib.Tactic.NormNum\nimport Mathlib.Tactic.Ring\n\nopen BigOperators Finset Nat Complex\n\ntheorem mzv_decomposition_c5 : \u2211 j : Fin 5, polylog 5 (cis (2 * Real.pi * j / 5)) = (1 / (5:\u2102)^4) * zeta 5 := by\n  simp_rw [polylog_eq_tsum_of_le_one (le_of_eq (abs_cis _))]\n  rw [Finset.sum_tsum_comm]\n  simp_rw [\u2190 Finset.mul_sum]\n  have h_cis_pow : \u2200 j : Fin 5, cis (2 * Real.pi * j / 5) = cis (2 * Real.pi / 5) ^ (j : \u2115) := by\n    intro j\n    rw [\u2190 Complex.cis_mul, Real.mul_comm]\n    congr\n    simp [div_mul_cancel _ (by norm_num : (5 : \u211d) \u2260 0)]\n\n  simp_rw [h_cis_pow, \u2190 pow_mul]\n  have mzv_decomposition_c5_sub1 : \u2200 n : \u2115, n \u2265 1 \u2192 \u2211 j : Fin 5, (cis (2 * Real.pi / 5)) ^ (j * n : \u2115) = if 5 \u2223 n then (5 : \u2102) else 0 := by\n    intro n hn\n    have h_root : cis (2 * Real.pi / 5) = rootOfUnity 5 \u2102 := by\n      simp [rootOfUnity, Complex.exp, Real.pi]\n    simp_rw [\u2190 pow_mul, h_root]\n    rw [sum_fin_eq_sum_range]\n    exact sum_rootOfUnity_pow (k := n) (by norm_num)\n\n  simp_rw [mzv_decomposition_c5_sub1 (fun n => PNat.pos n)]\n  have h_term_eq : (fun n : \u2115+ => (1 / (n : \u2102) ^ 5) * (if 5 \u2223 (n : \u2115) then 5 else 0)) =\n      (fun n : \u2115+ => if 5 \u2223 (n : \u2115) then 5 / (n : \u2102) ^ 5 else 0) := by\n    ext n; split_ifs <;> simp [mul_comm] <;> ring\n\n  let S : Set \u2115+ := {n | 5 \u2223 (n : \u2115)}\n  have h_indicator : (fun n \u21a6 if 5 \u2223 (n : \u2115) then 5 / (n : \u2102) ^ 5 else 0) =\n      Set.indicator S (fun n \u21a6 5 / (n : \u2102) ^ 5) := by\n    ext n; simp [Set.indicator, S]\n\n  rw [h_indicator, tsum_indicator_eq_tsum_subtype]\n  let e : \u2115+ \u2243 S :=\n    { toFun := fun k => \u27e85 * k, by simp [dvd_mul_right]\u27e9,\n      invFun := fun n => \u27e8n.1 / 5,\n        Nat.pos_of_ne_zero fun h_div_zero =>\n          n.ne_zero <| Subtype.coe_injective <|\n          (Nat.eq_zero_of_dvd_of_div_eq_zero n.2 h_div_zero)\u27e9,\n      left_inv := fun k => PNat.coe_inj.mp (Nat.mul_div_cancel_left k.1 (by norm_num)),\n      right_inv := fun n => Subtype.eq (Nat.mul_div_cancel' n.2) }\n  rw [e.tsum_eq]\n  simp_rw [Subtype.coe_mk, PNat.coe_coe, mul_pow]\n  rw [\u2190 tsum_mul_left]\n  have h_zeta_sum : \u2211' (k : \u2115+), 1 / (k : \u2102) ^ 5 = zeta 5 := by\n    simp_rw [\u2190 cpow_nat_cast]\n    rfl\n  rw [h_zeta_sum]\n  field_simp [pow_succ]\n  ring",
+  "research_brief": "",
+  "v15_sorry": 5,
+  "domain_prior": 0.05,
+  "gap_probability_map": {},
+  "sorry_guillotine_applied": false,
+  "cost_usd": 0.57,
+  "elapsed_s": 136.48,
+  "problem_id": "mzv_decomposition_c5",
+  "status": "FAILED (UNRECOVERABLE)",
+  "galileo_valid": false,
+  "galileo_message": "Failed to extract python closed form",
+  "galileo_diff": "N/A"
+}

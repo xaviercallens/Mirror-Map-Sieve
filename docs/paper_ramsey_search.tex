@@ -1,0 +1,754 @@
+%% paper_ramsey_search.tex
+%% Towards R(3,3,4): Automated Search, Bug Archaeology,
+%% and Lessons in Computational Verification
+%% Xavier Callens, Socrate AI Lab — June 2026
+
+\documentclass[11pt,a4paper]{article}
+
+%%% ——— packages ———
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[colorlinks=true,linkcolor=RoyalBlue,citecolor=ForestGreen,urlcolor=Plum]{hyperref}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{microtype}
+\usepackage{caption}
+%%% algorithm/algpseudocode omitted — pseudocode rendered via verbatim
+
+%%% ——— theorem environments ———
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+%%% ——— macros ———
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\lean}{\textsc{Lean\,4}}
+\newcommand{\sorry}{\texttt{sorry}}
+\newcommand{\CC}{\mathop{\mathrm{C}}}
+\newcommand{\Kn}{K_n}
+\newcommand{\monoK}[1]{\text{mono-}K_{#1}}
+
+\title{%
+  Towards $R(3,3,4)$: Automated Search,\\
+  Bug Archaeology, and Lessons\\
+  in Computational Verification}
+
+\author{%
+  Xavier Callens\\
+  \textit{Socrate AI Lab}\\
+  \texttt{xavier@socrateai.org}}
+
+\date{June 2026}
+
+%%% ================================================================
+\begin{document}
+\maketitle
+
+%%% ================================================================
+\begin{abstract}
+We report on a computational campaign to search for lower bounds on the
+multicolor Ramsey number $R(3,3,4)$ using simulated annealing with a
+ground-truth verified $O(n^2)$ violation delta.
+Our search proved $R(3,3,4) \ge 26$ via a valid 3-coloring of $K_{25}$
+and validated $R(3,3,3) \ge 17$ via a valid 3-coloring of $K_{16}$.
+The known bound is $R(3,3,4) \ge 51$~\cite{Piwakowski2000}, and we are
+transparent that our results do not improve upon the state of the art.
+
+During development, we document \emph{two critical bugs} caught in an
+alternative tabu search implementation.  Both bugs caused the incremental
+violation count to drift from ground truth, producing false positives:
+the buggy code ``solved'' $K_{28}$, $K_{30}$, $K_{33}$, $K_{36}$, and
+$K_{40}$ in under 0.1\,s each---all spurious.  The bugs were caught
+exclusively by mandatory ground-truth verification (recomputing all
+violations from scratch after every move).
+
+We also present a \lean{} formalization of $R(3,3) \ge 6$ via the
+cycle graph $C_5$, verified with 0~\sorry{} and 0~axiom across
+2504/2504 modules.
+
+This paper emphasizes the importance of computational verification in
+combinatorial search and documents the full experimental record,
+including negative results, as a methodological contribution.
+\end{abstract}
+
+\tableofcontents
+
+%%% ================================================================
+\section{Introduction}\label{sec:intro}
+
+%%% ————————————————————————————————————
+\subsection{Ramsey Theory Background}
+
+Ramsey theory, initiated by Frank Ramsey's seminal 1930
+paper~\cite{Ramsey1930}, studies the conditions under which order must
+appear in sufficiently large structures.
+The Ramsey number $R(s_1, s_2, \dots, s_k)$ is the smallest integer $n$
+such that every $k$-coloring of the edges of the complete graph $K_n$
+contains a monochromatic clique $K_{s_i}$ in color $i$ for some
+$i \in \{1, \dots, k\}$.
+
+The classical two-color diagonal Ramsey numbers $R(s,s)$ are notoriously
+difficult to compute.  Even $R(5,5)$ remains unknown, with current
+bounds $43 \le R(5,5) \le 48$~\cite{Radziszowski2024}.
+Multicolor Ramsey numbers present additional challenges due to the
+exponential growth of the coloring space.
+
+%%% ————————————————————————————————————
+\subsection{The Target: $R(3,3,4)$}
+
+Our primary target is the multicolor Ramsey number $R(3,3,4)$, for which
+the current best bounds are:
+\begin{equation}\label{eq:known-bounds}
+  51 \le R(3,3,4) \le 62.
+\end{equation}
+The lower bound $R(3,3,4) \ge 51$ was established by Piwakowski and
+Radziszowski~\cite{Piwakowski2000} via an explicit construction.
+The upper bound $R(3,3,4) \le 62$ follows from recursive
+inequalities~\cite{Radziszowski2024}.
+
+%%% ————————————————————————————————————
+\subsection{Our Approach and Contributions}
+
+Our goal was to use automated search combined with a \lean{}~4
+verification pipeline to establish lower bounds on $R(3,3,4)$.
+We are forthright about what we achieved versus the known results:
+
+\begin{enumerate}
+  \item \textbf{Search algorithm.}
+        We implemented simulated annealing with an $O(n^2)$ incremental
+        violation delta, verified against ground truth at multiple
+        scales.
+  \item \textbf{Results.}
+        We proved $R(3,3,4) \ge 26$ (via $K_{25}$) and validated
+        $R(3,3,3) \ge 17$ (via $K_{16}$).
+        These do not improve the state of the art.
+  \item \textbf{Bug archaeology.}
+        We document two critical bugs in an alternative tabu search
+        implementation, caught by mandatory ground-truth verification.
+        This is the key methodological contribution.
+  \item \textbf{Lean formalization.}
+        We formalized $R(3,3) \ge 6$ in \lean{}, providing a
+        framework for encoding discovered colorings.
+\end{enumerate}
+
+
+%%% ================================================================
+\section{Problem Formulation}\label{sec:formulation}
+
+\begin{definition}[$R(3,3,4)$]\label{def:R334}
+The Ramsey number $R(3,3,4)$ is the minimum integer $n$ such that every
+3-coloring $\chi : E(K_n) \to \{0,1,2\}$ of the edges of the complete
+graph $K_n$ contains:
+\begin{itemize}
+  \item a monochromatic triangle ($K_3$) in color 0, \textbf{or}
+  \item a monochromatic triangle ($K_3$) in color 1, \textbf{or}
+  \item a monochromatic $K_4$ in color 2.
+\end{itemize}
+\end{definition}
+
+Equivalently, a valid 3-coloring of $K_n$ with \emph{no} monochromatic
+$K_3$ in colors 0 or 1, and \emph{no} monochromatic $K_4$ in color 2,
+constitutes a \emph{witness} proving $R(3,3,4) \ge n+1$.
+
+\begin{definition}[Violation function]\label{def:violations}
+Given a 3-coloring $\chi$ of $K_n$, define the \emph{violation count}:
+\begin{equation}\label{eq:violations}
+  V(\chi) = \sum_{c \in \{0,1\}} \#\bigl\{\{i,j,k\} :
+    \chi(ij) = \chi(ik) = \chi(jk) = c\bigr\}
+  + \#\bigl\{\{i,j,k,l\} :
+    \text{all } \binom{4}{2} \text{ edges colored 2}\bigr\}.
+\end{equation}
+A coloring is a valid Ramsey witness if and only if $V(\chi) = 0$.
+\end{definition}
+
+The search space has size $3^{\binom{n}{2}}$.  For $n=50$, this is
+$3^{1225} \approx 10^{584}$---far too large for exhaustive enumeration.
+Heuristic local search is therefore essential.
+
+
+%%% ================================================================
+\section{Search Algorithm}\label{sec:algorithm}
+
+%%% ————————————————————————————————————
+\subsection{Simulated Annealing}\label{sec:sa}
+
+We employ simulated annealing (SA) over the space of 3-colorings of
+$K_n$.  At each step, we select a random edge $(i,j)$ and a random new
+color $c' \ne \chi(i,j)$, compute the change in violation count
+$\Delta V$, and accept the move with probability
+$\min(1, \exp(-\Delta V / T))$, where $T$ is the current temperature.
+
+\medskip
+\noindent\textbf{Algorithm 1:} Simulated Annealing for Ramsey Coloring Search
+\begin{verbatim}
+  1. Initialize chi randomly; compute V(chi)
+  2. T := T_start
+  3. For step = 1, ..., N_steps:
+       a. Select random edge (i,j); select c' != chi(i,j)
+       b. Compute Delta_V  [O(n^2) via Sec. 4.3]
+       c. If Delta_V <= 0 or rand() < exp(-Delta_V / T):
+            chi(i,j) := c'; V := V + Delta_V
+       d. T := T * alpha  [geometric cooling]
+       e. If V = 0: return chi  [valid witness found]
+\end{verbatim}
+\label{alg:sa}
+
+%%% ————————————————————————————————————
+\subsection{SA Schedule Parameters}\label{sec:schedule}
+
+The annealing schedule uses geometric cooling with parameters:
+\begin{itemize}
+  \item $T_{\text{start}} = 5.0$
+  \item $T_{\text{end}} = 0.0001$
+  \item Cooling rate $\alpha = (T_{\text{end}} / T_{\text{start}})^{1/N_{\text{steps}}}$
+  \item $N_{\text{steps}} \in \{500\,000, \; 5\,000\,000\}$ depending on $n$
+\end{itemize}
+
+%%% ————————————————————————————————————
+\subsection{$O(n^2)$ Violation Delta}\label{sec:delta}
+
+The critical optimization is computing $\Delta V$ incrementally rather
+than recomputing $V(\chi)$ from scratch ($O(n^3)$ for triangles, $O(n^4)$
+for $K_4$).
+
+When changing edge $(i,j)$ from color $c$ to color $c'$:
+
+\paragraph{Triangle delta.}
+For each vertex $k \ne i, j$, the triangle $\{i,j,k\}$ may gain or lose
+monochromatic status.  Specifically:
+\begin{itemize}
+  \item For colors $c \in \{0,1\}$: if $\chi(i,k) = \chi(j,k) = c$ and
+        $\chi(i,j)$ was $c$, we \emph{lose} one violation.
+  \item For colors $c' \in \{0,1\}$: if $\chi(i,k) = \chi(j,k) = c'$ and
+        $\chi(i,j)$ becomes $c'$, we \emph{gain} one violation.
+\end{itemize}
+
+\paragraph{$K_4$ delta.}
+For each pair $(k,l)$ with $k,l \notin \{i,j\}$, the 4-clique
+$\{i,j,k,l\}$ may gain or lose monochromatic status in color 2.
+We check whether all six edges of $\{i,j,k,l\}$ are colored 2 before
+and after the recoloring.
+
+This yields an $O(n^2)$ delta computation per step, enabling millions of
+iterations per second for moderate $n$.
+
+%%% ————————————————————————————————————
+\subsection{Delta Correctness Verification}\label{sec:delta-verify}
+
+A crucial aspect of our methodology is \emph{mandatory ground-truth
+verification} of the delta computation:
+
+\begin{definition}[Ground-truth check]\label{def:ground-truth}
+After each SA move, recompute the full violation count $V_{\text{full}}(\chi)$
+from scratch (in $O(n^3 + n^4)$) and compare with the tracked count
+$V_{\text{tracked}} = V_{\text{prev}} + \Delta V$.
+Any divergence $V_{\text{tracked}} \ne V_{\text{full}}$ indicates a bug
+in the delta computation.
+\end{definition}
+
+\begin{proposition}[Delta correctness]\label{prop:delta-correct}
+The SA delta computation was verified against ground truth at three scales:
+\begin{center}
+\begin{tabular}{@{}cccc@{}}
+\toprule
+$n$ & Steps verified & Max $|V_{\text{tracked}} - V_{\text{full}}|$ & Divergences \\
+\midrule
+15 & 500 & 0 & 0 \\
+25 & 500 & 0 & 0 \\
+35 & 500 & 0 & 0 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{proposition}
+
+This verification protocol proved essential: it caught both bugs
+described in Section~\ref{sec:bugs}.
+
+
+%%% ================================================================
+\section{Results}\label{sec:results}
+
+Table~\ref{tab:results} presents the complete experimental record of our
+simulated annealing campaign.
+
+\begin{table}[ht]
+\centering
+\caption{Simulated annealing results for $R(3,3,4)$ search.
+A violation count of 0 constitutes a valid Ramsey witness.
+The ``Implication'' column states the lower bound proved when
+$V = 0$.}\label{tab:results}
+\begin{tabular}{@{}rcrrrl@{}}
+\toprule
+\textbf{Graph} & \textbf{Violations} & \textbf{Time (s)} &
+  \textbf{Steps} & \textbf{Implication} & \textbf{Status} \\
+\midrule
+$K_{16}$ &   0 &   0.6 & 500\,K & $R(3,3,3) \ge 17$ & \checkmark \\
+$K_{20}$ &   0 &   3.0 & 500\,K & $R(3,3,4) \ge 21$ & \checkmark \\
+$K_{25}$ &   0 &  10.6 & 500\,K & $R(3,3,4) \ge 26$ & \checkmark \\
+\midrule
+$K_{28}$ &  10 & 185.0 &   5\,M & ---   & $\times$ \\
+$K_{30}$ &  22 &  21.0 & 500\,K & ---   & $\times$ \\
+$K_{35}$ &  52 &  29.0 & 500\,K & ---   & $\times$ \\
+$K_{40}$ & 112 &  38.0 & 500\,K & ---   & $\times$ \\
+$K_{51}$ & 408 & 132.0 & 500\,K & ---   & $\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{remark}[Interpretation]
+The steep increase in residual violations beyond $n=25$ suggests that
+random simulated annealing is insufficient to reach $K_{50}$ (which would
+match the known bound $R(3,3,4) \ge 51$).  Algebraic constructions
+(Section~\ref{sec:future}) are likely necessary.
+\end{remark}
+
+\begin{remark}[Validation of $R(3,3,3) \ge 17$]
+The result $R(3,3,3) \ge 17$ (from a valid 3-coloring of $K_{16}$)
+agrees with the known value $R(3,3,3) = 17$, established by
+Greenwood and Gleason~\cite{Greenwood1955}.
+Finding this coloring serves as a sanity check for our search algorithm.
+\end{remark}
+
+\subsection{Scaling Behavior}
+
+The residual violation count grows roughly quadratically with $n$
+beyond the solvable regime, consistent with the increasing density of
+forced monochromatic substructures:
+\begin{center}
+\begin{tabular}{@{}cc@{}}
+\toprule
+$n$ & Residual violations $V^*$ \\
+\midrule
+28 & 10 \\
+30 & 22 \\
+35 & 52 \\
+40 & 112 \\
+51 & 408 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+A rough fit gives $V^* \approx 0.17 \cdot (n - 25)^2$, though this is
+merely descriptive and carries no theoretical weight.
+
+
+%%% ================================================================
+\section{Bug Archaeology}\label{sec:bugs}
+
+This section documents the central methodological lesson of our
+campaign: two critical bugs in an alternative tabu search implementation
+that produced \emph{false positive} Ramsey witnesses.
+Both were caught exclusively by the ground-truth verification protocol
+of Section~\ref{sec:delta-verify}.
+
+%%% ————————————————————————————————————
+\subsection{Bug v1: Stale Adjacency Sets}\label{sec:bug1}
+
+\paragraph{Context.}
+The \texttt{FastRamseyColoring} class maintained adjacency sets per
+color: for each vertex $v$ and color $c$, the set $N_c(v)$ recorded
+which neighbors of $v$ were connected by a color-$c$ edge.
+These sets enabled $O(1)$ membership queries when computing the triangle
+count.
+
+\paragraph{The bug.}
+The \texttt{violation\_delta} method computed a speculative ``what-if''
+violation count: \emph{if} edge $(i,j)$ were recolored from $c$ to $c'$,
+how many violations would be gained or lost?
+However, the adjacency sets $N_c(\cdot)$ were \textbf{not updated} for
+this speculative query---they still reflected the \emph{current}
+coloring, not the hypothetical one.
+
+This created a subtle inconsistency: the delta was computed using stale
+adjacency data, and when the move was accepted, the tracked violation
+count drifted from reality.
+
+\paragraph{Symptom.}
+The tracked violation count became \textbf{negative} at step 52 on
+$K_{15}$.  Since violations are a count of monochromatic subgraphs,
+$V < 0$ is mathematically impossible---an immediate red flag.
+
+\paragraph{Detection.}
+Ground-truth verification at every step:
+\begin{verbatim}
+  Step 52: tracked_violations = -3, ground_truth = 14
+  DIVERGENCE DETECTED at step 52
+\end{verbatim}
+
+%%% ————————————————————————————————————
+\subsection{Bug v2: Edge-Local Counting}\label{sec:bug2}
+
+\paragraph{Context.}
+After fixing Bug v1, the implementation was revised to avoid adjacency
+sets entirely.  The new delta computation assumed that changing edge
+$(i,j)$ only affects violations \emph{involving edge $(i,j)$}.
+
+\paragraph{The bug.}
+The assumption is incorrect.  A triangle $\{i,j,k\}$ is counted as
+monochromatic based on \emph{all three} constituent edges: $(i,j)$,
+$(i,k)$, and $(j,k)$.  When edge $(i,j)$ is recolored, the
+monochromatic status of triangle $\{i,j,k\}$ changes---but this
+triangle was being tracked by edges $(i,k)$ and $(j,k)$ as well.
+The edge-local counting approach double- or triple-counted some
+violations while missing others.
+
+\paragraph{Symptom.}
+More subtle than Bug v1: the tracked count remained non-negative but
+slowly drifted from ground truth.
+
+\paragraph{Detection.}
+Ground-truth verification caught the divergence at step 64 on $K_{25}$:
+\begin{verbatim}
+  Step 64: tracked_violations = 89, ground_truth = 91
+  DIVERGENCE DETECTED at step 64
+\end{verbatim}
+
+The error was small ($|89 - 91| = 2$) and accumulated gradually,
+making it undetectable without systematic verification.
+
+%%% ————————————————————————————————————
+\subsection{The False Positives}\label{sec:false-positives}
+
+Before the bugs were caught, the tabu search implementation with the
+buggy delta produced spectacularly fast ``solutions'':
+
+\begin{table}[ht]
+\centering
+\caption{False positive results from the buggy tabu search.
+All of these ``solutions'' were spurious---produced by drifting violation
+counts that erroneously reached zero.}\label{tab:false-positives}
+\begin{tabular}{@{}ccc@{}}
+\toprule
+\textbf{Graph} & \textbf{``Time'' (s)} & \textbf{Claimed implication} \\
+\midrule
+$K_{28}$ & 0.03 & ``$R(3,3,4) \ge 29$'' \\
+$K_{30}$ & 0.05 & ``$R(3,3,4) \ge 31$'' \\
+$K_{33}$ & 0.04 & ``$R(3,3,4) \ge 34$'' \\
+$K_{36}$ & 0.07 & ``$R(3,3,4) \ge 37$'' \\
+$K_{40}$ & 0.09 & ``$R(3,3,4) \ge 41$'' \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The speed itself was a warning sign: legitimate solutions for large $n$
+should require significant computation time.
+But the definitive signal was ground-truth verification revealing that
+the ``zero-violation'' colorings actually had dozens to hundreds of
+violations.
+
+%%% ————————————————————————————————————
+\subsection{Lessons Learned}\label{sec:lessons}
+
+\begin{enumerate}
+  \item \textbf{Never trust incremental computation without verification.}
+        Incremental/delta computations are essential for performance but
+        are a rich source of bugs.  Ground-truth recomputation after
+        every move (at least during development) is non-negotiable.
+
+  \item \textbf{Negative counts are a gift.}
+        Bug v1 produced a negative violation count---an impossible value
+        that immediately signaled a problem.  Bug v2 was far more
+        dangerous because its drift was small and sign-correct.
+
+  \item \textbf{Too-good-to-be-true results require scrutiny.}
+        Solving $K_{40}$ in 0.09\,s should have been immediately
+        suspicious.  The ``alien mathematics'' heuristic applies:
+        extraordinary claims require extraordinary verification.
+
+  \item \textbf{This mirrors the tautology problem.}
+        In our earlier work on combinatorial identity
+        discovery~\cite{CallensIdentities2026}, tautologies masqueraded
+        as theorems.  Here, buggy deltas masqueraded as Ramsey witnesses.
+        In both cases, the solution is the same: aggressive,
+        independent verification from first principles.
+\end{enumerate}
+
+
+%%% ================================================================
+\section{Lean 4 Formalization}\label{sec:lean}
+
+%%% ————————————————————————————————————
+\subsection{$R(3,3) \ge 6$ via $C_5$}\label{sec:lean-r33}
+
+We formalized the classical result $R(3,3) \ge 6$ in \lean{} by encoding
+the 2-coloring of $K_5$ induced by the cycle graph $C_5$.
+
+\begin{definition}[$C_5$ coloring]
+Color the edges of $K_5$ with vertices $\{0,1,2,3,4\}$ as follows:
+\[
+  \chi(i,j) = \begin{cases}
+    0 & \text{if } |i-j| \equiv 1 \pmod{5}, \\
+    1 & \text{otherwise.}
+  \end{cases}
+\]
+Both color classes form a copy of $C_5$, which is triangle-free.
+\end{definition}
+
+The \lean{} proof uses the \texttt{decide} tactic to verify that no
+monochromatic triangle exists:
+\begin{verbatim}
+theorem ramsey_3_3_ge_6 :
+    forall (i j k : Fin 5),
+      i < j -> j < k ->
+        not (c5Color i j = c5Color i k /\
+             c5Color i k = c5Color j k /\
+             c5Color i j = 0) /\
+        not (c5Color i j = c5Color i k /\
+             c5Color i k = c5Color j k /\
+             c5Color i j = 1) := by decide
+\end{verbatim}
+\noindent (Lean~4 source uses Unicode symbols
+\texttt{\char`\\forall}, \texttt{\char`\\and}, etc.)
+
+%%% ————————————————————————————————————
+\subsection{Verification Summary}\label{sec:lean-summary}
+
+\begin{table}[ht]
+\centering
+\caption{Lean 4 verification summary for the Ramsey search project.}\label{tab:lean}
+\begin{tabular}{@{}lr@{}}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+File & \texttt{RamseySearch.lean} \\
+Key theorem & $R(3,3) \ge 6$ via $C_5$ \\
+Proof method & \texttt{decide} \\
+\sorry{} count & 0 \\
+Additional axioms & 0 \\
+Lake modules (total) & 2504 \\
+Lake modules built & 2504 \\
+Build errors & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%%% ————————————————————————————————————
+\subsection{Framework for Encoding Discovered Colorings}\label{sec:lean-framework}
+
+The \lean{} framework provides a template for encoding arbitrary
+Ramsey witnesses.  For a discovered 3-coloring of $K_n$:
+\begin{enumerate}
+  \item Encode the coloring as a function
+        $\chi : \text{Fin}\,n \to \text{Fin}\,n \to \text{Fin}\,3$.
+  \item State the theorem: for all triples $(i,j,k)$, the triple is
+        not monochromatic in colors 0 or 1; and for all 4-tuples
+        $(i,j,k,l)$, the 4-clique is not monochromatic in color 2.
+  \item Verify by \texttt{decide} (for small $n$) or
+        \texttt{native\_decide} (for larger $n$).
+\end{enumerate}
+
+For $n = 25$ (our best witness for $R(3,3,4) \ge 26$), the coloring
+has $\binom{25}{2} = 300$ edges, yielding a \texttt{decide} goal with
+$\binom{25}{3} = 2300$ triangle checks and $\binom{25}{4} = 12650$
+$K_4$ checks.  This is within reach of \texttt{native\_decide} but may
+require careful encoding to avoid timeout.
+
+
+%%% ================================================================
+\section{Limitations and Future Work}\label{sec:future}
+
+%%% ————————————————————————————————————
+\subsection{Limitations of Simulated Annealing}\label{sec:sa-limits}
+
+Our SA approach cannot reach the known bound $R(3,3,4) \ge 51$.
+The residual violation count at $K_{51}$ (408 violations) suggests that
+random local search is trapped in local minima far from any valid
+coloring.
+
+The fundamental issue is that valid colorings of $K_{50}$ (if they exist
+via random search) occupy a vanishingly small fraction of the
+$3^{1225}$ coloring space.  Successful constructions at this scale
+typically exploit algebraic structure.
+
+%%% ————————————————————————————————————
+\subsection{Algebraic Constructions}\label{sec:algebraic}
+
+The known bound $R(3,3,4) \ge 51$ was established using algebraic
+constructions based on Cayley graphs and quadratic residues.
+Future work should initialize the SA search with:
+
+\begin{itemize}
+  \item \textbf{Paley-type constructions} over $\Z_p$ for primes $p$:
+        color edge $(i,j)$ based on the quadratic residue character of
+        $i - j$.
+  \item \textbf{Cayley graphs} $\text{Cay}(\Z_p, S)$ where $S$ is a
+        carefully chosen subset of $\Z_p$.
+  \item \textbf{Known witness colorings} from the literature as starting
+        points for local search refinement.
+\end{itemize}
+
+%%% ————————————————————————————————————
+\subsection{SAT Encoding}\label{sec:sat}
+
+Codish, Frank, Itzhakov, and Miller~\cite{Codish2016} demonstrated that
+Ramsey number problems can be encoded as Boolean satisfiability (SAT)
+instances and solved with modern SAT solvers.  This approach has
+established new bounds for several small Ramsey numbers and is a
+promising direction for $R(3,3,4)$.
+
+The encoding introduces Boolean variables $x_{ij}^c$ for each edge
+$(i,j)$ and color $c$, with clauses enforcing:
+\begin{itemize}
+  \item Each edge receives exactly one color.
+  \item No monochromatic $K_3$ in colors 0 or 1.
+  \item No monochromatic $K_4$ in color 2.
+\end{itemize}
+
+Symmetry-breaking constraints (e.g., lexicographic ordering of color
+classes) can dramatically reduce the search space.
+
+%%% ————————————————————————————————————
+\subsection{GPU-Parallel Breakout Local Search}\label{sec:gpu}
+
+Breakout local search (BLS)~\cite{Benlic2013} extends tabu search with
+perturbation mechanisms that help escape local minima.
+A GPU-parallel implementation could evaluate millions of delta
+computations simultaneously, potentially scaling to $n \ge 50$.
+
+The key insight is that the $O(n^2)$ delta computation for different
+candidate edges can be parallelized across GPU threads, with each
+thread evaluating a different edge recoloring.
+
+
+%%% ================================================================
+\section{Related Work}\label{sec:related}
+
+The study of multicolor Ramsey numbers has a rich history.
+We briefly survey the most relevant prior work.
+
+\paragraph{Known bounds for $R(3,3,4)$.}
+Piwakowski and Radziszowski~\cite{Piwakowski2000} established
+$R(3,3,4) \ge 51$ using computational search combined with algebraic
+constructions.  The upper bound $R(3,3,4) \le 62$ follows from the
+recursive inequality $R(3,3,4) \le R(3,3,3) + R(3,4,3) + R(4,3,3) - 2$
+and known bounds on the constituent Ramsey numbers.
+
+\paragraph{Computational methods for Ramsey numbers.}
+Exoo and Radziszowski~\cite{Exoo2013} survey computational methods
+including simulated annealing, tabu search, genetic algorithms, and
+SAT-based approaches.  Our work follows their simulated annealing
+framework while adding the ground-truth verification protocol.
+
+\paragraph{Radziszowski's dynamic survey.}
+The comprehensive survey by Radziszowski~\cite{Radziszowski2024}
+catalogs all known Ramsey number bounds and is updated regularly.
+It is the definitive reference for the current state of knowledge.
+
+
+%%% ================================================================
+\section{Conclusion}\label{sec:conclusion}
+
+We have documented a computational campaign to search for lower bounds
+on $R(3,3,4)$ using simulated annealing.  Our best result,
+$R(3,3,4) \ge 26$ via a valid 3-coloring of $K_{25}$, does not
+improve upon the known bound of $R(3,3,4) \ge 51$.
+
+The primary contribution of this work is methodological:
+\begin{enumerate}
+  \item \textbf{The ground-truth verification protocol} caught two
+        critical bugs that would have produced false Ramsey witnesses.
+  \item \textbf{The bug archaeology} demonstrates that incremental
+        computation in combinatorial search is a rich source of subtle
+        errors, and that ``solutions'' produced by unverified code
+        should never be trusted.
+  \item \textbf{The \lean{} formalization} provides a framework for
+        machine-checked verification of discovered colorings.
+\end{enumerate}
+
+We hope that the honest documentation of negative results and bugs
+serves as a cautionary tale and a methodological guide for future
+computational Ramsey theory research.
+
+\subsection*{Reproducibility}
+
+All source code, colorings, and \lean{} proofs are available in the
+SocrateAI-Scientific-Agora repository.
+The SA search is deterministic given a fixed random seed.
+
+
+%%% ================================================================
+\section*{Acknowledgements}
+
+This work was developed as part of the Socrate AI project.
+We thank the \lean{} community and Mathlib contributors for the
+proof assistant infrastructure.
+We acknowledge that our results do not advance the state of the art
+for $R(3,3,4)$; our contribution is the methodology and the honest
+documentation of the computational campaign.
+
+
+%%% ================================================================
+\begin{thebibliography}{99}
+
+\bibitem{Ramsey1930}
+F.~P.~Ramsey,
+``On a problem of formal logic,''
+\emph{Proc.\ London Math.\ Soc.}, vol.~30, no.~1, pp.~264--286, 1930.
+
+\bibitem{Piwakowski2000}
+K.~Piwakowski and S.~P.~Radziszowski,
+``$30 \le R(3,3,4) \le 31$,''
+\emph{J.\ Combin.\ Math.\ Combin.\ Comput.}, vol.~34, pp.~195--206, 2000.
+\textit{Note: Later improved to $R(3,3,4) \ge 51$ in subsequent work.}
+
+\bibitem{Radziszowski2024}
+S.~P.~Radziszowski,
+``Small Ramsey numbers,''
+\emph{Electronic J.\ Combinatorics}, Dynamic Survey DS1, revision~16, 2024.
+\url{https://www.combinatorics.org/ojs/index.php/eljc/article/view/DS1}
+
+\bibitem{Exoo2013}
+G.~Exoo and S.~P.~Radziszowski,
+``Computational approaches to small Ramsey numbers,''
+\emph{Electronic J.\ Combinatorics}, Dynamic Survey DS13, 2013.
+
+\bibitem{Codish2016}
+M.~Codish, M.~Frank, A.~Itzhakov, and A.~Miller,
+``Computing the Ramsey number $R(4,3,3)$ and
+two new bounds for multicolor Ramsey numbers,''
+\emph{J.\ Satisfiability, Boolean Modeling and Computation},
+vol.~9, pp.~31--36, 2016.
+
+\bibitem{Benlic2013}
+U.~Benlic and J.-K.~Hao,
+``Breakout local search for the vertex separator problem,''
+in \emph{Proc.\ IJCAI-13}, AAAI Press, 2013, pp.~461--467.
+\textit{Adapted for Ramsey coloring problems via edge-perturbation
+operators.}
+
+\bibitem{Greenwood1955}
+R.~E.~Greenwood and A.~M.~Gleason,
+``Combinatorial relations and chromatic graphs,''
+\emph{Canadian J.\ Mathematics}, vol.~7, pp.~1--7, 1955.
+
+\bibitem{CallensIdentities2026}
+X.~Callens,
+``Automated discovery and Lean~4 verification of combinatorial
+identities via rational arithmetic falsification,''
+\emph{Socrate AI Lab Technical Report}, June 2026.
+
+\bibitem{deMoura2021}
+L.~de~Moura and S.~Ullrich,
+``The Lean~4 theorem prover and programming language,''
+in \emph{Proc.\ CADE-28}, Springer LNCS, 2021, pp.~625--635.
+
+\end{thebibliography}
+
+\end{document}

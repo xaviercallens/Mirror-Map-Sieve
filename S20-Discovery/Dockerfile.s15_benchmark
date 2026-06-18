@@ -1,0 +1,29 @@
+FROM nvidia/cuda:12.1.1-runtime-ubuntu22.04
+
+# Install python and basic utilities
+RUN apt-get update && apt-get install -y \
+    python3 python3-pip git wget \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Install uv for fast resolution
+RUN pip install uv
+
+# Install PyTorch with CUDA 12.1 and dependencies
+RUN uv pip install --system torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+
+# Install HF and evaluation dependencies
+RUN uv pip install --system transformers accelerate datasets safetensors "lm-eval[hf]" nvidia-ml-py
+
+# Copy application code
+COPY . .
+
+# Install s15_kernel local package
+RUN uv pip install --system -e .
+
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+
+# Command to run full benchmark
+CMD ["python3", "-m", "s15_kernel.run_full_benchmark", "--all", "--model", "microsoft/phi-3-mini-4k-instruct", "--mmlu-limit", "10", "--max-tokens", "100"]

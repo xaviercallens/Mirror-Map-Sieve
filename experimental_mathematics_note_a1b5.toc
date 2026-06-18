@@ -1,0 +1,38 @@
+\contentsline {chapter}{\numberline {1}Introduction}{7}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Mathematical Precision and Notation Clarity}{9}{chapter.2}%
+\contentsline {section}{\numberline {2.1}The Mirror Map and Picard-Fuchs Equations}{10}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Integrality of Coefficients (Lian-Yau Property)}{11}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Notation for Gromov-Witten Invariants}{11}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Arithmetic Geometry Notation}{12}{section.2.4}%
+\contentsline {chapter}{\numberline {3}Explanation of the Mirror Map Integrality (Lian-Yau Property)}{13}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Context for Integrality: Toric Geometry}{13}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Context for Integrality: Modularity}{14}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Worked Example: The Quintic Threefold}{14}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Distinction from Gromov-Witten Integrality}{15}{section.3.4}%
+\contentsline {section}{\numberline {3.5}Arithmetic Refinements: $p$-adic Integrality}{15}{section.3.5}%
+\contentsline {chapter}{\numberline {4}Plausibility of Three-Field Applications}{17}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Arithmetic Geometry Applications}{17}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Zeta Functions of Calabi-Yau Varieties}{17}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}Modularity}{18}{subsection.4.1.2}%
+\contentsline {section}{\numberline {4.2}Mirror Symmetry Applications}{18}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}BPS State Counting}{18}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Wall-Crossing Phenomena}{18}{subsection.4.2.2}%
+\contentsline {section}{\numberline {4.3}String Theory Applications}{19}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Calabi-Yau Compactifications and Moduli Spaces}{19}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}Black Hole Entropy and OSV Conjecture}{19}{subsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.3.3}D-branes and Central Charges}{19}{subsection.4.3.3}%
+\contentsline {subsection}{\numberline {4.3.4}Swampland Program}{20}{subsection.4.3.4}%
+\contentsline {chapter}{\numberline {5}Epistemological Defense and Formal Witnesses}{21}{chapter.5}%
+\contentsline {section}{\numberline {5.1}The Rigor of Computer-Assisted Proofs and Lean 4 Verification}{21}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}Lean 4 Kernel Verification as Absolute Mathematical Truth}{21}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}Bridging the Gap of Human Readability}{22}{subsection.5.1.2}%
+\contentsline {section}{\numberline {5.2}Topological Wave-Function Localization and Calabi-Yau 5-Fold Slices}{23}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Theoretical Framework: Topological Wave-Function Localization}{23}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Calabi-Yau 5-Fold Slice and Return Probability}{23}{subsection.5.2.2}%
+\contentsline {section}{\numberline {5.3}Cryptographic Hardness from Mirror Map Coefficients}{24}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}The Mirror Map Inversion Problem (MMIP) as a Hardness Assumption}{24}{subsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.3.2}Search Space Bounds and Resistance to Algebraic Attacks}{25}{subsection.5.3.2}%
+\contentsline {chapter}{\numberline {6}Conclusion and Future Directions}{27}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Summary of Key Contributions}{27}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Future Directions}{28}{section.6.2}%
+\contentsline {chapter}{Glossary}{31}{chapter*.4}%

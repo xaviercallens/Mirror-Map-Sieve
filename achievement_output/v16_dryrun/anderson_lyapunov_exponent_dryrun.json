@@ -1,0 +1,15 @@
+{
+  "pid": "anderson_lyapunov_exponent",
+  "domain": "mathematical_physics",
+  "solvability": 2,
+  "source": "v16_offline",
+  "pre_decomp_lemmas": 3,
+  "sorry_galois": 3,
+  "sorry_final": 0,
+  "arch_reduction": 3,
+  "verdict": "INCOMPLETE",
+  "euler_confidence": 0.7,
+  "cost_usd": 0.3,
+  "elapsed_s": 312.54,
+  "alexandrie_id": "v16_dryrun_anderson_lyapunov_exponent"
+}

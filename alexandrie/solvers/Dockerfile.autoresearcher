@@ -1,0 +1,11 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+RUN pip install requests google-cloud-storage sympy
+
+COPY discovery /app/discovery
+COPY autoresearch_loop.py .
+
+ENV PYTHONUNBUFFERED=1
+ENTRYPOINT ["python3", "autoresearch_loop.py"]

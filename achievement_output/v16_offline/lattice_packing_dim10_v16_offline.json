@@ -1,0 +1,14 @@
+{
+  "pid": "lattice_packing_dim10",
+  "domain": "discrete_geometry",
+  "v14_verdict": "INCOMPLETE",
+  "v14_sorry": 1,
+  "sorry_before": 0,
+  "sorry_after": 0,
+  "sorry_eliminated": 0,
+  "pre_decomp_slots": 3,
+  "offline_verdict": "ALREADY_OK",
+  "alexandrie_id": "v16_offline_lattice_packing_dim10",
+  "elapsed_s": 0.02,
+  "gap_summary": []
+}

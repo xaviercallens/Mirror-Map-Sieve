@@ -1,0 +1,28 @@
+{
+  "pid": "saw_simple_cubic",
+  "domain": "stat_mechanics",
+  "v16_verdict": "REFUTED",
+  "v16_confidence": 0.0,
+  "sorry_count": 11,
+  "sorry_count_after_archimedes": 11,
+  "sorry_count_final": 6,
+  "archimedes_reduction": 0,
+  "pre_decomp_lemmas": 3,
+  "sharding_tier": "",
+  "sharding_region": "",
+  "hypotheses_applied": [
+    "H1_PRE_DECOMP_3L"
+  ],
+  "conjecture_statement": "Let $c_n$ be the number of $n$-step self-avoiding walks on the simple cubic lattice $\\mathbb{Z}^3$ starting at the origin. Let $T_L$ be the transfer matrix for self-avoiding walks on the cylindrical subgraph $(\\{-L, \\dots, L\\})^2 \\times \\mathbb{Z} \\subset \\mathbb{Z}^3$. The connective constant $\\mu = \\lim_{n\\to\\infty} c_n^{1/n}$ exists and is equal to the limit of the spectral radii of the transfer matrices: $$\\mu = \\lim_{L\\to\\infty} \\rho(T_L)$$ where $\\rho(T_L)$ denotes the spectral radius of the operator $T_L$.",
+  "lean4_sketch": "import Mathlib.Analysis.NormedSpace.Spectrum\nimport Mathlib.Analysis.SpecialFunctions.Pow.Real\nimport Mathlib.Order.Filter.AtTopBot\nimport Mathlib.LinearAlgebra.Matrix.ToLin\n\nopen Filter Topology Real\n\n-- An abstract definition for the number of n-step self-avoiding walks on \u2124\u00b3.\nnoncomputable def sawCount (n : \u2115) : \u2115 := sorry\n\n-- The configuration space on a 2D slice of width L. Abstracted for this sketch.\nnoncomputable def SawConfigSpace (L : \u2115) : Type := sorry\ninstance (L : \u2115) : Fintype (SawConfigSpace L) := by sorry\ninstance (L : \u2115) : Inhabited (SawConfigSpace L) := by sorry\n\n-- The transfer matrix for a cylinder of width L.\nnoncomputable def transferMatrix (L : \u2115) : Matrix (SawConfigSpace L) (SawConfigSpace L) \u211d := sorry\n\n-- Conjecture: The connective constant is the limit of the spectral radii of transfer matrices.\ntheorem saw_simple_cubic : \n  let \u03bc := \u2a06 n, if h : n > 0 then (sawCount n : \u211d) ^ (1 / (n : \u211d)) else 0\n  let \u03c1 L := spectralRadius \u211d (Matrix.toLin' (transferMatrix L))\n  Tendsto \u03c1 atTop (\ud835\udcdd \u03bc) := by\n  \n  -- Sub-Lemma 1: The lattice walk count is supermultiplicative, guaranteeing the limit exists.\n  have h_walk : Tendsto (fun n \u21a6 (sawCount n : \u211d) ^ (1 / (n : \u211d))) atTop (\ud835\udcdd \u03bc) := by\n    have h_superadditive : \u2200 m n, 0 < m \u2192 0 < n \u2192 sawCount (m + n) \u2265 sawCount m * sawCount n := by\n      sorry -- Combinatorial proof by concatenating walks.\n    -- Fekete's Lemma for supermultiplicative sequences implies the limit exists and equals the supremum.\n    sorry\n\n  -- Sub-Lemma 2: The partition function (walks in a cylinder) is related to the spectral radius.\n  let c_L (L n : \u2115) : \u2115 := sorry -- Number of n-step SAWs in an L-cylinder\n  have h_pf : \u2200 L, Tendsto (fun n \u21a6 (c_L L n : \u211d) ^ (1 / (n : \u211d))) atTop (\ud835\udcdd (\u03c1 L)) := by\n    -- This follows from the Perron-Frobenius theorem for the positive matrix transferMatrix L.\n    -- The number of walks c_L(n) is related to Tr((T_L)^n), whose growth is dominated by the largest eigenvalue.\n    -- The proof would involve algebraic",
+  "lean4_sketch_archimedes": "import Mathlib.Analysis.NormedSpace.Basic\nimport Mathlib.Analysis.SpecialFunctions.Pow.Real\nimport Mathlib.Order.Filter.AtTopBot\nimport Mathlib.LinearAlgebra.Matrix.ToLin\nimport Mathlib.Topology.SpectralRadius\nimport Mathlib.Algebra.BigOperators.Basic\nimport Mathlib.Data.Real.Basic\nimport Mathlib.Tactic\nimport Mathlib.Analysis.Asymptotics.Supermultiplicative\n\nopen Filter Topology Real Matrix BigOperators Nat\n\nnoncomputable def sawCount (n : \u2115) : \u2115 := sorry\n\nnoncomputable def SawConfigSpace (L : \u2115) : Type := Fin L\ninstance (L : \u2115) : Fintype (SawConfigSpace L) := Fintype.ofFinite _\ninstance (L : \u2115) : Inhabited (SawConfigSpace L) := \u27e80\u27e9\n\nnoncomputable def transferMatrix (L : \u2115) : Matrix (SawConfigSpace L) (SawConfigSpace L) \u211d := sorry\n\ntheorem saw_simple_cubic :\n  let \u03bc := \u2a06 n, if h : n > 0 then (sawCount n : \u211d) ^ (1 / (n : \u211d)) else 0\n  let \u03c1 L := spectralRadius \u211d (toLin' (transferMatrix L))\n  Tendsto (\u03c1) atTop (\ud835\udcdd \u03bc) := by\n  have h_walk : Tendsto (fun n \u21a6 (sawCount n : \u211d) ^ (1 / (n : \u211d))) atTop (\ud835\udcdd \u03bc) := by\n    have h_superadditive : \u2200 m n, 0 < m \u2192 0 < n \u2192 sawCount (m + n) \u2265 sawCount m * sawCount n := by\n      sorry\n    have : IsSupermultiplicative (fun n \u21a6 sawCount n) := by\n      intro m n\n      by_cases h : m = 0 \u2228 n = 0\n      \u00b7 cases h with\n        | inl h => simp [h, zero_add]\n        | inr h => simp [h, add_zero]\n      \u00b7 push_neg at h\n        exact h_superadditive m n h.1 h.2\n    have := Fekete.le_supr_of_supermultiplicative this\n    simp only [\u03bc] at this\n    exact this\n  let c_L (L n : \u2115) : \u2115 := sorry\n  have h_pf : \u2200 L, Tendsto (fun n \u21a6 (c_L L n : \u211d) ^ (1 / (n : \u211d))) atTop (\ud835\udcdd (\u03c1 L)) := by\n    sorry\n  sorry",
+  "research_brief": "",
+  "v15_sorry": 2,
+  "domain_prior": 0.3,
+  "gap_probability_map": {},
+  "sorry_guillotine_applied": false,
+  "cost_usd": 0.42,
+  "elapsed_s": 103.08,
+  "problem_id": "saw_simple_cubic",
+  "status": "FAILED (UNRECOVERABLE)"
+}

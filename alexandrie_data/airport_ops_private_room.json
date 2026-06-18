@@ -1,0 +1,32 @@
+{
+  "room": "airport_ops_private",
+  "discoveries": [
+    {
+      "artifact_id": "AMAD_AIROPS_03_Quantum-Inspired_Dis",
+      "title": "Quantum-Inspired Disruption Recovery Lattice",
+      "amadeus_product": "Amadeus Recovery Management System (ARMS)",
+      "revenue_multiplier": 1.55,
+      "sim_mean_gain_usd": 549542.1968149039,
+      "sha256": "e95aa9a694aec961d91e48bdbaf669f96b47ade3ae0d2ee39aaa3bdc3be89826",
+      "vault_path": "/Users/xcallens/.gemini/antigravity/alexandrie_vault/private/paper/AMAD_AIROPS_03_Quantum-Inspired_Dis.txt"
+    },
+    {
+      "artifact_id": "AMAD_AIROPS_09_Stochastic_Lyapunov_",
+      "title": "Stochastic Lyapunov Revenue Stabiliser",
+      "amadeus_product": "Amadeus Revenue Management (PROS/Altea RM)",
+      "revenue_multiplier": 1.48,
+      "sim_mean_gain_usd": 479696.61355923116,
+      "sha256": "d27f8c85a33f108941fda0295afadef496984be03a03763e3daa0d60c3fd42b5",
+      "vault_path": "/Users/xcallens/.gemini/antigravity/alexandrie_vault/private/paper/AMAD_AIROPS_09_Stochastic_Lyapunov_.txt"
+    },
+    {
+      "artifact_id": "AMAD_AIROPS_08_Modular-Arithmetic_F",
+      "title": "Modular-Arithmetic Fuel Uplift Prediction",
+      "amadeus_product": "Amadeus Flight Efficiency (Optiflight)",
+      "revenue_multiplier": 1.44,
+      "sim_mean_gain_usd": 441496.26699046727,
+      "sha256": "9567b1c2007af7a7f46a5349096f978775e2eac9ed725b25fab91714ac26bc17",
+      "vault_path": "/Users/xcallens/.gemini/antigravity/alexandrie_vault/private/paper/AMAD_AIROPS_08_Modular-Arithmetic_F.txt"
+    }
+  ]
+}

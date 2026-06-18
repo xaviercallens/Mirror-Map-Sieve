@@ -1,0 +1,22 @@
+{
+  "pid": "autocorr_signed_upper",
+  "domain": "combinatorics",
+  "v14_verdict": "INCOMPLETE",
+  "v14_sorry": 1,
+  "sorry_before": 1,
+  "sorry_after": 0,
+  "sorry_eliminated": 1,
+  "pre_decomp_slots": 3,
+  "offline_verdict": "CLOSED",
+  "alexandrie_id": "v16_offline_autocorr_signed_upper",
+  "elapsed_s": 0.018,
+  "gap_summary": [
+    {
+      "gap_index": 1,
+      "context_snippet": "tocorr s.val k))) \u2264 (n : \u2124) / 2 := by\n  sorry\n  -- This conjecture posits that t",
+      "tactic_applied": "positivity",
+      "confidence": 0.9,
+      "resolved": true
+    }
+  ]
+}

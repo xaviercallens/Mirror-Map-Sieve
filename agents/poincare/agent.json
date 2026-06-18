@@ -1,0 +1,9 @@
+{
+  "name": "poincare",
+  "description": "Henri Poincaré — multi-perspective consensus, topological thinking. Runs N independent reviews and synthesizes a verdict.",
+  "role": "QUORUM_JUDGE",
+  "endpoints": {
+    "rpc": "https://poincare-service-xyz.a.run.app/rpc"
+  },
+  "model": "gemini-2.5-pro"
+}

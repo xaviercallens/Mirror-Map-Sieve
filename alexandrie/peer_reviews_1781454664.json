@@ -1,0 +1,29 @@
+[
+  {
+    "reviewer_id": "mistral_reviewer_1",
+    "model_used": "mistral-large-latest",
+    "verdict": "REVISE",
+    "strengths": "(see full review)",
+    "weaknesses": "(see full review)",
+    "patentability_score": 7,
+    "full_review": ""
+  },
+  {
+    "reviewer_id": "mistral_reviewer_2",
+    "model_used": "mistral-large-latest",
+    "verdict": "REVISE",
+    "strengths": "(see full review)",
+    "weaknesses": "(see full review)",
+    "patentability_score": 7,
+    "full_review": ""
+  },
+  {
+    "reviewer_id": "mistral_reviewer_3",
+    "model_used": "mistral-large-latest",
+    "verdict": "REVISE",
+    "strengths": "(see full review)",
+    "weaknesses": "(see full review)",
+    "patentability_score": 7,
+    "full_review": ""
+  }
+]

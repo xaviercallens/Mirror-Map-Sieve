@@ -1,0 +1,15 @@
+{
+  "pid": "feigenbaum_alpha",
+  "domain": "continuum_physics",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.65,
+  "sorry_count": 0,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.1,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 185.89036720800505,
+  "conjecture_statement": "{'conjecture_generator': ConjectureResult(conjectures=[Conjecture(statement='Let $\\\\alpha$ be the Feigenbaum constant, approximately 2.5029. We conjecture that $\\\\alpha$ is the unique real number greater than 1 satisfying the integral identity: $$\\\\int_0^1 \\\\left( \\\\prod_{k=0}^{\\\\infty} \\\\cos(t \\\\cdot \\\\alpha^{-k}) \\\\right) dt = \\\\frac{1}{2}$$', natural_language=\"The Feigenbaum constant $\\\\alpha$ is a universal scaling factor that appears in the period-doubling route to chaos. This conjecture pr",
+  "lean4_sketch": "",
+  "gap_probability_map": {}
+}

@@ -1,0 +1,838 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.11, pytest-9.0.3, pluggy-1.6.0
+rootdir: /Users/xcallens/xdev/SocrateAI-Scientific-Agora
+configfile: pyproject.toml
+plugins: mock-3.15.1, cov-7.1.0, asyncio-1.4.0, anyio-4.13.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 20 items
+
+tests/common/test_a2a.py ........FF...FFFFFFF
+WARNING: Failed to generate report: No data to report.
+
+                                                                         [100%]
+
+=================================== FAILURES ===================================
+______________________ test_delegate_task_pubsub_success _______________________
+
+a2a_client = <agents.common.a2a.A2AClient object at 0x11299e2a0>
+mocker = <pytest_mock.plugin.MockerFixture object at 0x112981190>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x112981d90>
+
+    @pytest.mark.asyncio
+    async def test_delegate_task_pubsub_success(a2a_client, mocker, monkeypatch):
+        monkeypatch.setenv("GCP_PROJECT", "test-project")
+>       mock_pubsub = mocker.patch("google.cloud.pubsub_v1.PublisherClient")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/common/test_a2a.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/pytest_mock/plugin.py:448: in __call__
+    return self._start_patch(
+.venv/lib/python3.12/site-packages/pytest_mock/plugin.py:266: in _start_patch
+    mocked: MockType = p.start()
+                       ^^^^^^^^^
+../../.pyenv/versions/3.12.11/lib/python3.12/unittest/mock.py:1624: in start
+    result = self.__enter__()
+             ^^^^^^^^^^^^^^^^
+../../.pyenv/versions/3.12.11/lib/python3.12/unittest/mock.py:1451: in __enter__
+    self.target = self.getter()
+                  ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'google.cloud.pubsub_v1'
+
+    def resolve_name(name):
+        """
+        Resolve a name to an object.
+    
+        It is expected that `name` will be a string in one of the following
+        formats, where W is shorthand for a valid Python identifier and dot stands
+        for a literal period in these pseudo-regexes:
+    
+        W(.W)*
+        W(.W)*:(W(.W)*)?
+    
+        The first form is intended for backward compatibility only. It assumes that
+        some part of the dotted name is a package, and the rest is an object
+        somewhere within that package, possibly nested inside other objects.
+        Because the place where the package stops and the object hierarchy starts
+        can't be inferred by inspection, repeated attempts to import must be done
+        with this form.
+    
+        In the second form, the caller makes the division point clear through the
+        provision of a single colon: the dotted name to the left of the colon is a
+        package to be imported, and the dotted name to the right is the object
+        hierarchy within that package. Only one import is needed in this form. If
+        it ends with the colon, then a module object is returned.
+    
+        The function will return an object (which might be a module), or raise one
+        of the following exceptions:
+    
+        ValueError - if `name` isn't in a recognised format
+        ImportError - if an import failed when it shouldn't have
+        AttributeError - if a failure occurred when traversing the object hierarchy
+                         within the imported package to get to the desired object.
+        """
+        global _NAME_PATTERN
+        if _NAME_PATTERN is None:
+            # Lazy import to speedup Python startup time
+            import re
+            dotted_words = r'(?!\d)(\w+)(\.(?!\d)(\w+))*'
+            _NAME_PATTERN = re.compile(f'^(?P<pkg>{dotted_words})'
+                                       f'(?P<cln>:(?P<obj>{dotted_words})?)?$',
+                                       re.UNICODE)
+    
+        m = _NAME_PATTERN.match(name)
+        if not m:
+            raise ValueError(f'invalid format: {name!r}')
+        gd = m.groupdict()
+        if gd.get('cln'):
+            # there is a colon - a one-step import is all that's needed
+            mod = importlib.import_module(gd['pkg'])
+            parts = gd.get('obj')
+            parts = parts.split('.') if parts else []
+        else:
+            # no colon - have to iterate to find the package boundary
+            parts = name.split('.')
+            modname = parts.pop(0)
+            # first part *must* be a module/package.
+            mod = importlib.import_module(modname)
+            while parts:
+                p = parts[0]
+                s = f'{modname}.{p}'
+                try:
+                    mod = importlib.import_module(s)
+                    parts.pop(0)
+                    modname = s
+                except ImportError:
+                    break
+        # if we reach this point, mod is the module, already imported, and
+        # parts is the list of parts in the object hierarchy to be traversed, or
+        # an empty list if just the module is wanted.
+        result = mod
+        for p in parts:
+>           result = getattr(result, p)
+                     ^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'google' has no attribute 'cloud'
+
+../../.pyenv/versions/3.12.11/lib/python3.12/pkgutil.py:528: AttributeError
+_____________________ test_delegate_task_pubsub_retry_fail _____________________
+
+a2a_client = <agents.common.a2a.A2AClient object at 0x1129a6450>
+mocker = <pytest_mock.plugin.MockerFixture object at 0x11299ddc0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11299ce90>
+
+    @pytest.mark.asyncio
+    async def test_delegate_task_pubsub_retry_fail(a2a_client, mocker, monkeypatch):
+        monkeypatch.setenv("GCP_PROJECT", "test-project")
+>       mock_pubsub = mocker.patch("google.cloud.pubsub_v1.PublisherClient")
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/common/test_a2a.py:109: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/pytest_mock/plugin.py:448: in __call__
+    return self._start_patch(
+.venv/lib/python3.12/site-packages/pytest_mock/plugin.py:266: in _start_patch
+    mocked: MockType = p.start()
+                       ^^^^^^^^^
+../../.pyenv/versions/3.12.11/lib/python3.12/unittest/mock.py:1624: in start
+    result = self.__enter__()
+             ^^^^^^^^^^^^^^^^
+../../.pyenv/versions/3.12.11/lib/python3.12/unittest/mock.py:1451: in __enter__
+    self.target = self.getter()
+                  ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'google.cloud.pubsub_v1'
+
+    def resolve_name(name):
+        """
+        Resolve a name to an object.
+    
+        It is expected that `name` will be a string in one of the following
+        formats, where W is shorthand for a valid Python identifier and dot stands
+        for a literal period in these pseudo-regexes:
+    
+        W(.W)*
+        W(.W)*:(W(.W)*)?
+    
+        The first form is intended for backward compatibility only. It assumes that
+        some part of the dotted name is a package, and the rest is an object
+        somewhere within that package, possibly nested inside other objects.
+        Because the place where the package stops and the object hierarchy starts
+        can't be inferred by inspection, repeated attempts to import must be done
+        with this form.
+    
+        In the second form, the caller makes the division point clear through the
+        provision of a single colon: the dotted name to the left of the colon is a
+        package to be imported, and the dotted name to the right is the object
+        hierarchy within that package. Only one import is needed in this form. If
+        it ends with the colon, then a module object is returned.
+    
+        The function will return an object (which might be a module), or raise one
+        of the following exceptions:
+    
+        ValueError - if `name` isn't in a recognised format
+        ImportError - if an import failed when it shouldn't have
+        AttributeError - if a failure occurred when traversing the object hierarchy
+                         within the imported package to get to the desired object.
+        """
+        global _NAME_PATTERN
+        if _NAME_PATTERN is None:
+            # Lazy import to speedup Python startup time
+            import re
+            dotted_words = r'(?!\d)(\w+)(\.(?!\d)(\w+))*'
+            _NAME_PATTERN = re.compile(f'^(?P<pkg>{dotted_words})'
+                                       f'(?P<cln>:(?P<obj>{dotted_words})?)?$',
+                                       re.UNICODE)
+    
+        m = _NAME_PATTERN.match(name)
+        if not m:
+            raise ValueError(f'invalid format: {name!r}')
+        gd = m.groupdict()
+        if gd.get('cln'):
+            # there is a colon - a one-step import is all that's needed
+            mod = importlib.import_module(gd['pkg'])
+            parts = gd.get('obj')
+            parts = parts.split('.') if parts else []
+        else:
+            # no colon - have to iterate to find the package boundary
+            parts = name.split('.')
+            modname = parts.pop(0)
+            # first part *must* be a module/package.
+            mod = importlib.import_module(modname)
+            while parts:
+                p = parts[0]
+                s = f'{modname}.{p}'
+                try:
+                    mod = importlib.import_module(s)
+                    parts.pop(0)
+                    modname = s
+                except ImportError:
+                    break
+        # if we reach this point, mod is the module, already imported, and
+        # parts is the list of parts in the object hierarchy to be traversed, or
+        # an empty list if just the module is wanted.
+        result = mod
+        for p in parts:
+>           result = getattr(result, p)
+                     ^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'google' has no attribute 'cloud'
+
+../../.pyenv/versions/3.12.11/lib/python3.12/pkgutil.py:528: AttributeError
+____________________________ test_a2a_server_routes ____________________________
+
+mock_card = AgentCard(name='test-agent', description='A test agent', url='http://mock-agent', version='1.0.0', capabilities={}, skills=[])
+mocker = <pytest_mock.plugin.MockerFixture object at 0x1128a5b50>
+
+    @pytest.mark.asyncio
+    async def test_a2a_server_routes(mock_card, mocker):
+        mixin = A2AServerMixin(mock_card)
+        app = MagicMock()
+        app.on_event = MagicMock(return_value=lambda f: f)
+        app.get = MagicMock(return_value=lambda f: f)
+        app.post = MagicMock(return_value=lambda f: f)
+    
+        mixin.mount_a2a_routes(app)
+    
+        # We can't fully unit test FastAPI inner routes without TestClient easily this way,
+        # but we can test the handle_rpc logic
+    
+        # We will simulate the handle_rpc directly:
+        # First we need to extract it
+        handle_rpc = None
+        for call in app.post.call_args_list:
+            if call[0][0] == "/rpc":
+                # The decorator registers the function
+                handle_rpc = call.kwargs.get("f") # No, it's used as @app.post("/rpc")\ndef handle_rpc...
+                break
+    
+        # Actually the simplest way is to test via TestClient in another module,
+        # but we can do a mock TestClient here if we import FastAPI
+        from fastapi import FastAPI
+        from fastapi.testclient import TestClient
+        real_app = FastAPI()
+        mixin.mount_a2a_routes(real_app)
+        client = TestClient(real_app)
+    
+        # Test /.well-known/agent.json
+        resp = client.get("/.well-known/agent.json")
+        assert resp.status_code == 200
+        assert resp.json()["name"] == "test-agent"
+    
+        # Test /health
+        resp = client.get("/health")
+        assert resp.status_code == 200
+    
+        # Test /rpc without executor
+        resp = client.post("/rpc", json={"method": "tasks/send", "id": "1", "params": {}})
+>       assert resp.json()["error"]["message"] == "No executor registered"
+               ^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'error'
+
+tests/common/test_a2a.py:180: KeyError
+_________________________ test_upload_artifact_to_gcs __________________________
+
+mocker = <pytest_mock.plugin.MockerFixture object at 0x112989070>
+
+    def test_upload_artifact_to_gcs(mocker):
+>       mock_storage = mocker.patch("google.cloud.storage.Client")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/common/test_a2a.py:215: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/pytest_mock/plugin.py:448: in __call__
+    return self._start_patch(
+.venv/lib/python3.12/site-packages/pytest_mock/plugin.py:266: in _start_patch
+    mocked: MockType = p.start()
+                       ^^^^^^^^^
+../../.pyenv/versions/3.12.11/lib/python3.12/unittest/mock.py:1624: in start
+    result = self.__enter__()
+             ^^^^^^^^^^^^^^^^
+../../.pyenv/versions/3.12.11/lib/python3.12/unittest/mock.py:1451: in __enter__
+    self.target = self.getter()
+                  ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'google.cloud.storage'
+
+    def resolve_name(name):
+        """
+        Resolve a name to an object.
+    
+        It is expected that `name` will be a string in one of the following
+        formats, where W is shorthand for a valid Python identifier and dot stands
+        for a literal period in these pseudo-regexes:
+    
+        W(.W)*
+        W(.W)*:(W(.W)*)?
+    
+        The first form is intended for backward compatibility only. It assumes that
+        some part of the dotted name is a package, and the rest is an object
+        somewhere within that package, possibly nested inside other objects.
+        Because the place where the package stops and the object hierarchy starts
+        can't be inferred by inspection, repeated attempts to import must be done
+        with this form.
+    
+        In the second form, the caller makes the division point clear through the
+        provision of a single colon: the dotted name to the left of the colon is a
+        package to be imported, and the dotted name to the right is the object
+        hierarchy within that package. Only one import is needed in this form. If
+        it ends with the colon, then a module object is returned.
+    
+        The function will return an object (which might be a module), or raise one
+        of the following exceptions:
+    
+        ValueError - if `name` isn't in a recognised format
+        ImportError - if an import failed when it shouldn't have
+        AttributeError - if a failure occurred when traversing the object hierarchy
+                         within the imported package to get to the desired object.
+        """
+        global _NAME_PATTERN
+        if _NAME_PATTERN is None:
+            # Lazy import to speedup Python startup time
+            import re
+            dotted_words = r'(?!\d)(\w+)(\.(?!\d)(\w+))*'
+            _NAME_PATTERN = re.compile(f'^(?P<pkg>{dotted_words})'
+                                       f'(?P<cln>:(?P<obj>{dotted_words})?)?$',
+                                       re.UNICODE)
+    
+        m = _NAME_PATTERN.match(name)
+        if not m:
+            raise ValueError(f'invalid format: {name!r}')
+        gd = m.groupdict()
+        if gd.get('cln'):
+            # there is a colon - a one-step import is all that's needed
+            mod = importlib.import_module(gd['pkg'])
+            parts = gd.get('obj')
+            parts = parts.split('.') if parts else []
+        else:
+            # no colon - have to iterate to find the package boundary
+            parts = name.split('.')
+            modname = parts.pop(0)
+            # first part *must* be a module/package.
+            mod = importlib.import_module(modname)
+            while parts:
+                p = parts[0]
+                s = f'{modname}.{p}'
+                try:
+                    mod = importlib.import_module(s)
+                    parts.pop(0)
+                    modname = s
+                except ImportError:
+                    break
+        # if we reach this point, mod is the module, already imported, and
+        # parts is the list of parts in the object hierarchy to be traversed, or
+        # an empty list if just the module is wanted.
+        result = mod
+        for p in parts:
+>           result = getattr(result, p)
+                     ^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'google' has no attribute 'cloud'
+
+../../.pyenv/versions/3.12.11/lib/python3.12/pkgutil.py:528: AttributeError
+______________________ test_upload_artifact_to_gcs_string ______________________
+
+mocker = <pytest_mock.plugin.MockerFixture object at 0x113023b90>
+
+    def test_upload_artifact_to_gcs_string(mocker):
+>       mock_storage = mocker.patch("google.cloud.storage.Client")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/common/test_a2a.py:226: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/pytest_mock/plugin.py:448: in __call__
+    return self._start_patch(
+.venv/lib/python3.12/site-packages/pytest_mock/plugin.py:266: in _start_patch
+    mocked: MockType = p.start()
+                       ^^^^^^^^^
+../../.pyenv/versions/3.12.11/lib/python3.12/unittest/mock.py:1624: in start
+    result = self.__enter__()
+             ^^^^^^^^^^^^^^^^
+../../.pyenv/versions/3.12.11/lib/python3.12/unittest/mock.py:1451: in __enter__
+    self.target = self.getter()
+                  ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'google.cloud.storage'
+
+    def resolve_name(name):
+        """
+        Resolve a name to an object.
+    
+        It is expected that `name` will be a string in one of the following
+        formats, where W is shorthand for a valid Python identifier and dot stands
+        for a literal period in these pseudo-regexes:
+    
+        W(.W)*
+        W(.W)*:(W(.W)*)?
+    
+        The first form is intended for backward compatibility only. It assumes that
+        some part of the dotted name is a package, and the rest is an object
+        somewhere within that package, possibly nested inside other objects.
+        Because the place where the package stops and the object hierarchy starts
+        can't be inferred by inspection, repeated attempts to import must be done
+        with this form.
+    
+        In the second form, the caller makes the division point clear through the
+        provision of a single colon: the dotted name to the left of the colon is a
+        package to be imported, and the dotted name to the right is the object
+        hierarchy within that package. Only one import is needed in this form. If
+        it ends with the colon, then a module object is returned.
+    
+        The function will return an object (which might be a module), or raise one
+        of the following exceptions:
+    
+        ValueError - if `name` isn't in a recognised format
+        ImportError - if an import failed when it shouldn't have
+        AttributeError - if a failure occurred when traversing the object hierarchy
+                         within the imported package to get to the desired object.
+        """
+        global _NAME_PATTERN
+        if _NAME_PATTERN is None:
+            # Lazy import to speedup Python startup time
+            import re
+            dotted_words = r'(?!\d)(\w+)(\.(?!\d)(\w+))*'
+            _NAME_PATTERN = re.compile(f'^(?P<pkg>{dotted_words})'
+                                       f'(?P<cln>:(?P<obj>{dotted_words})?)?$',
+                                       re.UNICODE)
+    
+        m = _NAME_PATTERN.match(name)
+        if not m:
+            raise ValueError(f'invalid format: {name!r}')
+        gd = m.groupdict()
+        if gd.get('cln'):
+            # there is a colon - a one-step import is all that's needed
+            mod = importlib.import_module(gd['pkg'])
+            parts = gd.get('obj')
+            parts = parts.split('.') if parts else []
+        else:
+            # no colon - have to iterate to find the package boundary
+            parts = name.split('.')
+            modname = parts.pop(0)
+            # first part *must* be a module/package.
+            mod = importlib.import_module(modname)
+            while parts:
+                p = parts[0]
+                s = f'{modname}.{p}'
+                try:
+                    mod = importlib.import_module(s)
+                    parts.pop(0)
+                    modname = s
+                except ImportError:
+                    break
+        # if we reach this point, mod is the module, already imported, and
+        # parts is the list of parts in the object hierarchy to be traversed, or
+        # an empty list if just the module is wanted.
+        result = mod
+        for p in parts:
+>           result = getattr(result, p)
+                     ^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'google' has no attribute 'cloud'
+
+../../.pyenv/versions/3.12.11/lib/python3.12/pkgutil.py:528: AttributeError
+_______________________ test_get_artifact_from_gcs_json ________________________
+
+mocker = <pytest_mock.plugin.MockerFixture object at 0x112f70c80>
+
+    def test_get_artifact_from_gcs_json(mocker):
+>       mock_storage = mocker.patch("google.cloud.storage.Client")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/common/test_a2a.py:231: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/pytest_mock/plugin.py:448: in __call__
+    return self._start_patch(
+.venv/lib/python3.12/site-packages/pytest_mock/plugin.py:266: in _start_patch
+    mocked: MockType = p.start()
+                       ^^^^^^^^^
+../../.pyenv/versions/3.12.11/lib/python3.12/unittest/mock.py:1624: in start
+    result = self.__enter__()
+             ^^^^^^^^^^^^^^^^
+../../.pyenv/versions/3.12.11/lib/python3.12/unittest/mock.py:1451: in __enter__
+    self.target = self.getter()
+                  ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'google.cloud.storage'
+
+    def resolve_name(name):
+        """
+        Resolve a name to an object.
+    
+        It is expected that `name` will be a string in one of the following
+        formats, where W is shorthand for a valid Python identifier and dot stands
+        for a literal period in these pseudo-regexes:
+    
+        W(.W)*
+        W(.W)*:(W(.W)*)?
+    
+        The first form is intended for backward compatibility only. It assumes that
+        some part of the dotted name is a package, and the rest is an object
+        somewhere within that package, possibly nested inside other objects.
+        Because the place where the package stops and the object hierarchy starts
+        can't be inferred by inspection, repeated attempts to import must be done
+        with this form.
+    
+        In the second form, the caller makes the division point clear through the
+        provision of a single colon: the dotted name to the left of the colon is a
+        package to be imported, and the dotted name to the right is the object
+        hierarchy within that package. Only one import is needed in this form. If
+        it ends with the colon, then a module object is returned.
+    
+        The function will return an object (which might be a module), or raise one
+        of the following exceptions:
+    
+        ValueError - if `name` isn't in a recognised format
+        ImportError - if an import failed when it shouldn't have
+        AttributeError - if a failure occurred when traversing the object hierarchy
+                         within the imported package to get to the desired object.
+        """
+        global _NAME_PATTERN
+        if _NAME_PATTERN is None:
+            # Lazy import to speedup Python startup time
+            import re
+            dotted_words = r'(?!\d)(\w+)(\.(?!\d)(\w+))*'
+            _NAME_PATTERN = re.compile(f'^(?P<pkg>{dotted_words})'
+                                       f'(?P<cln>:(?P<obj>{dotted_words})?)?$',
+                                       re.UNICODE)
+    
+        m = _NAME_PATTERN.match(name)
+        if not m:
+            raise ValueError(f'invalid format: {name!r}')
+        gd = m.groupdict()
+        if gd.get('cln'):
+            # there is a colon - a one-step import is all that's needed
+            mod = importlib.import_module(gd['pkg'])
+            parts = gd.get('obj')
+            parts = parts.split('.') if parts else []
+        else:
+            # no colon - have to iterate to find the package boundary
+            parts = name.split('.')
+            modname = parts.pop(0)
+            # first part *must* be a module/package.
+            mod = importlib.import_module(modname)
+            while parts:
+                p = parts[0]
+                s = f'{modname}.{p}'
+                try:
+                    mod = importlib.import_module(s)
+                    parts.pop(0)
+                    modname = s
+                except ImportError:
+                    break
+        # if we reach this point, mod is the module, already imported, and
+        # parts is the list of parts in the object hierarchy to be traversed, or
+        # an empty list if just the module is wanted.
+        result = mod
+        for p in parts:
+>           result = getattr(result, p)
+                     ^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'google' has no attribute 'cloud'
+
+../../.pyenv/versions/3.12.11/lib/python3.12/pkgutil.py:528: AttributeError
+______________________ test_get_artifact_from_gcs_string _______________________
+
+mocker = <pytest_mock.plugin.MockerFixture object at 0x112f12fc0>
+
+    def test_get_artifact_from_gcs_string(mocker):
+>       mock_storage = mocker.patch("google.cloud.storage.Client")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/common/test_a2a.py:242: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/pytest_mock/plugin.py:448: in __call__
+    return self._start_patch(
+.venv/lib/python3.12/site-packages/pytest_mock/plugin.py:266: in _start_patch
+    mocked: MockType = p.start()
+                       ^^^^^^^^^
+../../.pyenv/versions/3.12.11/lib/python3.12/unittest/mock.py:1624: in start
+    result = self.__enter__()
+             ^^^^^^^^^^^^^^^^
+../../.pyenv/versions/3.12.11/lib/python3.12/unittest/mock.py:1451: in __enter__
+    self.target = self.getter()
+                  ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'google.cloud.storage'
+
+    def resolve_name(name):
+        """
+        Resolve a name to an object.
+    
+        It is expected that `name` will be a string in one of the following
+        formats, where W is shorthand for a valid Python identifier and dot stands
+        for a literal period in these pseudo-regexes:
+    
+        W(.W)*
+        W(.W)*:(W(.W)*)?
+    
+        The first form is intended for backward compatibility only. It assumes that
+        some part of the dotted name is a package, and the rest is an object
+        somewhere within that package, possibly nested inside other objects.
+        Because the place where the package stops and the object hierarchy starts
+        can't be inferred by inspection, repeated attempts to import must be done
+        with this form.
+    
+        In the second form, the caller makes the division point clear through the
+        provision of a single colon: the dotted name to the left of the colon is a
+        package to be imported, and the dotted name to the right is the object
+        hierarchy within that package. Only one import is needed in this form. If
+        it ends with the colon, then a module object is returned.
+    
+        The function will return an object (which might be a module), or raise one
+        of the following exceptions:
+    
+        ValueError - if `name` isn't in a recognised format
+        ImportError - if an import failed when it shouldn't have
+        AttributeError - if a failure occurred when traversing the object hierarchy
+                         within the imported package to get to the desired object.
+        """
+        global _NAME_PATTERN
+        if _NAME_PATTERN is None:
+            # Lazy import to speedup Python startup time
+            import re
+            dotted_words = r'(?!\d)(\w+)(\.(?!\d)(\w+))*'
+            _NAME_PATTERN = re.compile(f'^(?P<pkg>{dotted_words})'
+                                       f'(?P<cln>:(?P<obj>{dotted_words})?)?$',
+                                       re.UNICODE)
+    
+        m = _NAME_PATTERN.match(name)
+        if not m:
+            raise ValueError(f'invalid format: {name!r}')
+        gd = m.groupdict()
+        if gd.get('cln'):
+            # there is a colon - a one-step import is all that's needed
+            mod = importlib.import_module(gd['pkg'])
+            parts = gd.get('obj')
+            parts = parts.split('.') if parts else []
+        else:
+            # no colon - have to iterate to find the package boundary
+            parts = name.split('.')
+            modname = parts.pop(0)
+            # first part *must* be a module/package.
+            mod = importlib.import_module(modname)
+            while parts:
+                p = parts[0]
+                s = f'{modname}.{p}'
+                try:
+                    mod = importlib.import_module(s)
+                    parts.pop(0)
+                    modname = s
+                except ImportError:
+                    break
+        # if we reach this point, mod is the module, already imported, and
+        # parts is the list of parts in the object hierarchy to be traversed, or
+        # an empty list if just the module is wanted.
+        result = mod
+        for p in parts:
+>           result = getattr(result, p)
+                     ^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'google' has no attribute 'cloud'
+
+../../.pyenv/versions/3.12.11/lib/python3.12/pkgutil.py:528: AttributeError
+______________________ test_get_artifact_from_gcs_bad_uri ______________________
+
+    def test_get_artifact_from_gcs_bad_uri():
+        with pytest.raises(ValueError):
+>           get_artifact_from_gcs("http://bad-uri")
+
+tests/common/test_a2a.py:250: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+uri = 'http://bad-uri'
+
+    def get_artifact_from_gcs(uri: str) -> dict | str:
+        """Download an artifact from a 'gs://' URI.
+    
+        Args:
+            uri: GCS URI in the form 'gs://{bucket}/{blob}'.
+    
+        Returns:
+            Parsed dict if JSON, raw string otherwise.
+        """
+>       from google.cloud import storage  # type: ignore[import]
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'google.cloud'
+
+agents/common/a2a.py:110: ModuleNotFoundError
+________________________________ test_a2a_state ________________________________
+
+mocker = <pytest_mock.plugin.MockerFixture object at 0x112f21c40>
+
+    @pytest.mark.asyncio
+    async def test_a2a_state(mocker):
+>       mock_db = mocker.patch("google.cloud.firestore.AsyncClient")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/common/test_a2a.py:254: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/pytest_mock/plugin.py:448: in __call__
+    return self._start_patch(
+.venv/lib/python3.12/site-packages/pytest_mock/plugin.py:266: in _start_patch
+    mocked: MockType = p.start()
+                       ^^^^^^^^^
+../../.pyenv/versions/3.12.11/lib/python3.12/unittest/mock.py:1624: in start
+    result = self.__enter__()
+             ^^^^^^^^^^^^^^^^
+../../.pyenv/versions/3.12.11/lib/python3.12/unittest/mock.py:1451: in __enter__
+    self.target = self.getter()
+                  ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'google.cloud.firestore'
+
+    def resolve_name(name):
+        """
+        Resolve a name to an object.
+    
+        It is expected that `name` will be a string in one of the following
+        formats, where W is shorthand for a valid Python identifier and dot stands
+        for a literal period in these pseudo-regexes:
+    
+        W(.W)*
+        W(.W)*:(W(.W)*)?
+    
+        The first form is intended for backward compatibility only. It assumes that
+        some part of the dotted name is a package, and the rest is an object
+        somewhere within that package, possibly nested inside other objects.
+        Because the place where the package stops and the object hierarchy starts
+        can't be inferred by inspection, repeated attempts to import must be done
+        with this form.
+    
+        In the second form, the caller makes the division point clear through the
+        provision of a single colon: the dotted name to the left of the colon is a
+        package to be imported, and the dotted name to the right is the object
+        hierarchy within that package. Only one import is needed in this form. If
+        it ends with the colon, then a module object is returned.
+    
+        The function will return an object (which might be a module), or raise one
+        of the following exceptions:
+    
+        ValueError - if `name` isn't in a recognised format
+        ImportError - if an import failed when it shouldn't have
+        AttributeError - if a failure occurred when traversing the object hierarchy
+                         within the imported package to get to the desired object.
+        """
+        global _NAME_PATTERN
+        if _NAME_PATTERN is None:
+            # Lazy import to speedup Python startup time
+            import re
+            dotted_words = r'(?!\d)(\w+)(\.(?!\d)(\w+))*'
+            _NAME_PATTERN = re.compile(f'^(?P<pkg>{dotted_words})'
+                                       f'(?P<cln>:(?P<obj>{dotted_words})?)?$',
+                                       re.UNICODE)
+    
+        m = _NAME_PATTERN.match(name)
+        if not m:
+            raise ValueError(f'invalid format: {name!r}')
+        gd = m.groupdict()
+        if gd.get('cln'):
+            # there is a colon - a one-step import is all that's needed
+            mod = importlib.import_module(gd['pkg'])
+            parts = gd.get('obj')
+            parts = parts.split('.') if parts else []
+        else:
+            # no colon - have to iterate to find the package boundary
+            parts = name.split('.')
+            modname = parts.pop(0)
+            # first part *must* be a module/package.
+            mod = importlib.import_module(modname)
+            while parts:
+                p = parts[0]
+                s = f'{modname}.{p}'
+                try:
+                    mod = importlib.import_module(s)
+                    parts.pop(0)
+                    modname = s
+                except ImportError:
+                    break
+        # if we reach this point, mod is the module, already imported, and
+        # parts is the list of parts in the object hierarchy to be traversed, or
+        # an empty list if just the module is wanted.
+        result = mod
+        for p in parts:
+>           result = getattr(result, p)
+                     ^^^^^^^^^^^^^^^^^^
+E           AttributeError: module 'google' has no attribute 'cloud'
+
+../../.pyenv/versions/3.12.11/lib/python3.12/pkgutil.py:528: AttributeError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/torch/cuda/__init__.py:63
+  /Users/xcallens/xdev/SocrateAI-Scientific-Agora/.venv/lib/python3.12/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+    import pynvml  # type: ignore[import]
+
+tests/common/test_a2a.py::test_a2a_server_routes
+  /Users/xcallens/xdev/SocrateAI-Scientific-Agora/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+tests/common/test_a2a.py::test_a2a_server_routes
+  /Users/xcallens/xdev/SocrateAI-Scientific-Agora/agents/common/a2a.py:405: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/common/test_a2a.py::test_a2a_server_routes
+  /Users/xcallens/xdev/SocrateAI-Scientific-Agora/.venv/lib/python3.12/site-packages/fastapi/applications.py:4598: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)  # ty: ignore[deprecated]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/common/test_a2a.py::test_delegate_task_pubsub_success - Attribut...
+FAILED tests/common/test_a2a.py::test_delegate_task_pubsub_retry_fail - Attri...
+FAILED tests/common/test_a2a.py::test_a2a_server_routes - KeyError: 'error'
+FAILED tests/common/test_a2a.py::test_upload_artifact_to_gcs - AttributeError...
+FAILED tests/common/test_a2a.py::test_upload_artifact_to_gcs_string - Attribu...
+FAILED tests/common/test_a2a.py::test_get_artifact_from_gcs_json - AttributeE...
+FAILED tests/common/test_a2a.py::test_get_artifact_from_gcs_string - Attribut...
+FAILED tests/common/test_a2a.py::test_get_artifact_from_gcs_bad_uri - ModuleN...
+FAILED tests/common/test_a2a.py::test_a2a_state - AttributeError: module 'goo...
+=================== 9 failed, 11 passed, 4 warnings in 4.68s ===================

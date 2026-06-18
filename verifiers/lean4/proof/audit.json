@@ -1,0 +1,366 @@
+{
+  "generated": "2026-06-08T20:06:09.357366",
+  "toolchain": "leanprover/lean4:v4.14.0",
+  "mathlib": "v4.14.0",
+  "summary": {
+    "total": 17,
+    "verified": 8,
+    "axiom_blocked": 3,
+    "earth_gapped": 5,
+    "sorry_blocked": 1,
+    "build_failed": 0,
+    "total_sorry": 25,
+    "total_axiom": 31
+  },
+  "modules": [
+    {
+      "module": "Agora.Basic",
+      "tier": "tier1_verified",
+      "status": "verified",
+      "build_ok": true,
+      "sorry_count": 0,
+      "axiom_count": 0,
+      "axiom_names": [],
+      "sorry_locations": [],
+      "build_time_ms": 1831,
+      "error_messages": []
+    },
+    {
+      "module": "Agora.AlienMath.TensorDecomposition",
+      "tier": "tier1_verified",
+      "status": "verified",
+      "build_ok": true,
+      "sorry_count": 0,
+      "axiom_count": 0,
+      "axiom_names": [],
+      "sorry_locations": [],
+      "build_time_ms": 1196,
+      "error_messages": []
+    },
+    {
+      "module": "Agora.AlienMath.NonCommutativeCryptography",
+      "tier": "tier1_verified",
+      "status": "verified",
+      "build_ok": true,
+      "sorry_count": 0,
+      "axiom_count": 0,
+      "axiom_names": [],
+      "sorry_locations": [],
+      "build_time_ms": 1721,
+      "error_messages": []
+    },
+    {
+      "module": "Agora.AlienMath.LyapunovFunctional",
+      "tier": "tier1_verified",
+      "status": "verified",
+      "build_ok": true,
+      "sorry_count": 0,
+      "axiom_count": 0,
+      "axiom_names": [],
+      "sorry_locations": [],
+      "build_time_ms": 2848,
+      "error_messages": []
+    },
+    {
+      "module": "Agora.AlienMath.Applications.Cryptography",
+      "tier": "tier1_verified",
+      "status": "verified",
+      "build_ok": true,
+      "sorry_count": 0,
+      "axiom_count": 0,
+      "axiom_names": [],
+      "sorry_locations": [],
+      "build_time_ms": 1109,
+      "error_messages": []
+    },
+    {
+      "module": "Agora.AlienMath.Applications.Quantum",
+      "tier": "tier1_verified",
+      "status": "verified",
+      "build_ok": true,
+      "sorry_count": 0,
+      "axiom_count": 0,
+      "axiom_names": [],
+      "sorry_locations": [],
+      "build_time_ms": 1349,
+      "error_messages": []
+    },
+    {
+      "module": "Agora.saw_simple_cubic",
+      "tier": "tier2_shattered",
+      "status": "earth_gapped",
+      "build_ok": true,
+      "sorry_count": 2,
+      "axiom_count": 6,
+      "axiom_names": [
+        "connective_constant_exists",
+        "alien_hyper_bridge_lace_converges",
+        "alien_limit_resolution",
+        "hyper_bridge_exact_ratio",
+        "hyper_bridge_penalty_asymptotics",
+        "\u03bc_Z3_sq_pos"
+      ],
+      "sorry_locations": [
+        {
+          "line": 161,
+          "content": "sorry -- NARROWED: pure real analysis (1/n \u2192 0)"
+        },
+        {
+          "line": 167,
+          "content": "sorry -- NARROWED: composition of exp derivative with \u039b_tendsto_zero"
+        }
+      ],
+      "build_time_ms": 1866,
+      "error_messages": []
+    },
+    {
+      "module": "Agora.AlienMath.StrassenVerified",
+      "tier": "tier2_shattered",
+      "status": "earth_gapped",
+      "build_ok": true,
+      "sorry_count": 2,
+      "axiom_count": 5,
+      "axiom_names": [
+        "MatrixCost",
+        "MatrixCost_lower_bound",
+        "BorderRank",
+        "holographic_tensor_projection",
+        "schonhage_tau_theorem"
+      ],
+      "sorry_locations": [
+        {
+          "line": 173,
+          "content": "sorry"
+        },
+        {
+          "line": 183,
+          "content": "sorry -- NARROWED: Archimedean + Nat\u2194\u211d coercion arithmetic"
+        }
+      ],
+      "build_time_ms": 1735,
+      "error_messages": []
+    },
+    {
+      "module": "Agora.AlienMath.ChargingMatrix",
+      "tier": "tier2_shattered",
+      "status": "axiom_blocked",
+      "build_ok": true,
+      "sorry_count": 0,
+      "axiom_count": 2,
+      "axiom_names": [
+        "crossing_number",
+        "holographic_border_rank_bound"
+      ],
+      "sorry_locations": [],
+      "build_time_ms": 1752,
+      "error_messages": []
+    },
+    {
+      "module": "Agora.AlienMath.ExactRationalWitness",
+      "tier": "tier3_axiomatic",
+      "status": "axiom_blocked",
+      "build_ok": true,
+      "sorry_count": 0,
+      "axiom_count": 1,
+      "axiom_names": [
+        "W_alien_base_pos"
+      ],
+      "sorry_locations": [],
+      "build_time_ms": 1793,
+      "error_messages": []
+    },
+    {
+      "module": "Agora.AlienMath.SliceConcatenation",
+      "tier": "tier3_axiomatic",
+      "status": "axiom_blocked",
+      "build_ok": true,
+      "sorry_count": 0,
+      "axiom_count": 1,
+      "axiom_names": [
+        "chi"
+      ],
+      "sorry_locations": [],
+      "build_time_ms": 1804,
+      "error_messages": []
+    },
+    {
+      "module": "Agora.AlienMath.TensorDeformations",
+      "tier": "tier3_axiomatic",
+      "status": "verified",
+      "build_ok": true,
+      "sorry_count": 0,
+      "axiom_count": 0,
+      "axiom_names": [],
+      "sorry_locations": [],
+      "build_time_ms": 1316,
+      "error_messages": []
+    },
+    {
+      "module": "Agora.diff_basis_optimal_10000",
+      "tier": "tier3_axiomatic",
+      "status": "sorry_blocked",
+      "build_ok": true,
+      "sorry_count": 2,
+      "axiom_count": 0,
+      "axiom_names": [],
+      "sorry_locations": [
+        {
+          "line": 72,
+          "content": "noncomputable def n (S : Finset \u2124) : \u2115 := sorry"
+        },
+        {
+          "line": 96,
+          "content": "sorry"
+        }
+      ],
+      "build_time_ms": 1826,
+      "error_messages": []
+    },
+    {
+      "module": "Agora.crossing_number_kn",
+      "tier": "tier3_axiomatic",
+      "status": "earth_gapped",
+      "build_ok": true,
+      "sorry_count": 1,
+      "axiom_count": 2,
+      "axiom_names": [
+        "cr_K_mono",
+        "crossing_double_counting_bound"
+      ],
+      "sorry_locations": [
+        {
+          "line": 66,
+          "content": "sorry"
+        }
+      ],
+      "build_time_ms": 1793,
+      "error_messages": []
+    },
+    {
+      "module": "Agora.E37BSD_v6_blueprint",
+      "tier": "tier4_blueprints",
+      "status": "earth_gapped",
+      "build_ok": true,
+      "sorry_count": 7,
+      "axiom_count": 10,
+      "axiom_names": [
+        "Point",
+        "torsionSubgroup",
+        "canonicalHeight",
+        "SelmerGroup",
+        "algebraicRank",
+        "TateShafarevich",
+        "TateShafarevich.Finite",
+        "analyticRank",
+        "P0",
+        "E37_tors_trivial"
+      ],
+      "sorry_locations": [
+        {
+          "line": 25,
+          "content": "noncomputable instance (E : EllipticCurve \u211d) (n : \u2115) : AddCommMonoid (SelmerGroup E n) := sorry"
+        },
+        {
+          "line": 26,
+          "content": "noncomputable instance (E : EllipticCurve \u211d) (n : \u2115) : Module (ZMod n) (SelmerGroup E n) := sorry"
+        },
+        {
+          "line": 48,
+          "content": "sorry -- Pending Neron-Tate local heights integration"
+        },
+        {
+          "line": 53,
+          "content": "sorry -- Proved via global 2-descent exact sequences"
+        },
+        {
+          "line": 58,
+          "content": "\u00b7 sorry -- Upper bound: Rank <= Selmer rank <= 1"
+        },
+        {
+          "line": 59,
+          "content": "\u00b7 sorry -- Lower bound: Rank >= 1 (P0 has infinite order)"
+        },
+        {
+          "line": 63,
+          "content": "sorry -- Awaiting Kolyvagin Euler systems formalization"
+        }
+      ],
+      "build_time_ms": 1600,
+      "error_messages": []
+    },
+    {
+      "module": "Agora.cmi_millennium_blueprints",
+      "tier": "tier4_blueprints",
+      "status": "earth_gapped",
+      "build_ok": true,
+      "sorry_count": 11,
+      "axiom_count": 4,
+      "axiom_names": [
+        "\ud835\udd32",
+        "riemannZeta",
+        "hilbert_polya_operator_exists",
+        "one_way_functions_exist_iff_p_neq_np"
+      ],
+      "sorry_locations": [
+        {
+          "line": 27,
+          "content": "sorry -- Active Riemann Hypothesis investigation path"
+        },
+        {
+          "line": 40,
+          "content": "def ComplexityClassP : Set (Set String) := sorry"
+        },
+        {
+          "line": 41,
+          "content": "def ComplexityClassNP : Set (Set String) := sorry"
+        },
+        {
+          "line": 46,
+          "content": "sorry -- Awaiting complexity-theoretic algebra expansions"
+        },
+        {
+          "line": 57,
+          "content": "def fluid_velocity_3d (u : \ud835\udd32 \u2192 \ud835\udd32) : Prop := sorry"
+        },
+        {
+          "line": 62,
+          "content": "sorry -- Awaiting PDE boundary layer convergence proofs"
+        },
+        {
+          "line": 74,
+          "content": "sorry -- Verified for rank 0 and 1 by Gross-Zagier and Kolyvagin"
+        },
+        {
+          "line": 78,
+          "content": "sorry -- Bounds proved using Kolyvagin's Euler systems"
+        },
+        {
+          "line": 88,
+          "content": "sorry -- Awaiting general cycle mapping frameworks"
+        },
+        {
+          "line": 98,
+          "content": "sorry -- Awaiting quantum gauge field theory axioms"
+        },
+        {
+          "line": 108,
+          "content": "sorry -- Solved by Grigori Perelman using Ricci Flow with surgery"
+        }
+      ],
+      "build_time_ms": 1750,
+      "error_messages": []
+    },
+    {
+      "module": "Agora.FormalizationDebt",
+      "tier": "tier5_infra",
+      "status": "verified",
+      "build_ok": true,
+      "sorry_count": 0,
+      "axiom_count": 0,
+      "axiom_names": [],
+      "sorry_locations": [],
+      "build_time_ms": 1178,
+      "error_messages": []
+    }
+  ]
+}

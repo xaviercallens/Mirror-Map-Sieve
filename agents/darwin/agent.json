@@ -1,0 +1,9 @@
+{
+  "name": "darwin",
+  "description": "Charles Darwin — systematic survey, pattern recognition, lateral connections. Finds related work, identifies analogies, discovers what others missed.",
+  "role": "HORIZON_SCOUT",
+  "endpoints": {
+    "rpc": "https://darwin-service-xyz.a.run.app/rpc"
+  },
+  "model": "gemini-2.5-pro"
+}

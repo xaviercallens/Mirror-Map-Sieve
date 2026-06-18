@@ -1,0 +1,15 @@
+{
+  "pid": "tracy_widom_f2_variance",
+  "domain": "mathematical_physics",
+  "v13_status": "CB_TRIPPED",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 3,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.15,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 137.15893104199495,
+  "conjecture_statement": "Let $\\\\mu_1, \\\\sigma_1^2$ be the mean and variance of the GUE Tracy-Widom distribution $F_1$, and let $\\\\mu_2, \\\\sigma_2^2$ be the mean and variance of the GOE Tracy-Widom distribution $F_2$. Then these quantities are related by the linear identity:\\\\n\\\\[ \\\\sigma_2^2 + 2\\\\mu_2 + \\\\sigma_1^2 = 0 \\\\]",
+  "lean4_sketch": "import Mathlib.Analysis.SpecialFunctions.Integrals\nimport Mathlib.Probability.Theory.Variance\n\n-- We axiomatically define the Tracy-Widom distributions as they are not yet in Mathlib.\n-- A full definition would require the theory of Fredholm determinants of Airy kernel operators.\naxiom tracyWidomF1 : Measure \u211d\naxiom tracyWidomF2 : Measure \u211d\n\n-- We assume they are probability measures with finite second moments.\n@[instance] axiom F1_isProb : IsProbabilityMeasure tracyWidomF1\n@[instance] axiom F2_isProb : IsProbabilityMeasure tracyWidomF2\naxiom F1_finite_moment_2 : (\u222b\u207b x, \u2016x^2\u2016\u208a \u2202tracyWidomF1) < \u22a4\naxiom F2_finite_moment_2 : (\u222b\u207b x, \u2016x^2\u2016\u208a \u2202tracyWidomF2) < \u22a4\n\n/-- The conjecture relating the mean and variance of the F1 (GUE) and F2 (GOE)\n    Tracy-Widom distributions. -/\ntheorem tracy_widom_mom",
+  "gap_probability_map": {}
+}

@@ -1,0 +1,15 @@
+{
+  "pid": "saw_square_lattice",
+  "domain": "stat_mechanics",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.65,
+  "sorry_count": 0,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.15,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 222.7869979590032,
+  "conjecture_statement": "{'conjecture_generator': ConjectureResult(conjectures=[Conjecture(statement='Let $c_n$ be the number of $n$-step self-avoiding walks (SAWs) on the square lattice $\\\\mathbb{Z}^2$, and let $c_n^{+}$ be the number of such walks constrained to the half-plane $x \\\\ge 0$. Let $\\\\langle |w_n|^2 \\\\rangle$ denote the mean squared end-to-end distance of $n$-step SAWs. Assuming the existence of the connective constant $\\\\mu_2$ and the critical exponents $\\\\gamma, \\\\gamma_1, \\\\nu \\\\in \\\\mathbb{R}$ governing",
+  "lean4_sketch": "",
+  "gap_probability_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "model_name": "SymBrain-v11-Dieudonne-Edge-8B",
+  "quantization": "INT4_AWQ",
+  "vram_allocated_gb": 8,
+  "dopaminergic_rpe_enabled": true,
+  "hippocampal_replay_buffer_size": 256,
+  "max_latency_ms": 120.0,
+  "intended_hardware": "Nvidia Jetson Orin / Apple Silicon UMA"
+}

@@ -1,0 +1,15 @@
+{
+  "pid": "lattice_packing_dim10",
+  "domain": "discrete_geometry",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 1,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.2,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 101.01503858299111,
+  "conjecture_statement": "Let $\\\\Lambda \\\\subset \\\\mathbb{R}^{10}$ be a lattice. Let $\\\\mu(\\\\Lambda) = \\\\min_{\\\\mathbf{v} \\\\in \\\\Lambda \\\\setminus \\\\{0\\\\}} \\\\|\\\\mathbf{v}\\\\|^2$ be its minimal squared norm and $k(\\\\Lambda) = |\\\\{\\\\mathbf{v} \\\\in \\\\Lambda : \\\\|\\\\mathbf{v}\\\\|^2 = \\\\mu(\\\\Lambda)\\\\}|$ be its kissing number. If $\\\\mu(\\\\Lambda) = 4$ and $k(\\\\Lambda) = 336$, then the determinant of any Gram matrix for $\\\\Lambda$, denoted $\\\\det(G_\\\\Lambda)$, satisfies $\\\\det(G_\\\\Lambda) \\\\ge 576$. Furthermore, equality $\\\\det(G_",
+  "lean4_sketch": "import Mathlib.Analysis.InnerProductSpace.Lattice\nimport Mathlib.LinearAlgebra.Gram\n\nopen Real InnerProductSpace\n\n-- Using Fin 10 for the 10-dimensional Euclidean space\nabbrev E10 := EuclideanSpace \u211d (Fin 10)\n\n-- Define minimal squared norm for a lattice \u039b\nnoncomputable def minNormSq (\u039b : AddSubgroup E10) : \u211d :=\n  inf { \u2016v\u2016^2 | (v : E10) \u2208 \u039b \u2227 v \u2260 0 }\n\n-- Define kissing number for a lattice \u039b\n-- Assumes the set of minimal vectors is finite, which is true for lattices.\nnoncomputable def kissingNumber (\u039b : AddSubgroup E10) : \u2115 :=\n  Nat.card { v : \u039b | \u2016v\u2016^2 = minNormSq \u039b }\n\n-- Define what it means for two lattices to be isometric\ndef AreIsometric (\u039b\u2081 \u039b\u2082 : AddSubgroup E10) : Prop :=\n  \u2203 (f : E10 \u2243\u2097\u1d62[\u211d] E10), f '' (\u039b\u2081 : Set E10) = (\u039b\u2082 : Set E10)\n\n-- A placeholder for the specific Korkine-Zolota",
+  "gap_probability_map": {}
+}

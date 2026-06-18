@@ -1,0 +1,31 @@
+{
+  "pid": "w5_watson_integral",
+  "domain": "stat_mechanics",
+  "v16_verdict": "REFUTED",
+  "v16_confidence": 0.0,
+  "sorry_count": 3,
+  "sorry_count_after_archimedes": 3,
+  "sorry_count_final": 1,
+  "archimedes_reduction": 0,
+  "pre_decomp_lemmas": 3,
+  "sharding_tier": "",
+  "sharding_region": "",
+  "hypotheses_applied": [
+    "H1_PRE_DECOMP_3L"
+  ],
+  "conjecture_statement": "Let the integral $I$ be defined as $I = \\frac{1}{\\pi^3} \\int_{0}^{\\pi} \\int_{0}^{\\pi} \\int_{0}^{\\pi} \\frac{dx\\,dy\\,dz}{1 - \\cos(x)\\cos(y)\\cos(z)}$. The integral evaluates to $I = \\frac{\\Gamma(1/4)^4}{4\\pi^3}$, where $\\Gamma$ is the Euler Gamma function.",
+  "lean4_sketch": "import Analysis.SpecialFunctions.Gamma.Basic\nimport Analysis.SpecialFunctions.Trigonometric.Basic\nimport MeasureTheory.Integral.Bochner\nimport Data.Real.Pi\n\nopen Real MeasureTheory Set Filter Topology\n\n-- In Mathlib, the complete elliptic integral of the first kind is not yet fully developed.\n-- We postulate its definition and key properties for this sketch.\nnoncomputable def ellipticK (k : \u211d) : \u211d :=\n  \u222b t in 0..(\u03c0/2), (1 - k^2 * (sin t)^2)^(-1/2)\n\ntheorem w5_watson_integral :\n  (1 / (\u03c0^3)) * \u222b x in 0..\u03c0, \u222b y in 0..\u03c0, \u222b z in 0..\u03c0, (1 - (cos x) * (cos y) * (cos z))\u207b\u00b9 =\n  (Gamma (1/4))^4 / (4 * \u03c0^3) := by\n  -- Let W be the triple integral without the 1/\u03c0\u00b3 prefactor.\n  let W := \u222b x in 0..\u03c0, \u222b y in 0..\u03c0, \u222b z in 0..\u03c0, (1 - (cos x) * (cos y) * (cos z))\u207b\u00b9\n  -- The main goal is to show W = \u0393(1/4)\u2074 / 4.\n  suffices h_main : W = (Gamma (1/4))^4 / 4 by\n    field_simp [h_main, pi_ne_zero]\n\n  -- Sub-Lemma 2 (h_pf): Establish the partition function integral representation.\n  -- This step reduces the triple integral to a double integral by evaluating the innermost integral.\n  -- The integral \u222b_0^\u03c0 dx / (1 - k cos x) = \u03c0 / \u221a(1-k\u00b2) for k = cos y * cos z.\n  have h_pf : W = \u222b y in 0..\u03c0, \u222b z in 0..\u03c0, \u03c0 / (Real.sqrt (1 - (cos y)^2 * (cos z)^2)) := by\n    -- This requires Fubini's theorem to swap integrals and a known result for the arccotangent integral.\n    -- For now, we assume this reduction is proven.\n    sorry\n\n  -- Sub-Lemma 1 (h_walk): Prove the lattice walk generates a recurrence.\n  -- Metaphorically, this step reduces the problem's dimension, recasting the double integral\n  -- as a single integral of the elliptic function K. This is akin to a recurrence relation's simplification.\n  -- The inner integral \u222b_0^\u03c0 dz / \u221a(1 - k\u00b2 cos\u00b2z) is identified as 2K(k) for k = cos y.\n  have h_walk : \u222b y in 0..\u03c0, \u222b z in 0..\u03c0, \u03c0 / (Real.sqrt (1 - (cos y)^2 * (cos z)^2)) =\n               4 * \u03c0 * \u222b k in 0..1, (ellipticK k) / Real.sqrt (1 - k^2) := by\n    -- Proof requires recognizing the inner integ",
+  "lean4_sketch_archimedes": "import Analysis.SpecialFunctions.Gamma.Basic\nimport Analysis.SpecialFunctions.Trigonometric.Basic\nimport MeasureTheory.Integral.Bochner\nimport Data.Real.Pi\n\nopen Real MeasureTheory Set Filter Topology\n\n-- In Mathlib, the complete elliptic integral of the first kind is not yet fully developed.\n-- We postulate its definition and key properties for this sketch.\nnoncomputable def ellipticK (k : \u211d) : \u211d :=\n  \u222b t in 0..(\u03c0/2), (1 - k^2 * (sin t)^2)^(-1/2)\n\ntheorem w5_watson_integral :\n  (1 / (\u03c0^3)) * \u222b x in 0..\u03c0, \u222b y in 0..\u03c0, \u222b z in 0..\u03c0, (1 - (cos x) * (cos y) * (cos z))\u207b\u00b9 =\n  (Gamma (1/4))^4 / (4 * \u03c0^3) := by\n  -- Let W be the triple integral without the 1/\u03c0\u00b3 prefactor.\n  let W := \u222b x in 0..\u03c0, \u222b y in 0..\u03c0, \u222b z in 0..\u03c0, (1 - (cos x) * (cos y) * (cos z))\u207b\u00b9\n  -- The main goal is to show W = \u0393(1/4)\u2074 / 4.\n  suffices h_main : W = (Gamma (1/4))^4 / 4 by\n    field_simp [h_main, pi_ne_zero]\n\n  -- Sub-Lemma 2 (h_pf): Establish the partition function integral representation.\n  -- This step reduces the triple integral to a double integral by evaluating the innermost integral.\n  -- The integral \u222b_0^\u03c0 dx / (1 - k cos x) = \u03c0 / \u221a(1-k\u00b2) for k = cos y * cos z.\n  have h_pf : W = \u222b y in 0..\u03c0, \u222b z in 0..\u03c0, \u03c0 / (Real.sqrt (1 - (cos y)^2 * (cos z)^2)) := by\n    -- This requires Fubini's theorem to swap integrals and a known result for the arccotangent integral.\n    -- For now, we assume this reduction is proven.\n    sorry\n\n  -- Sub-Lemma 1 (h_walk): Prove the lattice walk generates a recurrence.\n  -- Metaphorically, this step reduces the problem's dimension, recasting the double integral\n  -- as a single integral of the elliptic function K. This is akin to a recurrence relation's simplification.\n  -- The inner integral \u222b_0^\u03c0 dz / \u221a(1 - k\u00b2 cos\u00b2z) is identified as 2K(k) for k = cos y.\n  have h_walk : \u222b y in 0..\u03c0, \u222b z in 0..\u03c0, \u03c0 / (Real.sqrt (1 - (cos y)^2 * (cos z)^2)) =\n               4 * \u03c0 * \u222b k in 0..1, (ellipticK k) / Real.sqrt (1 - k^2) := by\n    -- Proof requires recognizing the inner integ",
+  "research_brief": "",
+  "v15_sorry": 2,
+  "domain_prior": 0.3,
+  "gap_probability_map": {},
+  "sorry_guillotine_applied": false,
+  "cost_usd": 0.42,
+  "elapsed_s": 122.74,
+  "problem_id": "w5_watson_integral",
+  "status": "FAILED (UNRECOVERABLE)",
+  "galileo_valid": false,
+  "galileo_message": "Failed to extract python closed form",
+  "galileo_diff": "N/A"
+}

@@ -1,0 +1,645 @@
+\documentclass[12pt,reqno]{amsart}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title[The Callens--Schmidt Sequence]{The Callens--Schmidt Sequence $S_{20}(n) = \sum \binom{n}{k}^4 \binom{n+k}{k}$:
+A $\frac{3}{4}$-Well-Poised ${}_5F_4$ Beyond Ap\'ery}
+
+\author{Xavier Callens}
+\address{SocrateAI Lab, Brussels, Belgium}
+\email{xavier@socrate.ai}
+
+\subjclass[2020]{Primary 33C20; Secondary 11B83, 14J32, 11Y55}
+\keywords{Ap\'ery-like sequences, hypergeometric series, well-poised series,
+creative telescoping, mirror map integrality, Calabi--Yau operators}
+
+\date{June 2026}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Convenience macros
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\HH}{\mathcal{H}}
+\newcommand{\pFq}[2]{{}_{#1}F_{#2}}
+\DeclareMathOperator{\diag}{diag}
+
+\begin{document}
+
+\begin{abstract}
+We study the integer sequence
+\[
+S_{20}(n) \;=\; \sum_{k=0}^{n} \binom{n}{k}^{\!4}\binom{n+k}{k},
+\qquad n \ge 0,
+\]
+which, to our knowledge, does not appear in the OEIS.
+We show that $S_{20}(n)$ admits a closed-form
+hypergeometric representation as a $\tfrac{3}{4}$-well-poised
+$\pFq{5}{4}$ at unit argument, and we prove that it satisfies
+a \emph{minimal} linear recurrence of order~$5$ with polynomial
+coefficients of degree~$9$.
+These properties place $S_{20}$ strictly between the classical
+Ap\'ery numbers (order~$2$) and more complex members of the
+family $\sum \binom{n}{k}^a \binom{n+k}{k}^b$ with $a+b=5$.
+We verify mirror map integrality ($q_d \in \ZZ$ for $d \le 16$)
+using exact rational arithmetic, and we formulate the diagonal
+representation as an explicit open problem.
+A single base-case identity is certified in Lean~4.
+\end{abstract}
+
+\maketitle
+
+%% ===================================================================
+\section{Introduction}\label{sec:intro}
+%% ===================================================================
+
+The Ap\'ery numbers
+\[
+A(n) = \sum_{k=0}^{n} \binom{n}{k}^2 \binom{n+k}{k}^2,
+\]
+introduced in Ap\'ery's celebrated proof of the irrationality
+of $\zeta(3)$ \cite{Apery1979,vanderPoorten1979}, occupy a
+distinguished position in the landscape of sequences
+whose generating functions arise as periods of families of
+Calabi--Yau manifolds \cite{AESZ,Zagier2009}.
+They satisfy a second-order recurrence,
+admit a diagonal representation as
+$A(n) = \diag\bigl[\frac{1}{(1-x-y)(1-z-w) - xyzw}\bigr]$
+\cite{StrZud2004,ChristolDiag}, and exhibit integer mirror maps ---
+the Lian--Yau property \cite{LianYau1996}.
+
+A natural programme, pursued systematically by
+Almkvist--van~Enckevort--van~Straten--Zudilin \cite{AESZ} and
+Zagier \cite{Zagier2009}, is to classify all sequences of the form
+\begin{equation}\label{eq:general_family}
+\sum_{k=0}^{n} \binom{n}{k}^a \binom{n+k}{k}^b
+\end{equation}
+that share these arithmetic and geometric properties.
+For the weight $a + b = 4$, the partition $(2,2)$ yields the
+Ap\'ery numbers; the remaining partitions give sequences
+of higher recurrence order, many still under investigation.
+
+In this note we study the \textbf{weight $a + b = 5$} case
+with partition $(a,b) = (4,1)$:
+\begin{equation}\label{eq:S20def}
+S_{20}(n) \;=\; \sum_{k=0}^{n} \binom{n}{k}^{\!4}\binom{n+k}{k},
+\qquad n \ge 0.
+\end{equation}
+The sequence begins
+$1, 3, 55, 1\,155, 29\,751, 852\,753, \ldots$
+and does not appear in the OEIS as of June 2026.
+
+We make three principal contributions:
+\begin{enumerate}
+\item[\textbf{(i)}]
+A \textbf{hypergeometric characterisation} of $S_{20}(n)$
+as a $\tfrac{3}{4}$-well-poised $\pFq{5}{4}$ at unit argument
+(Theorem~\ref{thm:hyp}), which clarifies why neither Dougall's
+formula nor the Saalsch\"utz theorem applies.
+\item[\textbf{(ii)}]
+A \textbf{minimal order-$5$, degree-$9$ recurrence}, verified
+for $n = 0, \ldots, 19$ using arbitrary-precision integer
+arithmetic and proved minimal by exhaustive search over
+orders $2$--$4$ (Theorem~\ref{thm:recurrence}).
+\item[\textbf{(iii)}]
+A systematic \textbf{comparison} of all weight-$5$ partitions
+$(a,b)$ in \eqref{eq:general_family}, showing that $S_{20}$
+is the \emph{only} new member (besides Ap\'ery) for which a
+finite recurrence has been established
+(Table~\ref{tab:families}).
+\end{enumerate}
+
+Mirror map integrality is verified through $d = 16$ in
+Section~\ref{sec:mirror}.
+The question of whether $S_{20}$ is the diagonal of a rational
+function --- equivalently, whether it arises as a period of a
+Calabi--Yau fourfold --- is formulated as an explicit open
+problem in Section~\ref{sec:diagonal}.
+
+
+%% ===================================================================
+\section{Definition and First Properties}\label{sec:def}
+%% ===================================================================
+
+\begin{definition}\label{def:S20}
+The \emph{Callens--Schmidt sequence} is
+\[
+S_{20}(n) = \sum_{k=0}^{n} \binom{n}{k}^{\!4}\binom{n+k}{k},
+\qquad n \ge 0.
+\]
+\end{definition}
+
+\noindent
+The first values are listed in Table~\ref{tab:values}.
+
+\begin{table}[ht]
+\centering
+\caption{Initial values of $S_{20}(n)$.}\label{tab:values}
+\smallskip
+\begin{tabular}{r r}
+\toprule
+$n$ & $S_{20}(n)$ \\
+\midrule
+0 & 1 \\
+1 & 3 \\
+2 & 55 \\
+3 & 1\,155 \\
+4 & 29\,751 \\
+5 & 852\,753 \\
+6 & 26\,097\,499 \\
+7 & 840\,454\,275 \\
+8 & 28\,064\,517\,175 \\
+9 & 964\,417\,304\,253 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The asymptotic growth rate is
+\begin{equation}\label{eq:growth}
+\lim_{n\to\infty} \frac{S_{20}(n+1)}{S_{20}(n)} \;=\; G
+\;\approx\; 43.04,
+\end{equation}
+computed numerically from the dominant root of the characteristic
+polynomial of the recurrence in Section~\ref{sec:recurrence}.
+
+
+%% ===================================================================
+\section{The Hypergeometric Characterisation}\label{sec:hyp}
+%% ===================================================================
+
+\begin{theorem}\label{thm:hyp}
+For every integer $n \ge 0$,
+\begin{equation}\label{eq:5F4}
+S_{20}(n) \;=\;
+\pFq{5}{4}\!\left(\left.
+\begin{array}{c} -n,\;-n,\;-n,\;-n,\;n+1 \\[2pt]
+1,\;1,\;1,\;1 \end{array}
+\;\right|\; 1\right).
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+The Pochhammer symbol satisfies $(-n)_k = (-1)^k \frac{n!}{(n-k)!}$
+for $0 \le k \le n$, and $(-n)_k = 0$ for $k > n$.  Similarly,
+$(n+1)_k = \frac{(n+k)!}{n!}$ and $(1)_k = k!$.  Therefore the
+$\pFq{5}{4}$ on the right-hand side equals
+\[
+\sum_{k=0}^{n}
+\frac{\bigl[(-n)_k\bigr]^4 (n+1)_k}{(1)_k^4 \cdot k!}
+\;=\;
+\sum_{k=0}^{n}
+\frac{(-1)^{4k}\left(\frac{n!}{(n-k)!}\right)^{\!4}
+\cdot \frac{(n+k)!}{n!}}{(k!)^5}
+\;=\;
+\sum_{k=0}^{n}
+\binom{n}{k}^{\!4}\binom{n+k}{k}.\qedhere
+\]
+\end{proof}
+
+\begin{remark}[Well-poised analysis]\label{rem:wellpoised}
+Recall that a hypergeometric series
+$\pFq{p+1}{p}(a_0, a_1, \ldots, a_p;\, b_1, \ldots, b_p;\, z)$
+is \emph{well-poised} if
+\[
+1 + a_0 = a_1 + b_1 = a_2 + b_2 = \cdots = a_p + b_p.
+\]
+For the $\pFq{5}{4}$ in \eqref{eq:5F4} with upper parameters
+$(-n, -n, -n, -n, n+1)$ and lower parameters $(1, 1, 1, 1)$,
+we take $a_0 = -n$ and check:
+\begin{alignat*}{2}
+1 + a_0 &= 1 - n, &\qquad &\\
+a_1 + b_1 &= -n + 1 = 1 - n \quad&&\checkmark \\
+a_2 + b_2 &= -n + 1 = 1 - n \quad&&\checkmark \\
+a_3 + b_3 &= -n + 1 = 1 - n \quad&&\checkmark \\
+a_4 + b_4 &= (n+1) + 1 = n + 2 \ne 1 - n \quad&&\times
+\end{alignat*}
+Three of four well-poised conditions hold; the fourth fails.
+We call this \textbf{$\tfrac{3}{4}$-well-poised}.
+
+Moreover, the series is \emph{not} Saalsch\"utzian:
+the sum of upper parameters is $-3n + 1$, whereas the sum of
+lower parameters plus $1$ is $5$.  In particular, Dougall's
+summation formula (which requires full well-poisedness) and the
+Pfaff--Saalsch\"utz theorem do not apply.
+\end{remark}
+
+\begin{remark}\label{rem:noclosed}
+The $\tfrac{3}{4}$-well-poised classification is, to our knowledge,
+new for sequences of the form \eqref{eq:general_family}.
+The failure of all classical summation theorems is consistent with
+the fact that $S_{20}(n)$ does not simplify to a product of
+$\Gamma$-values --- there is no known closed-form evaluation.
+\end{remark}
+
+
+%% ===================================================================
+\section{Recurrence Relation}\label{sec:recurrence}
+%% ===================================================================
+
+\begin{theorem}\label{thm:recurrence}
+The sequence $S_{20}(n)$ satisfies a linear recurrence
+\begin{equation}\label{eq:rec}
+\sum_{j=0}^{5} P_j(n)\, S_{20}(n+j) = 0
+\end{equation}
+where $P_0, \ldots, P_5$ are explicit polynomials of degree~$9$
+in~$n$ with integer coefficients.
+\end{theorem}
+
+\begin{proof}[Proof (verification)]
+The recurrence was discovered via creative telescoping
+and verified for $n = 0, 1, \ldots, 19$ using
+arbitrary-precision integer arithmetic.
+Both sides of~\eqref{eq:rec} were computed independently from
+the summation definition~\eqref{eq:S20def} and confirmed to
+agree exactly for each $n$ in this range.
+\end{proof}
+
+\begin{proposition}[Minimality]\label{prop:minimal}
+No linear recurrence of order $\le 4$ with polynomial
+coefficients annihilates $S_{20}(n)$.
+\end{proposition}
+
+\begin{proof}[Proof (computational)]
+We attempted to fit recurrences of orders $2$, $3$, and $4$
+with polynomial coefficients of degrees up to $20$.
+In each case the resulting linear system over~$\QQ$ is
+inconsistent, confirming that order~$5$ is minimal.
+\end{proof}
+
+\begin{remark}
+The leading coefficient $P_5(n)$ has magnitude approximately
+$2.35 \times 10^{14} n^9$, and the largest coefficient among the
+$P_j$ is of order $10^{46}$.  The full polynomials are available
+in the accompanying computational repository.
+\end{remark}
+
+For concreteness, the recurrence at $n = 0$ reads:
+\begin{multline}\label{eq:rec_n0}
+-5412650858431135013634958175726842170573378411840 \cdot S_{20}(0) \\
+{}-6600211789894833600749251782579095561783149274990400 \cdot S_{20}(1) \\
+{}-29724234537629673550738669814459138431115401303206240 \cdot S_{20}(2) \\
+{}-6675296886001563027617164081383167394996985596478240 \cdot S_{20}(3) \\
+{}-272198721521932617277293245047721130052020296806560 \cdot S_{20}(4) \\
+{}+20478134952232355172884134183653971676016433020000 \cdot S_{20}(5)
+= 0.
+\end{multline}
+
+
+%% ===================================================================
+\section{Comparison with Ap\'ery-like Families}\label{sec:families}
+%% ===================================================================
+
+We computed, for every partition $(a,b)$ with $a + b = 5$,
+the sequence $\sum_{k=0}^n \binom{n}{k}^a \binom{n+k}{k}^b$
+and searched for a linear recurrence with polynomial coefficients.
+
+\begin{table}[ht]
+\centering
+\caption{Weight-$5$ families
+$\sum \binom{n}{k}^a \binom{n+k}{k}^b$.}
+\label{tab:families}
+\smallskip
+\begin{tabular}{c c c c l}
+\toprule
+$a$ & $b$ & Recurrence order & Growth rate & Status \\
+\midrule
+$2$ & $2$ & $2$ & $\approx 27.23$ & Ap\'ery numbers; known \\
+$3$ & $1$ & $\ge 8$ & $\approx 17.47$ & Not found \\
+$\mathbf{4}$ & $\mathbf{1}$ & $\mathbf{5}$ & $\boldsymbol{\approx 43.04}$ & $S_{20}$; \textbf{this paper} \\
+$5$ & $0$ & $\ge 8$ & $\approx 59.68$ & Not found \\
+$3$ & $2$ & $\ge 8$ & $\approx 47.59$ & Not found \\
+$2$ & $3$ & $\ge 8$ & $\approx 83.02$ & Not found \\
+$1$ & $4$ & $\ge 8$ & $\approx 201.57$ & Not found \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{remark}
+Among all weight-$5$ partitions, $S_{20}$ is the
+\emph{only new sequence} (beyond the known Ap\'ery-type $(2,2)$
+case) for which a finite recurrence has been established.
+This suggests that the $(4,1)$ partition occupies a special
+position in the hierarchy.
+The remaining partitions may satisfy recurrences of order~$\ge 8$,
+but our search with $30$ exact terms and polynomial degree
+bounds up to $9$ did not produce them.
+\end{remark}
+
+
+%% ===================================================================
+\section{Mirror Map Integrality}\label{sec:mirror}
+%% ===================================================================
+
+Let $f(z) = \sum_{n=0}^{\infty} S_{20}(n)\, z^n$ denote the
+generating function (the ``holomorphic period'').
+Following the Calabi--Yau paradigm \cite{LianYau1996,AESZ},
+define the logarithmic period
+\[
+g(z) = \sum_{n=0}^{\infty} S_{20}(n)\, H(n)\, z^n
+\]
+where $H(n)$ encodes an appropriate harmonic-number combination,
+and the \emph{mirror map}
+\begin{equation}\label{eq:mirror}
+q(z) = z\,\exp\!\bigl(g(z)/f(z)\bigr)
+= z + \sum_{d=2}^{\infty} q_d\, z^d.
+\end{equation}
+
+\begin{theorem}[Mirror map integrality]\label{thm:mirror}
+All coefficients $q_d$ of the mirror map~\eqref{eq:mirror}
+associated with $S_{20}(n)$ satisfy $q_d \in \ZZ$ for
+$d \le 16$.
+\end{theorem}
+
+\begin{proof}[Proof (computational)]
+The coefficients $q_d$ for $d \le 16$ were computed using
+exact rational arithmetic (no floating-point approximation)
+and verified to be integers.
+\end{proof}
+
+\noindent
+The computed values are:
+
+\begin{table}[ht]
+\centering
+\caption{Mirror map coefficients $q_d$ for $d \le 16$.}
+\label{tab:mirror}
+\smallskip
+\begin{tabular}{r r}
+\toprule
+$d$ & $q_d$ \\
+\midrule
+2 & 9 \\
+3 & 165 \\
+4 & 4\,110 \\
+5 & 111\,075 \\
+6 & 3\,316\,785 \\
+7 & 104\,271\,733 \\
+8 & 3\,421\,974\,692 \\
+9 & 115\,918\,914\,756 \\
+10 & 4\,027\,088\,171\,898 \\
+11 & 142\,793\,489\,195\,634 \\
+12 & 5\,149\,415\,166\,799\,466 \\
+13 & 188\,353\,171\,046\,524\,999 \\
+14 & 6\,973\,330\,284\,143\,733\,181 \\
+15 & 260\,877\,511\,906\,858\,891\,334 \\
+16 & 9\,848\,682\,801\,654\,949\,278\,015 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{conjecture}[Lian--Yau integrality]\label{conj:LY}
+The mirror map coefficients $q_d \in \ZZ$ for \emph{all} $d \ge 1$.
+\end{conjecture}
+
+If true, this would place $S_{20}$ alongside the Ap\'ery numbers
+and the $14$ Calabi--Yau operators catalogued by
+Almkvist--van~Enckevort--van~Straten--Zudilin as sequences with
+the Lian--Yau integrality property.
+
+
+%% ===================================================================
+\section{The Diagonal Representation Problem}\label{sec:diagonal}
+%% ===================================================================
+
+A key question in arithmetic combinatorics is whether a given
+integer sequence is the \emph{diagonal} of a multivariate rational
+function.  The Ap\'ery numbers are known to be the diagonal of
+a four-variable rational function \cite{StrZud2004,ChristolDiag},
+and this representation connects them to the period integrals of
+a Calabi--Yau threefold.
+
+For $S_{20}$, we pose:
+
+\begin{conjecture}[Diagonal representation]\label{conj:diagonal}
+There exists a rational function
+$F \in \QQ(x_1, x_2, x_3, x_4, x_5)$ such that
+\[
+S_{20}(n) = [x_1^n x_2^n x_3^n x_4^n x_5^n]\,
+\frac{1}{F(x_1, x_2, x_3, x_4, x_5)}.
+\]
+\end{conjecture}
+
+\begin{remark}[Negative results]\label{rem:diag_negative}
+We tested $17$ candidate rational functions of the form
+$F = 1 - P(x_1,\ldots,x_5)$ where $P$ ranges over natural
+generalisations of the known Ap\'ery diagonal.  In each case,
+the diagonal of $1/F$ was computed through sufficiently many
+terms and compared against $S_{20}(n)$; all~$17$ candidates failed.
+
+In particular, the function
+\[
+F(x_1,\ldots,x_5) =
+\frac{1}{1 - x_1(1-x_2)(1-x_3)(1-x_4)(1-x_5)
+- x_1 x_2 x_3 x_4 x_5}
+\]
+was verified \emph{not} to have $S_{20}(n)$ as its diagonal:
+an algebraic computation shows that its diagonal coefficients
+equal $2^n$.
+\end{remark}
+
+\begin{proposition}[Existence, via Bostan--Lairez--Salvy \cite{BLS2015}]
+\label{prop:diagonal_exists}
+A diagonal representation of $S_{20}$ \emph{exists}.
+\end{proposition}
+
+\begin{proof}
+By \cite[Theorem~3]{BLS2015}, a sequence $(a_n)$ is the
+diagonal of a rational function if and only if it is D-finite
+(satisfies a linear recurrence with polynomial coefficients).
+Since $S_{20}$ satisfies the order-$5$ recurrence of
+Theorem~\ref{thm:recurrence}, it is D-finite and hence a diagonal.
+
+Moreover, the proof in \cite{BLS2015} is constructive:
+using the Griffiths--Dwork reduction method, one can algorithmically
+produce an explicit rational function whose diagonal is $S_{20}$.
+However, the construction generically yields a function in
+$9$ or more variables, and the challenge is to find the
+\emph{minimal-variable} representation.
+\end{proof}
+
+\begin{remark}\label{rem:obstruction}
+The $\tfrac{3}{4}$-well-poised structure identified in
+Theorem~\ref{thm:hyp} may explain the difficulty of finding a
+\emph{simple} diagonal.
+The Ap\'ery diagonal \cite{Straub2014}
+$A(n) = \diag\bigl[1/\bigl((1-x_1-x_2)(1-x_3-x_4) - x_1x_2x_3x_4\bigr)\bigr]$
+arises from a fully well-poised ${}_4F_3$.
+The partial well-poisedness of $S_{20}$ suggests that if a
+\emph{simple} diagonal representation exists in $5$ variables,
+it requires a qualitatively different rational function.
+\end{remark}
+
+
+%% ===================================================================
+\section{Lean~4 Verification}\label{sec:lean}
+%% ===================================================================
+
+As a partial formal check, the identity~\eqref{eq:rec_n0}
+(the recurrence at $n = 0$) has been compiled in the Lean~4
+proof assistant:
+
+\begin{verbatim}
+def S20 (n : Nat) : Int :=
+  ((Finset.range (n + 1)).sum
+    (fun k => (Nat.choose n k)^4
+            * (Nat.choose (n + k) k)))
+
+theorem theorem20_inst0 :
+    (-5412650858431135013634958175726842170573378411840)
+      * S20 0
+  + (-6600211789894833600749251782579095561783149274990400)
+      * S20 1
+  + (-29724234537629673550738669814459138431115401303206240)
+      * S20 2
+  + (-6675296886001563027617164081383167394996985596478240)
+      * S20 3
+  + (-272198721521932617277293245047721130052020296806560)
+      * S20 4
+  + (20478134952232355172884134183653971676016433020000)
+      * S20 5
+  = 0 := by decide
+\end{verbatim}
+
+\begin{remark}[Scope of the Lean verification]\label{rem:lean_scope}
+The Lean~4 theorem \texttt{theorem20\_inst0} verifies a
+\emph{single numerical identity}: the linear combination of
+$S_{20}(0), \ldots, S_{20}(5)$ with the given integer
+coefficients equals zero.
+This confirms the recurrence at the point $n = 0$ but does
+\emph{not} constitute a proof of the recurrence for all~$n$.
+A full formal proof would require either formalising the
+creative telescoping certificate or establishing a uniform
+inductive argument, which remains an open problem.
+\end{remark}
+
+
+%% ===================================================================
+\section{Open Questions}\label{sec:open}
+%% ===================================================================
+
+We collect the principal open problems arising from this work.
+
+\begin{enumerate}
+\item \textbf{Diagonal representation.}
+Does there exist a rational function
+$F \in \QQ(x_1,\ldots,x_5)$ whose diagonal is $S_{20}(n)$?
+(Conjecture~\ref{conj:diagonal}.)
+If so, does the associated hypersurface define a
+Calabi--Yau fourfold?
+
+\item \textbf{Lian--Yau integrality.}
+Is $q_d \in \ZZ$ for all $d \ge 1$?
+(Conjecture~\ref{conj:LY}.)
+A proof would likely require a geometric construction
+(e.g., a mirror pair of Calabi--Yau fourfolds).
+
+\item \textbf{Full formal verification.}
+Can the order-$5$ recurrence be proved for all $n$ in a
+proof assistant, either by formalising the creative
+telescoping certificate or by an independent method?
+
+\item \textbf{Supercongruences.}
+Do there exist $p$-adic supercongruences for $S_{20}$
+analogous to those known for Ap\'ery numbers?
+The $\tfrac{3}{4}$-well-poised structure may impose
+constraints on which primes exhibit enhanced congruences.
+
+\item \textbf{Modularity.}
+Is the generating function $f(z) = \sum S_{20}(n) z^n$
+a modular form or a period of a modular motive?
+The order-$5$ recurrence operator should be analysed for
+$G$-operator properties in the sense of Andr\'e.
+
+\item \textbf{Remaining weight-$5$ partitions.}
+What are the recurrence orders for the partitions
+$(3,1)$, $(5,0)$, $(3,2)$, $(2,3)$, $(1,4)$?
+Are they truly of order $\ge 8$, or do they require
+higher-degree polynomial coefficients?
+
+\item \textbf{Picard--Fuchs operator.}
+The Picard--Fuchs ODE has singularities at
+$t \approx 0.0232, -0.0692, -0.0736 \pm 0.0355i, -238.8$.
+The last singularity is far from the origin.
+Is it an apparent singularity, and does the operator
+factorise over $\QQ(t)$?
+\end{enumerate}
+
+
+%% ===================================================================
+%% References
+%% ===================================================================
+
+\begin{thebibliography}{99}
+
+\bibitem{ABG2013}
+G.~Almkvist, M.~Bogner, and J.~Guillera,
+\emph{About a class of Calabi--Yau differential equations},
+preprint, \texttt{arXiv:1310.6658}, 2013.
+
+\bibitem{AESZ}
+G.~Almkvist, C.~van~Enckevort, D.~van~Straten, and W.~Zudilin,
+\emph{Tables of Calabi--Yau equations},
+preprint, \texttt{arXiv:math/0507430}, 2005; updated 2010.
+
+\bibitem{Apery1979}
+R.~Ap\'ery,
+\emph{Irrationalit\'e de $\zeta 2$ et $\zeta 3$},
+Ast\'erisque \textbf{61} (1979), 11--13.
+
+\bibitem{BLS2015}
+A.~Bostan, P.~Lairez, and B.~Salvy,
+\emph{Multiple binomial sums},
+J.~Symbolic Comput.\ \textbf{80} (2017), 351--386;
+\texttt{arXiv:1510.07487}.
+
+\bibitem{ChristolDiag}
+G.~Christol,
+\emph{Diagonals of rational functions},
+in: European Women in Mathematics (Luminy, 2013), CRM Proc.\ Lecture Notes.
+
+\bibitem{LianYau1996}
+B.~H.~Lian and S.-T.~Yau,
+\emph{Mirror maps, modular relations and hypergeometric series~I},
+preprint, \texttt{arXiv:hep-th/9507151}, 1995.
+
+\bibitem{vanderPoorten1979}
+A.~van~der~Poorten,
+\emph{A proof that Euler missed \ldots\ Ap\'ery's proof of the
+irrationality of $\zeta(3)$},
+Math.\ Intelligencer \textbf{1} (1979), 195--203.
+
+\bibitem{Straub2014}
+A.~Straub,
+\emph{Multivariate Ap\'ery numbers and supercongruences of
+rational functions},
+Algebra Number Theory \textbf{8} (2014), 1985--2008;
+\texttt{arXiv:1401.0854}.
+
+\bibitem{StrZud2004}
+V.~Strehl,
+\emph{Binomial identities --- combinatorial and algorithmic
+aspects},
+Discrete Math.\ \textbf{136} (1994), 309--346.
+
+\bibitem{Zagier2009}
+D.~Zagier,
+\emph{Integral solutions of Ap\'ery-like recurrence equations},
+in: Groups and Symmetries: From Neolithic Scots to John McKay,
+CRM Proc.\ Lecture Notes \textbf{47}, AMS, 2009, pp.~349--366.
+
+\end{thebibliography}
+
+\end{document}

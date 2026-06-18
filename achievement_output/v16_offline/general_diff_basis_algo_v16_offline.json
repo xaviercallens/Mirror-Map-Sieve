@@ -1,0 +1,14 @@
+{
+  "pid": "general_diff_basis_algo",
+  "domain": "combinatorics",
+  "v14_verdict": "REFUTED",
+  "v14_sorry": 3,
+  "sorry_before": 0,
+  "sorry_after": 0,
+  "sorry_eliminated": 0,
+  "pre_decomp_slots": 3,
+  "offline_verdict": "ALREADY_OK",
+  "alexandrie_id": "v16_offline_general_diff_basis_algo",
+  "elapsed_s": 0.019,
+  "gap_summary": []
+}

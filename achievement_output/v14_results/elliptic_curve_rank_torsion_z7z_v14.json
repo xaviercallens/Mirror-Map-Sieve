@@ -1,0 +1,15 @@
+{
+  "pid": "elliptic_curve_rank_torsion_z7z",
+  "domain": "number_theory",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 2,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.05,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 100.6913621249987,
+  "conjecture_statement": "Let $K$ be a number field and $E$ be an elliptic curve defined over $K$. If the torsion subgroup of the Mordell-Weil group $E(K)$ contains a subgroup isomorphic to $\\\\mathbb{Z}/7\\\\mathbb{Z} \\\\times \\\\mathbb{Z}/7\\\\mathbb{Z}$, then the rank of $E(K)$ is zero. Formally, if $(\\\\mathbb{Z}/7\\\\mathbb{Z})^2 \\\\hookrightarrow E(K)_{\\\\text{tors}}$, then $\\\\text{rank}_{\\\\mathbb{Z}}(E(K)) = 0$.",
+  "lean4_sketch": "import Mathlib.NumberTheory.EllipticCurve.Point\nimport Mathlib.NumberTheory.NumberField.Basic\nimport Mathlib.GroupTheory.Finiteness\nimport Mathlib.Algebra.Module.Rank\nimport Mathlib.GroupTheory.SpecificGroups.Cyclic\n\nopen EllipticCurve Additive\n\n-- This conjecture proposes a strong structural property for a specific class of elliptic curves.\n-- It connects the torsion structure to the rank of the Mordell-Weil group.\n-- A proof would be a major result in the arithmetic of elliptic curves.\n-- We use `Module.rank \u2124 (Point E)` for the Mordell-Weil rank of E(K).\n\n-- We define a placeholder for the Selmer group, as it is not yet in Mathlib.\n-- In a full development, this would be a finite F_p-vector space.\naxiom SelmerGroup (E : EllipticCurve K) (p : \u2115) : Type\n\nconjecture elliptic_curve_rank_z7z",
+  "gap_probability_map": {}
+}

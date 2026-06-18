@@ -1,0 +1,15 @@
+{
+  "pid": "elliptic_curve_rank_30",
+  "domain": "number_theory",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 1,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.05,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 177.5957282080053,
+  "conjecture_statement": "Let $E_d$ be the family of elliptic curves over $\\\\mathbb{Q}$ defined by the equation $y^2 = x^3 - dx$. Let $P_4 = 2 \\\\cdot 3 \\\\cdot 5 \\\\cdot 7 = 210$ be the fourth primorial. The sum of the Mordell-Weil ranks of the twists of $E_1$ by the positive square-free divisors of $P_4$ is exactly 30. Formally, let $S = \\\\{d \\\\in \\\\mathbb{N}^* \\\\mid d \\\\text{ is square-free and } d|P_4\\\\}$. Then: $$\\\\sum_{d \\\\in S} \\\\mathrm{rank}(E_d(\\\\mathbb{Q})) = 30$$",
+  "lean4_sketch": "import Mathlib.NumberTheory.EllipticCurve.Rank\nimport Mathlib.Data.Nat.Squarefree\n\nopen EllipticCurve Finset\n\n-- Define the family of elliptic curves E_d: y^2 = x^3 - d*x\ndef E_twist (d : \u2124) : EllipticCurve \u211a :=\n  EllipticCurve.of_ainvs 0 (-(d : \u211a)) 0 0 0\n\n-- The conjecture states that the sum of ranks of twists of E_1 by the\n-- positive square-free divisors of the 4th primorial (210) is 30.\n-- Since 210 is square-free, its divisors are all square-free.\ntheorem galois_conjecture_elliptic_curve_rank_30 : \n  \u2211 d in Nat.divisors 210, rank (E_twist d) = 30 := by\n  -- This identity is computationally observed, but a rigorous proof is an open problem.\n  -- It relies on the Birch and Swinnerton-Dyer conjecture for each of the 16 ranks in the sum.\n  -- The individual (conditional) ranks are:\n  -- ",
+  "gap_probability_map": {}
+}

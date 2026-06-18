@@ -1,0 +1,62 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: hilbert-service
+  namespace: default
+  labels:
+    app: hilbert
+    version: "2.0.0"
+    agora-agent: "true"
+  annotations:
+    run.googleapis.com/ingress: internal        # INTERNAL_ONLY as required
+    run.googleapis.com/description: "Hilbert Agent v2.0 — Axiomatic Program Builder"
+spec:
+  template:
+    metadata:
+      annotations:
+        # Resources: 4 CPU / 8Gi as specified
+        run.googleapis.com/cpu-throttling: "false"
+        autoscaling.knative.dev/minScale: "0"
+        autoscaling.knative.dev/maxScale: "4"
+    spec:
+      containerConcurrency: 2
+      timeoutSeconds: 300      # deep-think model needs extended timeout
+      containers:
+        - image: gcr.io/${PROJECT_ID}/hilbert-agent:2.0.0
+          resources:
+            limits:
+              cpu: "4"
+              memory: "8Gi"
+          env:
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: gemini-api-key
+                  key: latest
+            - name: GOOGLE_CLOUD_PROJECT
+              valueFrom:
+                secretKeyRef:
+                  name: gcp-project
+                  key: latest
+            - name: AGORA_AGENT_NAME
+              value: hilbert
+            - name: AGORA_MODEL
+              value: gemini-3.1-pro-deep-think
+            - name: BUDGET_PER_EXPERIMENT_USD
+              value: "100.0"
+            - name: LOG_LEVEL
+              value: INFO
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10

@@ -1,0 +1,20 @@
+steps:
+  # ── Build the inventory image ───────────────────────────────────────────────
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-f'
+      - 'Dockerfile.inventory'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/inventory-pipeline:latest'
+      - '.'
+    timeout: '900s'
+
+images:
+  - 'gcr.io/$PROJECT_ID/inventory-pipeline:latest'
+
+timeout: '1200s'
+
+options:
+  machineType: 'E2_HIGHCPU_8'
+  logging: CLOUD_LOGGING_ONLY

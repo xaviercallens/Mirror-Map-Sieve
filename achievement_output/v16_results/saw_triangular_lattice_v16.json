@@ -1,0 +1,28 @@
+{
+  "pid": "saw_triangular_lattice",
+  "domain": "stat_mechanics",
+  "v16_verdict": "REFUTED",
+  "v16_confidence": 0.0,
+  "sorry_count": 3,
+  "sorry_count_after_archimedes": 3,
+  "sorry_count_final": 0,
+  "archimedes_reduction": 0,
+  "pre_decomp_lemmas": 3,
+  "sharding_tier": "",
+  "sharding_region": "",
+  "hypotheses_applied": [
+    "H1_PRE_DECOMP_3L"
+  ],
+  "conjecture_statement": "Let $\\mathbb{T}$ denote the 2-dimensional triangular lattice. Let $c_N(\\mathbb{T})$ be the number of $N$-step self-avoiding walks on $\\mathbb{T}$ starting from a fixed origin. The connective constant of the lattice is defined as the limit $\\mu(\\mathbb{T}) = \\lim_{N\\to\\infty} [c_N(\\mathbb{T})]^{1/N}$. We conjecture that $\\mu(\\mathbb{T}) \\le \\sqrt{18}$.",
+  "lean4_sketch": "import Mathlib.Analysis.SpecialFunctions.Pow.Real\nimport Mathlib.Analysis.NormedSpace.Spectral\nimport Mathlib.Topology.MetricSpace.Sequences\nimport Mathlib.Data.Real.Sqrt\nimport Mathlib.LinearAlgebra.Trace\n\nuniverse u\n\n-- We axiomatically introduce the necessary concepts for the conjecture.\n\n/-- The number of n-step self-avoiding walks on the triangular lattice. -/\naxiom c : \u2115 \u2192 \u211d\n\n/-- The connective constant of the triangular lattice. -/\naxiom mu_triangular : \u211d\n\n/-- The connective constant is the asymptotic growth rate of c(n). -/\naxiom mu_triangular_is_lim :\n  Tendsto (fun n \u21a6 if c n > 0 then (c n) ^ (1 / (n : \u211d)) else 0) atTop (nhds mu_triangular)\n\n/-- For each width W, H W is the state space for the transfer matrix method. -/\naxiom H : \u2115 \u2192 Type u\naxiom h_normed_space : \u2200 W, NormedAddCommGroup (H W) \u2227 NormedSpace \u2102 (H W)\nattribute [instance] h_normed_space\naxiom h_fin_dim : \u2200 W, FiniteDimensional \u2102 (H W)\nattribute [instance] h_fin_dim\n\n/-- The transfer matrix for SAWs on a strip of width W. -/\naxiom T : \u2200 W : \u2115, H W \u2192L[\u2102] H W\n\n/-- The connective constant is the supremum of the spectral radii of the transfer matrices. -/\naxiom mu_is_sup_spectral_radius :\n  mu_triangular = sSup (Set.range (fun W \u21a6 (spectralRadius \u2102 (T W) : \u211d)))\n\n/--\nConjecture: The connective constant of the triangular lattice is bounded by sqrt(18).\nThe proof strategy relies on establishing a uniform bound for the spectral radius\nof the transfer matrices T_W for strips of any width W.\n-/\ntheorem triangular_lattice_connective_constant_bound : mu_triangular \u2264 Real.sqrt 18 := by\n  rw [mu_is_sup_spectral_radius]\n  apply sSup_le_iff.mpr\n  constructor\n  \u00b7 -- The range of spectral radii must be non-empty.\n    use 0\n    simp only [Set.mem_range, spectralRadius_nonneg, exists_apply_eq_apply, Real.coe_nnreal_nonneg]\n  \u00b7 -- We need to show that sqrt(18) is an upper bound for all spectral radii.\n    intro r hr\n    rcases hr with \u27e8W, rfl\u27e9\n    let T_W := T W\n    -- The core of the proof is to show `(spectralRad",
+  "lean4_sketch_archimedes": "import Mathlib.Analysis.SpecialFunctions.Pow.Real\nimport Mathlib.Analysis.NormedSpace.Spectral\nimport Mathlib.Topology.MetricSpace.Sequences\nimport Mathlib.Data.Real.Sqrt\nimport Mathlib.LinearAlgebra.Trace\n\nuniverse u\n\n-- We axiomatically introduce the necessary concepts for the conjecture.\n\n/-- The number of n-step self-avoiding walks on the triangular lattice. -/\naxiom c : \u2115 \u2192 \u211d\n\n/-- The connective constant of the triangular lattice. -/\naxiom mu_triangular : \u211d\n\n/-- The connective constant is the asymptotic growth rate of c(n). -/\naxiom mu_triangular_is_lim :\n  Tendsto (fun n \u21a6 if c n > 0 then (c n) ^ (1 / (n : \u211d)) else 0) atTop (nhds mu_triangular)\n\n/-- For each width W, H W is the state space for the transfer matrix method. -/\naxiom H : \u2115 \u2192 Type u\naxiom h_normed_space : \u2200 W, NormedAddCommGroup (H W) \u2227 NormedSpace \u2102 (H W)\nattribute [instance] h_normed_space\naxiom h_fin_dim : \u2200 W, FiniteDimensional \u2102 (H W)\nattribute [instance] h_fin_dim\n\n/-- The transfer matrix for SAWs on a strip of width W. -/\naxiom T : \u2200 W : \u2115, H W \u2192L[\u2102] H W\n\n/-- The connective constant is the supremum of the spectral radii of the transfer matrices. -/\naxiom mu_is_sup_spectral_radius :\n  mu_triangular = sSup (Set.range (fun W \u21a6 (spectralRadius \u2102 (T W) : \u211d)))\n\n/--\nConjecture: The connective constant of the triangular lattice is bounded by sqrt(18).\nThe proof strategy relies on establishing a uniform bound for the spectral radius\nof the transfer matrices T_W for strips of any width W.\n-/\ntheorem triangular_lattice_connective_constant_bound : mu_triangular \u2264 Real.sqrt 18 := by\n  rw [mu_is_sup_spectral_radius]\n  apply sSup_le_iff.mpr\n  constructor\n  \u00b7 -- The range of spectral radii must be non-empty.\n    use 0\n    simp only [Set.mem_range, spectralRadius_nonneg, exists_apply_eq_apply, Real.coe_nnreal_nonneg]\n  \u00b7 -- We need to show that sqrt(18) is an upper bound for all spectral radii.\n    intro r hr\n    rcases hr with \u27e8W, rfl\u27e9\n    let T_W := T W\n    -- The core of the proof is to show `(spectralRad",
+  "research_brief": "",
+  "v15_sorry": 1,
+  "domain_prior": 0.3,
+  "gap_probability_map": {},
+  "sorry_guillotine_applied": false,
+  "cost_usd": 0.42,
+  "elapsed_s": 132.3,
+  "problem_id": "saw_triangular_lattice",
+  "status": "FAILED (UNRECOVERABLE)"
+}

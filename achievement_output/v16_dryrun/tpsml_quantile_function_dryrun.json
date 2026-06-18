@@ -1,0 +1,15 @@
+{
+  "pid": "tpsml_quantile_function",
+  "domain": "special_functions",
+  "solvability": 2,
+  "source": "missing",
+  "pre_decomp_lemmas": 3,
+  "sorry_galois": 12,
+  "sorry_final": 12,
+  "arch_reduction": 0,
+  "verdict": "REFUTED",
+  "euler_confidence": 0.6,
+  "cost_usd": 0.3,
+  "elapsed_s": 92.14,
+  "alexandrie_id": "v16_dryrun_tpsml_quantile_function"
+}

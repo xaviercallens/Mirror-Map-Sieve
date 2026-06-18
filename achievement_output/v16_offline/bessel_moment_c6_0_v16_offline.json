@@ -1,0 +1,22 @@
+{
+  "pid": "bessel_moment_c6_0",
+  "domain": "special_functions",
+  "v14_verdict": "INCOMPLETE",
+  "v14_sorry": 6,
+  "sorry_before": 1,
+  "sorry_after": 0,
+  "sorry_eliminated": 1,
+  "pre_decomp_slots": 3,
+  "offline_verdict": "CLOSED",
+  "alexandrie_id": "v16_offline_bessel_moment_c6_0",
+  "elapsed_s": 0.021,
+  "gap_summary": [
+    {
+      "gap_index": 1,
+      "context_snippet": "hen -1 else 0) / (k : \u211d) ^ s) := by\n--  sorry -- This would follow from Dirichle",
+      "tactic_applied": "positivity",
+      "confidence": 0.9,
+      "resolved": true
+    }
+  ]
+}

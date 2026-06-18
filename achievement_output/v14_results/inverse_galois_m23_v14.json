@@ -1,0 +1,15 @@
+{
+  "pid": "inverse_galois_m23",
+  "domain": "number_theory",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 1,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.05,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 77.04628733299614,
+  "conjecture_statement": "Let $M_{23}$ be the Mathieu group on 23 points. There exists an irreducible polynomial $f \\\\in \\\\mathbb{Q}[X]$ of degree 23 such that the Galois group of the splitting field of $f$ over $\\\\mathbb{Q}$ is isomorphic to $M_{23}$. Formally: $$\\\\exists f \\\\in \\\\mathbb{Q}[X] \\\\text{ s.t. } \\\\text{Irreducible}(f) \\\\land \\\\deg(f) = 23 \\\\land \\\\text{Gal}(\\\\text{SplittingField}_{\\\\mathbb{Q}}(f) / \\\\mathbb{Q}) \\\\cong M_{23}$$",
+  "lean4_sketch": "import Mathlib.FieldTheory.IsGalois\nimport Mathlib.FieldTheory.SplittingField\nimport Mathlib.GroupTheory.SpecificGroups.Mathieu\n\nopen Polynomial\n\n/--\nConjecture (Inverse Galois Problem for M\u2082\u2083): The Mathieu group M\u2082\u2083 can be realized as the\nGalois group of a degree 23 irreducible polynomial over the rational numbers.\n-/\ntheorem M23_is_Galois_over_Q :\n  \u2203 (f : \u211a[X]), Irreducible f \u2227 f.natDegree = 23 \u2227\n    Nonempty (Gal (SplittingField f) \u211a \u2243* (MathieuGroup 23)) := by\n  sorry\n  -- This is a major open problem. A proof is expected to proceed via the rigidity method.\n  -- Step 1: Prove the existence of a rationally rigid triple of conjugacy classes in M\u2082\u2083.\n  -- The triple of classes (2A, 4A, 23A) is known to be rigid. This requires formalizing\n  -- the theory of conjugacy classes, rationality, ",
+  "gap_probability_map": {}
+}

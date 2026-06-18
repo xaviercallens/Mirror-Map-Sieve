@@ -1,0 +1,89 @@
+<![CDATA[# Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International
+
+## CC BY-NC-ND 4.0
+
+Copyright (c) 2026 Xavier Callens / Socrate AI Lab, Paris, France
+
+Patent Pending: US-PAT-PEND-2026-0525
+
+---
+
+## Scope
+
+This license applies to the following **proprietary components** of the
+SocrateAI Scientific Agora project:
+
+- **G_Socratique model weights** (all formats: `.gguf`, `.safetensors`, `.bin`, `.pt`)
+- **Trained LoRA adapters** for SymBrain cognitive engine (v1–v5)
+- **Fine-tuned checkpoint files** produced by RLCF optimization
+- **Curated benchmark datasets** in `benchmarks/data/`
+- **Proprietary configuration profiles** in `configs/proprietary/`
+
+All other source code in this repository is licensed under the
+[Apache License 2.0](LICENSE).
+
+---
+
+## License Terms
+
+### You are free to:
+
+- **Share** — copy and redistribute the material in any medium or format
+
+The licensor cannot revoke these freedoms as long as you follow the license
+terms.
+
+### Under the following terms:
+
+- **Attribution** — You must give appropriate credit, provide a link to the
+  license, and indicate if changes were made. You may do so in any reasonable
+  manner, but not in any way that suggests the licensor endorses you or your use.
+
+- **NonCommercial** — You may not use the material for commercial purposes.
+
+- **NoDerivatives** — If you remix, transform, or build upon the material, you
+  may not distribute the modified material.
+
+- **No additional restrictions** — You may not apply legal terms or
+  technological measures that legally restrict others from doing anything the
+  license permits.
+
+### Notices:
+
+You do not have to comply with the license for elements of the material in
+the public domain or where your use is permitted by an applicable exception
+or limitation.
+
+No warranties are given. The license may not give you all of the permissions
+necessary for your intended use. For example, other rights such as publicity,
+privacy, or moral rights may limit how you use the material.
+
+---
+
+## Full Legal Text
+
+The full legal text of the CC BY-NC-ND 4.0 license is available at:
+https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
+
+---
+
+## Commercial Licensing
+
+For commercial use of proprietary components, including G_Socratique weights
+and trained adapters, please contact:
+
+- **Xavier Callens** — callensxavier@gmail.com
+- **Socrate AI Lab** — Paris, France
+
+Commercial licenses are available for enterprise deployments, on-premise
+installations, and integration into proprietary products.
+
+---
+
+## Patent Notice
+
+The methods and systems described in this repository are covered by
+**US Patent Pending US-PAT-PEND-2026-0525**. Use of patented methods
+requires a separate patent license for commercial applications.
+Contact callensxavier@gmail.com for patent licensing inquiries.
+]]>

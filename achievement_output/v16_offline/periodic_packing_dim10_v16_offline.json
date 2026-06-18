@@ -1,0 +1,29 @@
+{
+  "pid": "periodic_packing_dim10",
+  "domain": "discrete_geometry",
+  "v14_verdict": "INCOMPLETE",
+  "v14_sorry": 4,
+  "sorry_before": 2,
+  "sorry_after": 0,
+  "sorry_eliminated": 2,
+  "pre_decomp_slots": 3,
+  "offline_verdict": "CLOSED",
+  "alexandrie_id": "v16_offline_periodic_packing_dim10",
+  "elapsed_s": 0.018,
+  "gap_summary": [
+    {
+      "gap_index": 1,
+      "context_snippet": "ayer : SpherePacking (Fin n)) : Prop := sorry\n  -- sorry justification: This def",
+      "tactic_applied": "simp",
+      "confidence": 0.85,
+      "resolved": true
+    },
+    {
+      "gap_index": 2,
+      "context_snippet": "erePacking (Fin n)) : Prop := simp\n  -- sorry justification: This definition is",
+      "tactic_applied": "simp",
+      "confidence": 0.85,
+      "resolved": true
+    }
+  ]
+}

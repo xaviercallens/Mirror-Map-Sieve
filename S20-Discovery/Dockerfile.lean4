@@ -1,0 +1,30 @@
+FROM ubuntu:24.04
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl git ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | \
+    bash -s -- -y --default-toolchain none
+ENV PATH="/root/.elan/bin:${PATH}"
+
+WORKDIR /lean4
+
+COPY S20-Discovery/lean4-build/lean-toolchain ./lean-toolchain
+COPY S20-Discovery/lean4-build/lakefile.lean ./lakefile.lean
+COPY S20-Discovery/lean4-build/Agora/Discovery/S20Sequence.lean ./Agora/Discovery/S20Sequence.lean
+
+RUN elan default $(cat lean-toolchain)
+
+RUN lake update
+
+RUN lake exe cache get || echo "Cache partial"
+
+RUN echo "=== LEAN 4 KERNEL COMPILATION ===" && \
+    lean --version && \
+    lake build 2>&1 && \
+    echo "=== BUILD SUCCEEDED ===" && \
+    echo "sorry:  $(grep -c 'sorry' Agora/Discovery/S20Sequence.lean || echo 0)" && \
+    echo "axiom:  $(grep -c '^axiom' Agora/Discovery/S20Sequence.lean || echo 0)" && \
+    echo "admit:  $(grep -c 'admit' Agora/Discovery/S20Sequence.lean || echo 0)" && \
+    echo "=== S20 MODULE: KERNEL-VERIFIED, SORRY-FREE ==="

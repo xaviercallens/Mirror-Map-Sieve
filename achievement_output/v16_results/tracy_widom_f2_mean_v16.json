@@ -1,0 +1,31 @@
+{
+  "pid": "tracy_widom_f2_mean",
+  "domain": "mathematical_physics",
+  "v16_verdict": "REFUTED",
+  "v16_confidence": 0.0,
+  "sorry_count": 4,
+  "sorry_count_after_archimedes": 4,
+  "sorry_count_final": 1,
+  "archimedes_reduction": 0,
+  "pre_decomp_lemmas": 3,
+  "sharding_tier": "",
+  "sharding_region": "",
+  "hypotheses_applied": [
+    "H1_PRE_DECOMP_3L"
+  ],
+  "conjecture_statement": "Let $q(s)$ be the Hastings-McLeod solution to the Painlev\u00e9 II equation $q''(s) = s q(s) + 2q(s)^3$, uniquely defined by the asymptotic condition $q(s) \\sim \\mathrm{Ai}(s)$ as $s \\to \\infty$. Let $F_2(s)$ be the Tracy-Widom distribution function for the GUE, whose mean is denoted by $\\mu_2$. Then the total integral of the square of the Hastings-McLeod solution is directly proportional to the mean of the distribution: $$\\int_{-\\infty}^{\\infty} q(s)^2 \\, ds = -2 \\mu_2$$",
+  "lean4_sketch": "import Mathlib.Analysis.InnerProductSpace.SelfAdjoint\nimport Mathlib.Analysis.NormedSpace.Spectrum\nimport Mathlib.Analysis.SpecialFunctions.Airy\nimport Mathlib.MeasureTheory.Integral.Bochner\n\nopen MeasureTheory Set ContinuousLinearMap\n\nnoncomputable section\n\n-- We model the underlying Hilbert space as H = L\u00b2(\u211d, \u2102) for generality, though L\u00b2(\u211d, \u211d) suffices.\nnotation \"H\" => L2 \u2102 volume\n\n-- The Airy operator K is the integral operator with the Airy kernel.\n-- It is a key object connecting random matrix theory to integrable systems.\nvariable (K : H \u2192L[\u211d] H)\n\n-- The Hastings-McLeod solution to the Painlev\u00e9 II equation.\nvariable (q : \u211d \u2192 \u211d) (hq_hm : \u2200 s, deriv (deriv q) s = s * q s + 2 * (q s)^3 \u2227 Tendsto (fun t => q t / airyAi t) atTop (\ud835\udcdd 1))\n\n-- We abstract the definitions of the F\u2082 distribution and its mean \u03bc\u2082,\n-- asserting their known connection to the Airy operator K.\nvariable (\u03bc\u2082 : \u211d)\n\n-- This is a strong assumption linking the abstract objects.\nvariable (h_connection : (\u2203 (F\u2082 : \u211d \u2192 \u211d), IsCdfOfLargestEigenvalue F\u2082 K \u2227 IsMeanOfDistribution \u03bc\u2082 F\u2082))\n\n-- Main Theorem Statement\n-- Note: `\u222b s, (q s)^2 \u2202volume` is notation for the Lebesgue integral.\n-- We use `(q s : \u2102)` to lift the real-valued function to the complex L2 space.\ntheorem tracy_widom_f2_mean : \u222b s, ((q s) : \u2102) ^ 2 \u2202volume = -2 * (\u03bc\u2082 : \u2102) := by\n  -- The proof is operator-theoretic, leveraging deep trace formulas that connect\n  -- the spectral properties of K to the Painlev\u00e9 transcendent q.\n\n  -- Sub-Lemma 1: The Airy operator K is self-adjoint.\n  -- This is fundamental, ensuring its spectrum is real and enabling spectral theory.\n  have tracy_widom_f2_mean_sub1 : IsSelfAdjoint K := by\n    -- A full proof would define K via its integral kernel K(x,y) and show the kernel\n    -- is symmetric, i.e., K(x, y) = K(y, x). For a real kernel, symmetry implies self-adjointness.\n    -- The Airy kernel K_Ai(x,y) = (Ai(x)Ai'(y) - Ai'(x)Ai(y)) / (x-y) is symmetric.\n    sorry -- IsSelfAdjoint.adjoint_eq would be used here after",
+  "lean4_sketch_archimedes": "import Mathlib.Analysis.InnerProductSpace.Basic\nimport Mathlib.Analysis.NormedSpace.Spectrum\nimport Mathlib.Analysis.SpecialFunctions.Airy.Basic\nimport Mathlib.MeasureTheory.Integral.Bochner\nimport Mathlib.MeasureTheory.Integral.Lebesgue\n\nopen MeasureTheory Set ContinuousLinearMap\n\nnoncomputable section\n\nnotation \"H\" => L2 \u2102 volume\n\nvariable (K : H \u2192L[\u211d] H)\n\nvariable (q : \u211d \u2192 \u211d) (hq_hm : \u2200 s, deriv (deriv q) s = s * q s + 2 * ((q s) ^ 3 : \u211d) \u2227\n  Tendsto (fun t => q t / airyAi t) atTop (\ud835\udcdd (1 : \u211d)))\n\nvariable (\u03bc\u2082 : \u211d)\n\nvariable (h_connection : (\u2203 (F\u2082 : \u211d \u2192 \u211d), IsCdfOfLargestEigenvalue F\u2082 K \u2227 IsMeanOfDistribution \u03bc\u2082 F\u2082))\n\ntheorem tracy_widom_f2_mean : \u222b s, ((q s) : \u2102) ^ 2 \u2202volume = (-2 * (\u03bc\u2082 : \u2102)) := by\n  have tracy_widom_f2_mean_sub1 : IsSelfAdjoint K := by\n    sorry",
+  "research_brief": "",
+  "v15_sorry": 2,
+  "domain_prior": 0.15,
+  "gap_probability_map": {},
+  "sorry_guillotine_applied": false,
+  "cost_usd": 0.62,
+  "elapsed_s": 859.35,
+  "problem_id": "tracy_widom_f2_mean",
+  "status": "FAILED (UNRECOVERABLE)",
+  "galileo_valid": false,
+  "galileo_message": "Failed to extract python closed form",
+  "galileo_diff": "N/A"
+}

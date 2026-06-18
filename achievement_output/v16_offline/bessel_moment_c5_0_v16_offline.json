@@ -1,0 +1,14 @@
+{
+  "pid": "bessel_moment_c5_0",
+  "domain": "special_functions",
+  "v14_verdict": "INCOMPLETE",
+  "v14_sorry": 0,
+  "sorry_before": 0,
+  "sorry_after": 0,
+  "sorry_eliminated": 0,
+  "pre_decomp_slots": 3,
+  "offline_verdict": "ALREADY_OK",
+  "alexandrie_id": "v16_offline_bessel_moment_c5_0",
+  "elapsed_s": 0.019,
+  "gap_summary": []
+}

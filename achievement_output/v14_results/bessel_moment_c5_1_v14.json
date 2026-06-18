@@ -1,0 +1,15 @@
+{
+  "pid": "bessel_moment_c5_1",
+  "domain": "special_functions",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 2,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.25,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 226.78273104199616,
+  "conjecture_statement": "\\\\\\\\text{Let } I_0(x) \\\\\\\\text{ and } K_0(x) \\\\\\\\text{ be the modified Bessel functions of the first and second kind of order 0. Then,}\\\\n\\\\\\\\\\\\\\\\[\\\\n\\\\\\\\int_0^\\\\\\\\infty x^5 I_0(x) K_0(x)^3 \\\\\\\\,dx = \\\\\\\\frac{1}{2}\\\\\\\\zeta(5) + \\\\\\\\frac{\\\\\\\\pi^2}{36}\\\\\\\\zeta(3)\\\\n\\\\\\\\\\\\\\\\]",
+  "lean4_sketch": "import Analysis.SpecialFunctions.Bessel\\\nimport Analysis.SpecialFunctions.Integrals\\\nimport Analysis.SpecialFunctions.Zeta\\\n\\\nopen Real\\\n\\\n/- This conjecture states the value of a specific Bessel function moment in terms of\\\n   the Riemann zeta function at odd integer values. Such identities are motivated by\\\n   calculations in quantum field theory and are numerically verified to high precision.\\\n   A full proof would require a formalization of advanced techniques for evaluating\\\n   Feynman integrals, such as the differential equations method or the theory of motives\\\n   for Feynman graphs, which are far beyond the current scope of Mathlib. -/\\\ntheorem bessel_moment_c5_1 : \\\n  (\u222b x in Set.Ioi 0, x^5 * besselI 0 x * (besselK 0 x)^3) = (1/2) * riemannZeta 5 + (pi^2 / 36) * riemannZeta 3 := b",
+  "gap_probability_map": {}
+}

@@ -1,0 +1,56 @@
+# Copyright (c) 2026 Xavier Callens / Socrate AI Lab
+# Licensed under Apache 2.0 - see LICENSE file
+# Patent: US-PAT-PEND-2026-0525
+#
+# Solver container — multi-stage Rust build for rusty-SUNDIALS
+
+# ============================================================
+# Stage 1: Build rusty-SUNDIALS from Rust source
+# ============================================================
+FROM rust:1.79-bookworm AS builder
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    cmake \
+    libsundials-dev \
+    libopenblas-dev \
+    liblapack-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build
+
+# Copy solver source
+COPY solvers/ solvers/
+WORKDIR /build/solvers
+
+# Build in release mode
+RUN cargo build --release
+
+# ============================================================
+# Stage 2: Minimal runtime image
+# ============================================================
+FROM debian:bookworm-slim AS runtime
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libsundials-dev \
+    libopenblas0 \
+    liblapack3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Security: non-root
+RUN groupadd -r solver && useradd -r -g solver solver
+
+WORKDIR /app
+
+# Copy compiled binary
+COPY --from=builder /build/solvers/target/release/rusty_sundials /usr/local/bin/rusty_sundials
+
+# Verify binary
+RUN rusty_sundials --version || echo "Binary built (version check may not be supported)"
+
+RUN chown -R solver:solver /app
+USER solver
+
+ENV RUST_LOG=info
+
+ENTRYPOINT ["rusty_sundials"]

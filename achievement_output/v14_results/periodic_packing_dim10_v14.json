@@ -1,0 +1,15 @@
+{
+  "pid": "periodic_packing_dim10",
+  "domain": "discrete_geometry",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 4,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.2,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 86.92788333298813,
+  "conjecture_statement": "Let $\\\\mathcal{P}_n$ be the set of all periodic sphere packings in $\\\\mathbb{R}^n$, and let $\\\\Delta_n = \\\\sup_{P \\\\in \\\\mathcal{P}_n} \\\\text{density}(P)$ be the maximum possible density. Let $\\\\Lambda_9 \\\\subset \\\\mathbb{R}^9$ be the optimal lattice for sphere packing in 9 dimensions (conjecturally, the Coxeter-Todd lattice). We conjecture that $\\\\Delta_{10}$ is achieved not by a unique packing, but by a continuous family of non-isometric packings. Furthermore, every packing $P_{opt} \\\\in \\\\mat",
+  "lean4_sketch": "import Mathlib.Geometry.Euclidean.SpherePacking.Basic\nimport Mathlib.Analysis.InnerProductSpace.PiL2\nimport Mathlib.LinearAlgebra.Matrix.Gram\n\nopen Set Metric\n\n/- We model R^n as `EuclideanSpace \u211d (Fin n)` -/\n\n/-- A predicate asserting that a sphere packing `P` in `n+1` dimensions is a\n    periodic stacking of a layer packing `P_layer` in `n` dimensions. -/\ndef IsPeriodicStacking {n : \u2115} (P : SpherePacking (Fin (n+1))) (P_layer : SpherePacking (Fin n)) : Prop := sorry\n  -- sorry justification: This definition is non-trivial. It requires formalizing the geometric\n  -- concept of slicing a point set `P.centers` by a family of parallel hyperplanes,\n  -- checking that each slice is isometric to `P_layer.centers`, and that the translations\n  -- between layers follow a periodic pattern. This wou",
+  "gap_probability_map": {}
+}

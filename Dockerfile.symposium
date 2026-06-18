@@ -1,0 +1,43 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# ── System dependencies ───────────────────────────────────────────────────────
+# Full texlive stack needed for 50-150 page monograph compilation
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    texlive-full \
+    lmodern \
+    latexmk \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# ── Python dependencies ───────────────────────────────────────────────────────
+# Install everything in ONE pip call to ensure google.* namespace packages
+# (google-genai, google-antigravity, google-auth) are properly merged.
+# Do NOT use requirements.txt — it can downgrade packages and break namespaces.
+RUN pip install --no-cache-dir \
+    "matplotlib>=3.8" \
+    "numpy>=1.26" \
+    "scipy>=1.11" \
+    "python-dotenv" \
+    "requests>=2.31" \
+    "google-cloud-storage>=2.0.0" \
+    "google-genai>=2.7.0" \
+    "google-antigravity>=0.1.2" \
+    "structlog>=24.1.0" \
+    "pydantic>=2.0" \
+    "z3-solver"
+
+# Verify the critical import works (fail build if broken)
+RUN python3 -c "from google.antigravity import Agent, LocalAgentConfig, types; print('OK: google.antigravity imports successfully')"
+
+# ── Application code ──────────────────────────────────────────────────────────
+COPY . .
+ENV PYTHONPATH=/app
+RUN mkdir -p /app/output/images /app/output/symposium
+
+# Final import verification after COPY
+RUN python3 -c "from agents.pipelines.base import PipelineStage, agent_generate; from agents.pipelines.config import SymposiumConfig; print('OK: Symposium pipeline imports verified')"
+
+CMD ["python3", "agents/symposium_runner.py"]

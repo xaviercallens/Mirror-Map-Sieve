@@ -1,0 +1,39 @@
+{
+  "s": 3,
+  "t": 3,
+  "best_proven": 6,
+  "results": [
+    {
+      "success": true,
+      "n": 5,
+      "s": 3,
+      "t": 3,
+      "violations": 0,
+      "trial": 0,
+      "step": 18,
+      "elapsed_s": 0.0,
+      "coloring": [
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        0
+      ],
+      "method": "sa_ramsey"
+    },
+    {
+      "success": false,
+      "n": 6,
+      "s": 3,
+      "t": 3,
+      "violations": 2,
+      "elapsed_s": 32.93,
+      "method": "sa_ramsey"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "pid": "saw_square_lattice",
+  "domain": "stat_mechanics",
+  "v16_verdict": "REFUTED",
+  "v16_confidence": 0.0,
+  "sorry_count": 6,
+  "sorry_count_after_archimedes": 6,
+  "sorry_count_final": 2,
+  "archimedes_reduction": 0,
+  "pre_decomp_lemmas": 3,
+  "sharding_tier": "",
+  "sharding_region": "",
+  "hypotheses_applied": [
+    "H1_PRE_DECOMP_3L"
+  ],
+  "conjecture_statement": "Let $c_n$ be the number of $n$-step self-avoiding walks on the square lattice $\\mathbb{Z}^2$. The connective constant $\\mu = \\lim_{n \\to \\infty} c_n^{1/n}$, which is known to exist, satisfies the inequality $$\\mu \\le \\sqrt{7}.$$",
+  "lean4_sketch": "import Mathlib.Analysis.NormedSpace.Spectral\nimport Mathlib.MeasureTheory.Integral.Bochner\nimport Mathlib.Analysis.SpecialFunctions.Pow.Real\nimport Mathlib.Topology.Basic\n\nopen BigOperators Classical\n\n-- We formalize the problem by defining the connective constant and the main theorem.\n-- Let c(n) be the number of n-step self-avoiding walks on \u2124\u00b2.\n-- The existence of the limit is a known (but non-trivial) theorem by Hammersley and Welsh.\n-- We state it as a hypothesis for this problem.\n\nvariable (c : \u2115 \u2192 \u211d) (\u03bc : \u211d)\n  (h_lim_exists : Tendsto (fun n \u21a6 (c n) ^ (1 / (n : \u211d))) atTop (\ud835\udcdd \u03bc))\n\n-- The transfer operator T acts on a Hilbert space H representing the states on a single\n-- column of the lattice. Its spectral radius determines the free energy and thus \u03bc.\nvariable {H : Type*} [NormedAddCommGroup H] [NormedSpace \u2102 H] [CompleteSpace H]\nvariable (T : H \u2192L[\u2102] H)\n\n-- The partition function Z on a finite L \u00d7 W grid.\nnoncomputable def partition_function (_L _W : \u2115) : \u211d := sorry\n\n-- The main theorem, stating the conjectured bound.\ntheorem saw_square_lattice :\n  \u03bc \u2264 Real.sqrt 7 := by\n  -- The overall proof connects the combinatorial count c(n) to the partition function,\n  -- and then to the spectral radius of the transfer operator. We abstract this connection.\n  have h_connection : (spectralRadius \u2102 T \u2264 Real.sqrt 7) \u2192 (\u03bc \u2264 Real.sqrt 7) := by sorry\n  apply h_connection\n\n  -- Sub-Lemma 1: Prove the lattice walk generates a recurrence.\n  -- This is the core idea of the transfer matrix method. The partition function on a\n  -- cylinder of length L+1 is obtained by applying the transfer matrix to the partition\n  -- function on a cylinder of length L. This statement represents Z(L+1, W) = Tr(T * T^L).\n  have saw_square_lattice_sub1 : \u2200 (L W : \u2115) (T_mat T_pow_L_mat : Matrix (Fin W) (Fin W) \u2102),\n      partition_function (L + 1) W = sorry := by\n    -- A rigorous proof would define the partition function and transfer matrix explicitly.\n    -- The identity would then follow from algebra",
+  "lean4_sketch_archimedes": "import Mathlib.Analysis.NormedSpace.Spectral\nimport Mathlib.MeasureTheory.Integral.Bochner\nimport Mathlib.Analysis.SpecialFunctions.Pow.Real\nimport Mathlib.Topology.Basic\nimport Mathlib.LinearAlgebra.Spectrum\nimport Mathlib.LinearAlgebra.Matrix.Trace\n\nopen BigOperators Classical\n\nvariable (c : \u2115 \u2192 \u211d) (\u03bc : \u211d)\n  (h_lim_exists : Tendsto (fun n \u21a6 (c n) ^ (1 / (n : \u211d))) atTop (\ud835\udcdd \u03bc))\n\nvariable {H : Type*} [NormedAddCommGroup H] [NormedSpace \u2102 H] [CompleteSpace H]\nvariable (T : H \u2192L[\u2102] H)\n\nnoncomputable def partition_function (_L _W : \u2115) : \u211d := 0\n\ntheorem saw_square_lattice :\n  \u03bc \u2264 Real.sqrt 7 := by\n  have h_connection : (spectralRadius \u2102 T \u2264 Real.sqrt 7) \u2192 (\u03bc \u2264 Real.sqrt 7) := by\n    intro h_spec\n    rw [\u2190 h_lim_exists.tendsto_iff_eventuallyLe (by norm_num)]\n    apply eventually_of_forall\n    intro n\n    have : (c n) ^ (1 / (n : \u211d)) \u2264 (spectralRadius \u2102 T) ^ (1 + 1 / (n : \u211d)) := by sorry\n    linarith\n  apply h_connection\n  sorry",
+  "research_brief": "",
+  "v15_sorry": 2,
+  "domain_prior": 0.3,
+  "gap_probability_map": {},
+  "sorry_guillotine_applied": false,
+  "cost_usd": 0.62,
+  "elapsed_s": 264.4,
+  "problem_id": "saw_square_lattice",
+  "status": "FAILED (UNRECOVERABLE)"
+}

@@ -1,0 +1,131 @@
+{
+    "domains": [
+        "Extremal Graph Theory",
+        "Hypergeometric Summation",
+        "Large-scale combinatorial exploration"
+    ],
+    "memory_nodes": [
+        {
+            "id": 1,
+            "domain": "Hypergeometric Summation",
+            "name": "Identity 1",
+            "description": "Novel recurrence for Stirling numbers",
+            "confidence_score": 0.95,
+            "computational_verification": "Passed basic numerical bounds."
+        },
+        {
+            "id": 73582,
+            "domain": "Extremal Graph Theory",
+            "name": "Ramsey R(3,5) Lower Bound Verification",
+            "description": "Parallel Simulated Annealing search on K_13. Valid coloring found: False",
+            "confidence_score": 0.5,
+            "computational_verification": "Unsuccessful",
+            "timestamp": "2026-06-15T15:11:13Z"
+        },
+        {
+            "id": 73583,
+            "domain": "Hypergeometric Summation",
+            "name": "Weighted Binomial Sum closed form p=1",
+            "description": "sum_{k=0}^n k^1 * C(n,k) = (n) * 2^(n - 1)",
+            "confidence_score": 1.0,
+            "computational_verification": "Verified exact rational match on n=[p..2p+5]",
+            "timestamp": "2026-06-15T15:11:13Z"
+        },
+        {
+            "id": 73584,
+            "domain": "Hypergeometric Summation",
+            "name": "Weighted Binomial Sum closed form p=2",
+            "description": "sum_{k=0}^n k^2 * C(n,k) = (n + n^2) * 2^(n - 2)",
+            "confidence_score": 1.0,
+            "computational_verification": "Verified exact rational match on n=[p..2p+5]",
+            "timestamp": "2026-06-15T15:11:13Z"
+        },
+        {
+            "id": 73585,
+            "domain": "Hypergeometric Summation",
+            "name": "Weighted Binomial Sum closed form p=3",
+            "description": "sum_{k=0}^n k^3 * C(n,k) = (3n^2 + n^3) * 2^(n - 3)",
+            "confidence_score": 1.0,
+            "computational_verification": "Verified exact rational match on n=[p..2p+5]",
+            "timestamp": "2026-06-15T15:11:13Z"
+        },
+        {
+            "id": 73586,
+            "domain": "Hypergeometric Summation",
+            "name": "Weighted Binomial Sum closed form p=4",
+            "description": "sum_{k=0}^n k^4 * C(n,k) = (-2n + 3n^2 + 6n^3 + n^4) * 2^(n - 4)",
+            "confidence_score": 1.0,
+            "computational_verification": "Verified exact rational match on n=[p..2p+5]",
+            "timestamp": "2026-06-15T15:11:13Z"
+        },
+        {
+            "id": 73587,
+            "domain": "Hypergeometric Summation",
+            "name": "Weighted Binomial Sum closed form p=5",
+            "description": "sum_{k=0}^n k^5 * C(n,k) = (-10n^2 + 15n^3 + 10n^4 + n^5) * 2^(n - 5)",
+            "confidence_score": 1.0,
+            "computational_verification": "Verified exact rational match on n=[p..2p+5]",
+            "timestamp": "2026-06-15T15:11:13Z"
+        },
+        {
+            "id": 113081,
+            "domain": "Extremal Graph Theory",
+            "name": "Ramsey R(3,5) Lower Bound Verification",
+            "description": "Parallel Simulated Annealing search on K_13. Valid coloring found: True",
+            "confidence_score": 1.0,
+            "computational_verification": "Passed exact clique checks",
+            "timestamp": "2026-06-15T15:11:53Z"
+        },
+        {
+            "id": 113082,
+            "domain": "Hypergeometric Summation",
+            "name": "Weighted Binomial Sum closed form p=1",
+            "description": "sum_{k=0}^n k^1 * C(n,k) = (n) * 2^(n - 1)",
+            "confidence_score": 1.0,
+            "computational_verification": "Verified exact rational match on n=[p..2p+5]",
+            "timestamp": "2026-06-15T15:11:53Z"
+        },
+        {
+            "id": 113083,
+            "domain": "Hypergeometric Summation",
+            "name": "Weighted Binomial Sum closed form p=2",
+            "description": "sum_{k=0}^n k^2 * C(n,k) = (n + n^2) * 2^(n - 2)",
+            "confidence_score": 1.0,
+            "computational_verification": "Verified exact rational match on n=[p..2p+5]",
+            "timestamp": "2026-06-15T15:11:53Z"
+        },
+        {
+            "id": 113084,
+            "domain": "Hypergeometric Summation",
+            "name": "Weighted Binomial Sum closed form p=3",
+            "description": "sum_{k=0}^n k^3 * C(n,k) = (3n^2 + n^3) * 2^(n - 3)",
+            "confidence_score": 1.0,
+            "computational_verification": "Verified exact rational match on n=[p..2p+5]",
+            "timestamp": "2026-06-15T15:11:53Z"
+        },
+        {
+            "id": 113085,
+            "domain": "Hypergeometric Summation",
+            "name": "Weighted Binomial Sum closed form p=4",
+            "description": "sum_{k=0}^n k^4 * C(n,k) = (-2n + 3n^2 + 6n^3 + n^4) * 2^(n - 4)",
+            "confidence_score": 1.0,
+            "computational_verification": "Verified exact rational match on n=[p..2p+5]",
+            "timestamp": "2026-06-15T15:11:53Z"
+        },
+        {
+            "id": 113086,
+            "domain": "Hypergeometric Summation",
+            "name": "Weighted Binomial Sum closed form p=5",
+            "description": "sum_{k=0}^n k^5 * C(n,k) = (-10n^2 + 15n^3 + 10n^4 + n^5) * 2^(n - 5)",
+            "confidence_score": 1.0,
+            "computational_verification": "Verified exact rational match on n=[p..2p+5]",
+            "timestamp": "2026-06-15T15:11:53Z"
+        }
+    ],
+    "theorems": [
+        {
+            "hypothesis_id": 1,
+            "proof_path": "output/lean_prototypes/1_proof.lean"
+        }
+    ]
+}

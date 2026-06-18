@@ -1,0 +1,15 @@
+{
+  "pid": "knot_volume_7_2",
+  "domain": "discrete_geometry",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 7,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.2,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 96.80464095898787,
+  "conjecture_statement": "Let $K$ be the $7_2$ knot. Let $s(K) = 7$ be its stick number and let $\\\\mathcal{P}_n(K)$ denote the space of all $n$-vertex polygonal knots in $\\\\mathbb{R}^3$ of type $K$. For a polygon $P \\\\in \\\\mathcal{P}_n(K)$, let $\\\\text{Vol}(\\\\text{conv}(P))$ be the Euclidean volume of the convex hull of its vertices and let $L(P)$ be its total length. Let $V_{\\\\text{hyp}}(K)$ be the hyperbolic volume of the knot complement $S^3 \\\\setminus K$, and let $N(K) = 6$ be the number of ideal tetrahedra in the ca",
+  "lean4_sketch": "import Mathlib.Topology.KnotTheory\nimport Mathlib.Geometry.Euclidean.Basic\nimport Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan\n\n-- We would need a formalization of polygonal knots and their properties\n-- For now, we use stubs.\n\nabbrev PolygonalKnot := List (EuclideanSpace \u211d (Fin 3))\n\n-- A rigorous definition of knot type equivalence for polygonal knots\ndef IsKnotTypeOf (P1 P2 : PolygonalKnot) : Prop := sorry\n\n-- The specific knot type 7_2\naxiom k7_2_type : Type\naxiom k7_2 : k7_2_type\n\n-- A predicate for a polygon to be of a certain knot type\ndef IsOfKnotType (P : PolygonalKnot) (k : k7_2_type) : Prop := sorry\n\n-- Volume of the convex hull of a set of points\n-- This would rely on a formalization of convex hulls and their measures.\ndef convexHullVolume (vertices : List (EuclideanSp",
+  "gap_probability_map": {}
+}

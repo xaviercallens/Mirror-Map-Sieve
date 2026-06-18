@@ -1,0 +1,89 @@
+# Copyright (c) 2026 Xavier Callens / Socrate AI Lab
+# Licensed under Apache 2.0 - see LICENSE file
+# Patent: US-PAT-PEND-2026-0525
+#
+# Agora Sentinel — Production API Container
+# Serves the full Sentinel Pipeline (Bourbaki→Galois→Descartes→Champollion)
+# on GCP Cloud Run with FastAPI.
+#
+# Build:
+#   docker build -f deploy/docker/Dockerfile.sentinel -t agora-sentinel .
+#
+# Run locally:
+#   docker run -p 8080:8080 -e GEMINI_API_KEY=<key> agora-sentinel
+
+FROM python:3.12-slim AS base
+
+# Security: run as non-root
+RUN groupadd -r agora && useradd -r -g agora agora
+
+# System dependencies (including Z3 for SMT solver)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    z3 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Python dependencies (pinned for reproducibility)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Core scientific stack
+RUN pip install --no-cache-dir \
+    mpmath==1.3.0 \
+    sympy==1.12 \
+    scipy==1.13.1 \
+    numpy==1.26.4 \
+    z3-solver>=4.12.0
+
+# API stack
+RUN pip install --no-cache-dir \
+    fastapi>=0.111.0 \
+    uvicorn[standard]>=0.30.0 \
+    httpx>=0.27.0 \
+    pydantic>=2.7.0 \
+    structlog>=24.0.0 \
+    sentence-transformers>=2.7.0 \
+    faiss-cpu>=1.7.0
+
+# Optional: Google Cloud / Antigravity
+RUN pip install --no-cache-dir \
+    google-cloud-storage>=2.14.0 \
+    google-cloud-firestore>=2.16.0 || true
+RUN pip install --no-cache-dir "google-adk>=2.0.0" || true
+
+# Application code
+COPY agents/ agents/
+COPY core/ core/
+COPY alexandrie/ alexandrie/
+COPY numerics/ numerics/
+COPY olympiad/ olympiad/
+COPY solvers/ solvers/
+COPY scripts/ scripts/
+COPY examples/ examples/
+
+# Non-root execution
+RUN mkdir -p /gcs && chown -R agora:agora /gcs
+RUN chown -R agora:agora /app
+
+# Pre-download the sentence-transformers model to avoid blocking startup
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
+
+USER agora
+
+
+# Environment
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PORT=8080 \
+    SENTINEL_MODE=api \
+    Z3_PATH=/usr/bin/z3
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+# Launch Sentinel API server
+CMD ["python", "-m", "uvicorn", "agents.sentinel_server:app", "--host", "0.0.0.0", "--port", "8080"]

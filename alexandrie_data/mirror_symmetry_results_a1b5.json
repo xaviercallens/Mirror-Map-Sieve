@@ -1,0 +1,111 @@
+{
+  "sequence_name": "Callens-Socrates Sequence",
+  "symbol": "S_15",
+  "formula": "S_{15}(n) = \\sum_{k=0}^n \\binom{n}{k} \\binom{n+k}{k}^5",
+  "logarithmic_formula": "B_{15}(n) = \\sum_{k=0}^n \\binom{n}{k} \\binom{n+k}{k}^5 (-4 H_n + 5 H_{n+k} - H_{n-k})",
+  "mirror_map_integrality": true,
+  "mirror_map_coefficients": [
+    {
+      "m": 2,
+      "coefficient": "112",
+      "is_integer": true,
+      "value": 112
+    },
+    {
+      "m": 3,
+      "coefficient": "37973",
+      "is_integer": true,
+      "value": 37973
+    },
+    {
+      "m": 4,
+      "coefficient": "18476275",
+      "is_integer": true,
+      "value": 18476275
+    },
+    {
+      "m": 5,
+      "coefficient": "10821732660",
+      "is_integer": true,
+      "value": 10821732660
+    },
+    {
+      "m": 6,
+      "coefficient": "7100453844125",
+      "is_integer": true,
+      "value": 7100453844125
+    },
+    {
+      "m": 7,
+      "coefficient": "5030526977639230",
+      "is_integer": true,
+      "value": 5030526977639230
+    },
+    {
+      "m": 8,
+      "coefficient": "3766982229930449912",
+      "is_integer": true,
+      "value": 3766982229930449912
+    },
+    {
+      "m": 9,
+      "coefficient": "2941341230210245145497",
+      "is_integer": true,
+      "value": 2941341230210245145497
+    },
+    {
+      "m": 10,
+      "coefficient": "2373057375276478794463542",
+      "is_integer": true,
+      "value": 2373057375276478794463542
+    },
+    {
+      "m": 11,
+      "coefficient": "1965565672266078946644676382",
+      "is_integer": true,
+      "value": 1965565672266078946644676382
+    },
+    {
+      "m": 12,
+      "coefficient": "1663559652614943061348684173340",
+      "is_integer": true,
+      "value": 1663559652614943061348684173340
+    },
+    {
+      "m": 13,
+      "coefficient": "1433571559812920900934104498024822",
+      "is_integer": true,
+      "value": 1433571559812920900934104498024822
+    },
+    {
+      "m": 14,
+      "coefficient": "1254412021012300081023960580939577790",
+      "is_integer": true,
+      "value": 1254412021012300081023960580939577790
+    },
+    {
+      "m": 15,
+      "coefficient": "1112147966455454760796771775378325040775",
+      "is_integer": true,
+      "value": 1112147966455454760796771775378325040775
+    },
+    {
+      "m": 16,
+      "coefficient": "997318403610331384764913817858942640469507",
+      "is_integer": true,
+      "value": 997318403610331384764913817858942640469507
+    }
+  ],
+  "first_few_terms": [
+    1,
+    33,
+    8263,
+    3503073,
+    1895356251,
+    1180593064563,
+    806032289128459,
+    586979809155773409,
+    448407844730784704539,
+    355425554134618852670283
+  ]
+}

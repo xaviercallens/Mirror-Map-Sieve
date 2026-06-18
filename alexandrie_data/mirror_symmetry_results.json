@@ -1,0 +1,111 @@
+{
+  "sequence_name": "Callens-Schmidt Sequence",
+  "symbol": "S_20",
+  "formula": "S_{20}(n) = \\sum_{k=0}^n \\binom{n}{k}^4 \\binom{n+k}{k}",
+  "logarithmic_formula": "B_{20}(n) = \\sum_{k=0}^n \\binom{n}{k}^4 \\binom{n+k}{k} (3 H_n + H_{n+k} - 4 H_{n-k})",
+  "mirror_map_integrality": true,
+  "mirror_map_coefficients": [
+    {
+      "m": 2,
+      "coefficient": "9",
+      "is_integer": true,
+      "value": 9
+    },
+    {
+      "m": 3,
+      "coefficient": "165",
+      "is_integer": true,
+      "value": 165
+    },
+    {
+      "m": 4,
+      "coefficient": "4110",
+      "is_integer": true,
+      "value": 4110
+    },
+    {
+      "m": 5,
+      "coefficient": "111075",
+      "is_integer": true,
+      "value": 111075
+    },
+    {
+      "m": 6,
+      "coefficient": "3316785",
+      "is_integer": true,
+      "value": 3316785
+    },
+    {
+      "m": 7,
+      "coefficient": "104271733",
+      "is_integer": true,
+      "value": 104271733
+    },
+    {
+      "m": 8,
+      "coefficient": "3421974692",
+      "is_integer": true,
+      "value": 3421974692
+    },
+    {
+      "m": 9,
+      "coefficient": "115918914756",
+      "is_integer": true,
+      "value": 115918914756
+    },
+    {
+      "m": 10,
+      "coefficient": "4027088171898",
+      "is_integer": true,
+      "value": 4027088171898
+    },
+    {
+      "m": 11,
+      "coefficient": "142793489195634",
+      "is_integer": true,
+      "value": 142793489195634
+    },
+    {
+      "m": 12,
+      "coefficient": "5149415166799466",
+      "is_integer": true,
+      "value": 5149415166799466
+    },
+    {
+      "m": 13,
+      "coefficient": "188353171046524999",
+      "is_integer": true,
+      "value": 188353171046524999
+    },
+    {
+      "m": 14,
+      "coefficient": "6973330284143733181",
+      "is_integer": true,
+      "value": 6973330284143733181
+    },
+    {
+      "m": 15,
+      "coefficient": "260877511906858891334",
+      "is_integer": true,
+      "value": 260877511906858891334
+    },
+    {
+      "m": 16,
+      "coefficient": "9848682801654949278015",
+      "is_integer": true,
+      "value": 9848682801654949278015
+    }
+  ],
+  "first_few_terms": [
+    1,
+    3,
+    55,
+    1155,
+    29751,
+    852753,
+    26097499,
+    840454275,
+    28064517175,
+    964417304253
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "pid": "autocorr_signed_upper",
+  "domain": "combinatorics",
+  "v16_verdict": "REFUTED",
+  "v16_confidence": 0.0,
+  "sorry_count": 5,
+  "sorry_count_after_archimedes": 5,
+  "sorry_count_final": 1,
+  "archimedes_reduction": 0,
+  "pre_decomp_lemmas": 3,
+  "sharding_tier": "",
+  "sharding_region": "",
+  "hypotheses_applied": [
+    "H1_PRE_DECOMP_3L"
+  ],
+  "conjecture_statement": "Let $s \\in \\{-1, 1\\}^n$ be a binary sequence of length $n \\ge 2$ containing exactly $k$ terms equal to $-1$. Let $C_{2j}(s) = \\sum_{i=0}^{n-2j-1} s_i s_{i+2j}$ be the aperiodic autocorrelation at even lag $2j$. Then the sum of all even-lag autocorrelations is bounded above as follows:\n\n$$ \\sum_{j=1}^{\\lfloor(n-1)/2\\rfloor} C_{2j}(s) \\le \\binom{n-k}{2} + \\binom{k}{2} - \\left( \\left\\lceil \\frac{n-k}{2} \\right\\rceil \\left\\lfloor \\frac{n-k}{2} \\right\\rfloor + \\left\\lceil \\frac{k}{2} \\right\\rceil \\left\\lfloor \\frac{k}{2} \\right\\rfloor \\right) $$",
+  "lean4_sketch": "import Mathlib.Data.Fintype.Card\nimport Mathlib.Data.Finset.Sum\nimport Mathlib.Data.Nat.Choose.Sum\nimport Mathlib.Tactic.Ring\n\n-- Define the aperiodic autocorrelation function for sequences s : Fin n \u2192 {-1, 1}\nnoncomputable def autocorr (n : \u2115) (s : Fin n \u2192 ZMod 2) (k : \u2115) : \u2124 :=\n  if h : k < n \u2227 k > 0 then\n    \u2211 i : Fin (n-k), if s i = s (i + k) then 1 else -1\n  else 0\n\n-- The formal statement of the conjecture\ntheorem autocorr_signed_upper (n : \u2115) (hn : n \u2265 2) (k : \u2115) (hk : k \u2264 n)\n  (s : Fin n \u2192 ZMod 2) (h_card : Fintype.card {i // s i = 1} = k) : \n  \u2211 j in Finset.range (n / 2), autocorr n s (2 * j.val + 2) \n  \u2264 Nat.choose (n-k) 2 + Nat.choose k 2 - \n    ( (Nat.div (n-k) 2) * (Nat.add (n-k) 1) / 2 + \n      (Nat.div k 2) * (Nat.add k 1) / 2) := by\n\n  -- Let s_block be the sequence with k ones followed by n-k zeros.\n  -- The core of the proof would be to show that the sum for any sequence `s` is at most the sum for `s_block`.\n  let num_pos := n - k\n  let num_neg := k\n\n  -- Sub-Lemma 1: Bijection between sequences with k negative terms and k-subsets\n  -- The number of such sequences is indeed n choose k.\n  have autocorr_signed_uppe_sub1 : Fintype.card { s : Fin n \u2192 ZMod 2 // Fintype.card {i // s i = 1} = k } = Nat.choose n k := by\n    let E := Equiv.subtypeEquiv { s : Fin n \u2192 ZMod 2 // Fintype.card {i // s i = 1} = k } (by simp)\n    rw [\u2190 Fintype.card_of_subtype]\n    -- This equivalence is standard in Mathlib\n    let f := fun (s : {s : Fin n \u2192 ZMod 2 // Fintype.card {i | s i = 1} = k}) \u21a6 s.1 \u207b\u00b9' {1}\n    -- We need to prove this is a bijection to Finset (Fin n) of size k.\n    sorry -- Fintype.card_eq_of_equiv is a possible approach\n\n  -- Sub-Lemma 2: Verify the extremal bound via double-counting\n  -- The main inequality step. One would sum over all pairs (i, j) with j-i even\n  -- and relate it to the structure of the sequence s.\n  have autocorr_signed_uppe_sub2 : \n    \u2211 j in Finset.range (n / 2), autocorr n s (2 * j.val + 2) \n    = (\u2211' (i j : Fin n), if (j.val > i.val",
+  "lean4_sketch_archimedes": "import Mathlib.Data.Fintype.Card\nimport Mathlib.Data.Finset.Sum\nimport Mathlib.Data.Nat.Choose.Sum\nimport Mathlib.Tactic.Ring\nimport Mathlib.Data.ZMod.Basic\nimport Mathlib.Data.Fintype.Pi\nimport Mathlib.Combinatorics.Enumerative.Binomial\n\n-- Define the aperiodic autocorrelation function for sequences s : Fin n \u2192 ZMod 2\nnoncomputable def autocorr (n : \u2115) (s : Fin n \u2192 ZMod 2) (k : \u2115) : \u2124 :=\n  if h : k > 0 \u2227 k < n then\n    \u2211 i : Fin (n - k),\n      if s \u27e8i.val, i.isLt.trans (Nat.sub_lt_of_pos_le (le_of_lt h.2) h.1)\u27e9 =\n         s \u27e8i.val + k, (Nat.lt_sub_iff_add_lt.mp i.isLt)\u27e9\n      then 1 else -1\n  else 0\n\n-- The formal statement of the conjecture\ntheorem autocorr_signed_upper (n : \u2115) (hn : n \u2265 2) (k : \u2115) (hk : k \u2264 n)\n  (s : Fin n \u2192 ZMod 2) (h_card : Fintype.card {i // s i = 1} = k) :\n  \u2211 j in Finset.range (n / 2), autocorr n s (2 * j + 2)\n  \u2264 Nat.choose (n-k) 2 + Nat.choose k 2 -\n    ( (Nat.div (n-k) 2) * (Nat.add (n-k) 1) / 2 +\n      (Nat.div k 2) * (Nat.add k 1) / 2) := by\n\n  -- Let s_block be the sequence with k ones followed by n-k zeros.\n  -- The core of the proof would be to show that the sum for any sequence `s` is at most the sum for `s_block`.\n  let num_pos := n - k\n  let num_neg := k\n\n  -- Sub-Lemma 1: Bijection between sequences with k ones and k-subsets\n  -- The number of such sequences is indeed n choose k.\n  have autocorr_signed_uppe_sub1 : Fintype.card { s : Fin n \u2192 ZMod 2 // Fintype.card {i // s i = 1} = k } = Nat.choose n k := by\n    rw [Fintype.card_subtype_pi_eq_choose (b := (1 : ZMod 2))]\n    simp [Fintype.card_fin]\n\n  -- Sub-Lemma 2: Verify the extremal bound via double-counting\n  -- The main inequality step. One would sum over all pairs (i, j) with j-i even\n  -- and relate it to the structure of the sequence s.\n  -- The original code for this sub-lemma was incomplete.\n  sorry",
+  "research_brief": "",
+  "v15_sorry": 2,
+  "domain_prior": 0.35,
+  "gap_probability_map": {},
+  "sorry_guillotine_applied": false,
+  "cost_usd": 0.57,
+  "elapsed_s": 183.49,
+  "problem_id": "autocorr_signed_upper",
+  "status": "FAILED (UNRECOVERABLE)"
+}

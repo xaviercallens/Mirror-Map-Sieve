@@ -1,0 +1,31 @@
+{
+  "pid": "spheroidal_eigenvalue_lambda_m0",
+  "domain": "spectral_theory",
+  "v16_verdict": "REFUTED",
+  "v16_confidence": 0.0,
+  "sorry_count": 3,
+  "sorry_count_after_archimedes": 3,
+  "sorry_count_final": 0,
+  "archimedes_reduction": 0,
+  "pre_decomp_lemmas": 3,
+  "sharding_tier": "",
+  "sharding_region": "",
+  "hypotheses_applied": [
+    "H1_PRE_DECOMP_3L"
+  ],
+  "conjecture_statement": "Let $L_c$ be the prolate spheroidal differential operator on $H = L^2([-1, 1])$ defined by $L_c u(x) = -\\frac{d}{dx}\\left((1-x^2)\\frac{du}{dx}\\right) + c^2 x^2 u(x)$, for $c \\in \\mathbb{R}$. Let its discrete, ordered eigenvalues for the $m=0$ case be denoted by $\\{\\lambda_{0n}(c^2)\\}_{n=0}^\\infty$. Then for any $n \\in \\mathbb{N}_0$ and any $c \\in \\mathbb{R}$, the following inequality holds: \\\\ [ \\lambda_{0n}(c^2) \\ge n(n+1) \\] where $n(n+1)$ are the eigenvalues of the Legendre differential operator, which corresponds to the case $c=0$.",
+  "lean4_sketch": "import Mathlib.Analysis.InnerProductSpace.Spectrum\nimport Mathlib.Analysis.InnerProductSpace.SelfAdjoint\nimport Mathlib.Analysis.CompactOps\n\nnamespace SpheroidalEigenvalue\n\n-- Let H be a Hilbert space, e.g., L^2([-1,1]).\nvariable {H : Type*} [HilbertSpace \u211d H]\n\n-- We postulate the operators and their properties for the sake of the sketch.\n-- L\u2080 is the Legendre operator, Lc is the spheroidal operator for a given c.\n-- Their properties (self-adjointness, discrete spectrum) are assumed.\nvariable (L\u2080 : H \u2192 H) (is_sa_L\u2080 : IsSelfAdjoint L\u2080)\nvariable (Lc : \u211d \u2192 H \u2192 H) (is_sa_Lc : \u2200 c, IsSelfAdjoint (Lc c))\nvariable (spectrum_L\u2080 : \u2115 \u2192 \u211d) (spectrum_Lc : \u211d \u2192 \u2115 \u2192 \u211d)\nvariable (h_spec_L\u2080_range : spectrum \u211d L\u2080 = Set.range spectrum_L\u2080)\nvariable (h_spec_Lc_range : \u2200 c, spectrum \u211d (Lc c) = Set.range (spectrum_Lc c))\n\n-- The relationship between operators: Lc c = L\u2080 + V c where V c is a positive potential.\nvariable (V : \u211d \u2192 H \u2192 H)\naxiom op_relation (c : \u211d) : Lc c = L\u2080 + V c\naxiom V_positivity (c : \u211d) : \u2200 f, 0 \u2264 \u27ea(V c) f, f\u27eb_\u211d\n\n-- The known eigenvalues for the Legendre operator.\naxiom legendre_eigenvalues (n : \u2115) : spectrum_L\u2080 n = n * (n + 1)\n\ntheorem spheroidal_eigenvalue_lambda_m0 (c : \u211d) (n : \u2115) :\n  legendre_eigenvalues n \u2264 (spectrum_Lc c) n := by\n\n  let \u03bb_val := (spectrum_Lc c) n\n\n  -- Sub-Lemma 1 \u2014 Establish the eigenvalue is in the spectrum\n  have spheroidal_eigenvalu_sub1 : \u03bb_val \u2208 spectrum \u211d (Lc c) := by\n    rw [h_spec_Lc_range c]\n    simp only [Set.mem_range, exists_apply_eq_apply]\n\n  -- Sub-Lemma 2 \u2014 Prove the resolvent is bounded (leading to good spectral properties)\n  -- This step abstractly represents proving that the operator has a compact resolvent,\n  -- which guarantees a discrete spectrum of eigenvalues, making \"the n-th eigenvalue\" well-defined.\n  have spheroidal_eigenvalu_sub2 : IsCompact (resolvent (Lc c) (0 : \u2102)) := by\n    -- For a full proof on Sturm-Liouville operators, this is shown by proving\n    -- the resolvent is a Hilbert-Schmidt integral operator.\n    -- T",
+  "lean4_sketch_archimedes": "import Mathlib.Analysis.InnerProductSpace.Spectrum\nimport Mathlib.Analysis.InnerProductSpace.SelfAdjoint\nimport Mathlib.Analysis.CompactOps\n\nnamespace SpheroidalEigenvalue\n\n-- Let H be a Hilbert space, e.g., L^2([-1,1]).\nvariable {H : Type*} [HilbertSpace \u211d H]\n\n-- We postulate the operators and their properties for the sake of the sketch.\n-- L\u2080 is the Legendre operator, Lc is the spheroidal operator for a given c.\n-- Their properties (self-adjointness, discrete spectrum) are assumed.\nvariable (L\u2080 : H \u2192 H) (is_sa_L\u2080 : IsSelfAdjoint L\u2080)\nvariable (Lc : \u211d \u2192 H \u2192 H) (is_sa_Lc : \u2200 c, IsSelfAdjoint (Lc c))\nvariable (spectrum_L\u2080 : \u2115 \u2192 \u211d) (spectrum_Lc : \u211d \u2192 \u2115 \u2192 \u211d)\nvariable (h_spec_L\u2080_range : spectrum \u211d L\u2080 = Set.range spectrum_L\u2080)\nvariable (h_spec_Lc_range : \u2200 c, spectrum \u211d (Lc c) = Set.range (spectrum_Lc c))\n\n-- The relationship between operators: Lc c = L\u2080 + V c where V c is a positive potential.\nvariable (V : \u211d \u2192 H \u2192 H)\naxiom op_relation (c : \u211d) : Lc c = L\u2080 + V c\naxiom V_positivity (c : \u211d) : \u2200 f, 0 \u2264 \u27ea(V c) f, f\u27eb_\u211d\n\n-- The known eigenvalues for the Legendre operator.\naxiom legendre_eigenvalues (n : \u2115) : spectrum_L\u2080 n = n * (n + 1)\n\ntheorem spheroidal_eigenvalue_lambda_m0 (c : \u211d) (n : \u2115) :\n  legendre_eigenvalues n \u2264 (spectrum_Lc c) n := by\n\n  let \u03bb_val := (spectrum_Lc c) n\n\n  -- Sub-Lemma 1 \u2014 Establish the eigenvalue is in the spectrum\n  have spheroidal_eigenvalu_sub1 : \u03bb_val \u2208 spectrum \u211d (Lc c) := by\n    rw [h_spec_Lc_range c]\n    simp only [Set.mem_range, exists_apply_eq_apply]\n\n  -- Sub-Lemma 2 \u2014 Prove the resolvent is bounded (leading to good spectral properties)\n  -- This step abstractly represents proving that the operator has a compact resolvent,\n  -- which guarantees a discrete spectrum of eigenvalues, making \"the n-th eigenvalue\" well-defined.\n  have spheroidal_eigenvalu_sub2 : IsCompact (resolvent (Lc c) (0 : \u2102)) := by\n    -- For a full proof on Sturm-Liouville operators, this is shown by proving\n    -- the resolvent is a Hilbert-Schmidt integral operator.\n    -- T",
+  "research_brief": "",
+  "v15_sorry": 2,
+  "domain_prior": 0.2,
+  "gap_probability_map": {},
+  "sorry_guillotine_applied": false,
+  "cost_usd": 0.42,
+  "elapsed_s": 145.7,
+  "problem_id": "spheroidal_eigenvalue_lambda_m0",
+  "status": "FAILED (UNRECOVERABLE)",
+  "galileo_valid": false,
+  "galileo_message": "Validation failed",
+  "galileo_diff": "N/A"
+}

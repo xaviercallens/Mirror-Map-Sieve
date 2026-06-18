@@ -1,0 +1,15 @@
+{
+  "pid": "covering_C13_k7_t4",
+  "domain": "combinatorics",
+  "v13_status": "CB_TRIPPED",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 7,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.35,
+  "cost_usd": 0.41000000000000003,
+  "elapsed_s": 101.37420204200316,
+  "conjecture_statement": "Let $V$ be a set of 13 points, and $\\\\\\\\mathcal{B}$ be a collection of 7-subsets of $V$ (called blocks) such that every 4-subset of $V$ is contained in at least one block of $\\\\\\\\mathcal{B}$. Let $C(13, 7, 4)$ be the minimum possible size of such a collection $\\\\\\\\mathcal{B}$. The conjecture is twofold: (1) $C(13, 7, 4) = 23$. (2) For any such minimal collection $\\\\\\\\mathcal{B}$ of size 23, the multiset of replication numbers $\\\\{|\\\\\\\\{B \\\\\\\\in \\\\\\\\mathcal{B} : x \\\\\\\\in B\\\\\\\\}| : x \\\\\\\\in V\\\\\\\\}",
+  "lean4_sketch": "import Mathlib.Data.Finset.Card\\\nimport Mathlib.Data.Fintype.Card\\\nimport Mathlib.Data.Multiset.Basic\\\n\\\nopen Finset\\\n\\\n/-! # Formalization of Covering Designs -/\\\n\\\nstructure CoveringDesign (n k t : \u2115) where\\\n  V : Type*\\\n  [fintypeV : Fintype V]\\\n  card_V : Fintype.card V = n\\\n  blocks : Finset (Finset V)\\\n  card_block_prop : \u2200 B \u2208 blocks, B.card = k\\\n  covering_prop : \u2200 T : Finset V, T.card = t \u2192 \u2203 B \u2208 blocks, T \u2286 B\\\n\\\ndef covering_number (n k t : \u2115) : \u2115 :=\\\n  sInf { b : \u2115 | \u2203 (D : CoveringDesign n k t), D.blocks.card = b }\\\n\\\ndef replication_number {n k t : \u2115} (D : CoveringDesign n k t) (x : D.V) : \u2115 :=\\\n  (D.blocks.filter (fun B \u21a6 x \u2208 B)).card\\\n\\\ndef replication_multiset {n k t : \u2115} (D : CoveringDesign n k t) : Multiset \u2115 :=\\\n  Multiset.map (replication_number D) (univ : Finset D.V).v",
+  "gap_probability_map": {}
+}

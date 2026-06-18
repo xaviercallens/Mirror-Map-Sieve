@@ -1,0 +1,5 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'us-central1-docker.pkg.dev/gen-lang-client-0625573011/agora-repo/alien-math-autoresearcher:latest', '-f', 'Dockerfile.autoresearcher', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'us-central1-docker.pkg.dev/gen-lang-client-0625573011/agora-repo/alien-math-autoresearcher:latest']

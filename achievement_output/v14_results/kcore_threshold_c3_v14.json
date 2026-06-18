@@ -1,0 +1,15 @@
+{
+  "pid": "kcore_threshold_c3",
+  "domain": "combinatorics",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 4,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.35,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 146.88216045800073,
+  "conjecture_statement": "Let $G(n, p)$ be the Erd\u0151s\u2013R\u00e9nyi random graph with $p=c/n$. Let $C_k(G)$ be the $k$-core of $G$. Let $C_\\\\triangle(G)$ be the triangle-core of $G$, defined as the largest induced subgraph of $G$ where every vertex is part of at least one triangle. Let $c_k$ and $c_\\\\triangle$ be the respective threshold constants for the emergence of a non-empty $C_k(G)$ and $C_\\\\triangle(G)$. The conjecture is that for $k=3$, these thresholds are identical: $c_3 = c_\\\\triangle$. Specifically, $c_3$ is the const",
+  "lean4_sketch": "import analysis.special_functions.exp_log\nimport combinatorics.simple_graph.core\nimport probability_theory.borel_cantelli\n\nnoncomputable theory\nopen filter\n\n/- We assume a framework for G(n,p) random graphs, providing a probability space\n   on `simple_graph (fin n)` for each n. -/\naxiom gnp (n : \u2115) (p : \u211d) : Type*\naxiom gnp_prob {n : \u2115} {p : \u211d} : measure_space (gnp n p)\n\n-- Definition of the triangle-core vertices via a peeling operator\ndef is_in_triangle {V : Type*} (G : simple_graph V) (v : V) (S : set V) : Prop :=\n  \u2203 u w \u2208 S, G.adj v u \u2227 G.adj v w \u2227 G.adj u w\n\ndef triangle_core_peeling_operator {V : Type*} (G : simple_graph V) (S : set V) : set V :=\n  {v \u2208 S | is_in_triangle G v S}\n\n-- The triangle-core vertex set is the largest fixed point of this operator.\n-- We postulate its existen",
+  "gap_probability_map": {}
+}

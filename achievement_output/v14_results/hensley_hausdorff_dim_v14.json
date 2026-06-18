@@ -1,0 +1,15 @@
+{
+  "pid": "hensley_hausdorff_dim",
+  "domain": "number_theory",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 2,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.05,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 140.19613208300143,
+  "conjecture_statement": "Let $d(A) := \\\\dim_H(\\\\{x \\\\in [0,1] \\\\setminus \\\\mathbb{Q} \\\\mid a_i(x) \\\\in A, \\\\forall i \\\\ge 1\\\\})$, where $a_i(x)$ are the partial quotients of the continued fraction of $x$ and $\\\\dim_H$ is the Hausdorff dimension. For $N \\\\in \\\\mathbb{N}_{\\\\ge 1}$, let $A_N = \\\\{1, 2, \\\\dots, N\\\\}$ and $B_N = \\\\{N+1, N+2, \\\\dots\\\\}$. Define the function $S(N) := d(A_N) + d(B_N)$. Then $S(N)$ is a strictly monotone increasing function of $N$ for all $N \\\\ge 1$. That is, $S(N+1) > S(N)$ for all $N \\\\ge 1$.",
+  "lean4_sketch": "import Mathlib.NumberTheory.ContinuedFractions.Basic\nimport Mathlib.Analysis.Calculus.MeanValue\nimport Mathlib.MeasureTheory.Measure.Hausdorff\n\nopen Real Set Metric MeasureTheory\n\n/-- The set of irrationals in [0,1] whose continued fraction digits are in a given set A. -/\nnoncomputable def ContinuedFraction.setOfDigits (A : Set \u2115) : Set \u211d :=\n  {x | 0 \u2264 x \u2227 x \u2264 1 \u2227 \u00ac Irrational x \u2227 \u2200 i, (continuedFraction x).digits i \u2208 A}\n\n/-- The Hausdorff dimension of the set of numbers with continued fraction digits in A. -/\nnoncomputable def dimH_cf (A : Set \u2115) : \u211d := hausdorffDimension (ContinuedFraction.setOfDigits A)\n\n/-- The sum of dimensions for the complementary digit sets {1,...,N} and {N+1,...}. -/\nnoncomputable def S (N : \u2115) : \u211d :=\n  dimH_cf (Ioc 0 N) + dimH_cf (Ioi N)\n\n/-- \nThis theorem states",
+  "gap_probability_map": {}
+}

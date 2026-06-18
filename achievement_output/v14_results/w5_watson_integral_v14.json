@@ -1,0 +1,15 @@
+{
+  "pid": "w5_watson_integral",
+  "domain": "stat_mechanics",
+  "v13_status": "CB_TRIPPED",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.65,
+  "sorry_count": 0,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.15,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 248.995407082999,
+  "conjecture_statement": "{'conjecture_generator': ConjectureResult(conjectures=[Conjecture(statement='Let the anisotropic Watson-type integral $I(a)$ for $a > 0$ be defined as\\n$$ I(a) := \\\\frac{1}{\\\\pi^3} \\\\int_0^\\\\pi \\\\int_0^\\\\pi \\\\int_0^\\\\pi \\\\frac{dx \\\\, dy \\\\, dz}{1 - \\\\frac{1}{2+a}(\\\\cos x + \\\\cos y + a \\\\cos z)} $$.\\nThen, in the limit as $a \\\\to 0^+$, the integral has the following asymptotic expansion:\\n$$ I(a) = 2 \\\\ln\\\\left(\\\\frac{1}{a}\\\\right) + C_0 + O(a \\\\ln a) $$,\\nwhere the constant term $C_0$ is given b",
+  "lean4_sketch": "",
+  "gap_probability_map": {}
+}

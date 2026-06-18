@@ -1,0 +1,15 @@
+{
+  "pid": "spherical_mode_quality_factor_te_tm",
+  "domain": "spectral_theory",
+  "solvability": 2,
+  "source": "v16_offline",
+  "pre_decomp_lemmas": 3,
+  "sorry_galois": 7,
+  "sorry_final": 7,
+  "arch_reduction": 0,
+  "verdict": "INCOMPLETE",
+  "euler_confidence": 0.7,
+  "cost_usd": 0.3,
+  "elapsed_s": 84.75,
+  "alexandrie_id": "v16_dryrun_spherical_mode_quality_factor_te_tm"
+}

@@ -1,0 +1,26 @@
+{
+  "pid": "bernstein_constant",
+  "domain": "special_functions",
+  "v16_verdict": "REFUTED",
+  "v16_confidence": 0.57,
+  "sorry_count": 4,
+  "sorry_count_after_archimedes": 4,
+  "sorry_count_final": 4,
+  "archimedes_reduction": 0,
+  "pre_decomp_lemmas": 3,
+  "sharding_tier": "",
+  "sharding_region": "",
+  "hypotheses_applied": [
+    "H1_PRE_DECOMP_3L"
+  ],
+  "conjecture_statement": "$$ \\sum_{n=0}^{\\infty} \\frac{\\binom{2n}{n}}{4^n (4n+1)} = \\frac{\\Gamma\\left(\\frac{1}{4}\\right) \\Gamma\\left(\\frac{1}{2}\\right)}{4\\Gamma\\left(\\frac{3}{4}\\right)} $$",
+  "lean4_sketch": "import Mathlib.Analysis.SpecialFunctions.Gamma.Basic\nimport Mathlib.Analysis.Summation.Summable\nimport Mathlib.Data.Real.Basic\n\n-- Placeholder for Gaussian hypergeometric function\n-- This function is not yet defined in Mathlib4.\n-- See: https://en.wikipedia.org/wiki/Hypergeometric_function\n-- _2F1(a,b;c;z) = \u2211 (n=0 to \u221e) (a)\u2099(b)\u2099 / (c)\u2099 * z\u207f/n!\nnamespace Real\nnoncomputable def Hypergeometric._2F1 (a b c z : \u211d) : \u211d := sorry\nend Real\n\n-- Theorem: bernstein_constant (v16)\n\ntheorem bernstein_constant :\n    \u2211' (n : \u2115), (Nat.choose (2 * n) n : \u211d) / (4^n * (4 * n + 1)) =\n    (Real.Gamma (1 / 4) * Real.Gamma (1 / 2)) / (4 * Real.Gamma (3 / 4)) := by\n  -- The proof proceeds by identifying the sum as a case of the Gaussian hypergeometric function\n  -- _2F1(a,b;c;z) at z=1, applying Gauss's theorem for its evaluation, and simplifying\n  -- the resulting expression involving the Gamma function.\n\n  -- Sub-Lemma 1 \u2014 \ud83d\udfe2 EASY: Prove positivity / non-vanishing of the special function's values.\n  -- This ensures the denominator of the right-hand side is non-zero.\n  have h_pos_denom_nonzero : 4 * Real.Gamma (3 / 4) \u2260 0 := by\n    have h_gamma_pos : 0 < Real.Gamma (3 / 4) := by\n      apply Real.Gamma_pos_of_pos\n      norm_num\n    exact mul_ne_zero (by norm_num) (ne_of_gt h_gamma_pos)\n\n  -- Sub-Lemma 2 \u2014 \ud83d\udd34 HARD: Establish the absolute summability of the series.\n  -- This is required for the sum to be well-defined.\n  have h_conv : Summable (\u03bb n : \u2115, (Nat.choose (2 * n) n : \u211d) / (4^n * (4 * n + 1))) := by\n    -- The proof of convergence relies on the asymptotic behavior of the central binomial coefficient,\n    -- showing the terms are O(n\u207b\u00b3/\u00b2). Since 3/2 > 1, the series converges by comparison\n    -- with a p-series. This is a non-trivial result from asymptotics.\n    sorry\n\n  -- Sub-Lemma 3 \u2014 \ud83d\udfe1 MEDIUM: Apply the functional equation for the Gamma function.\n  -- This is key to simplifying the expression from Gauss's theorem.\n  have h_rec : Real.Gamma (5 / 4) = (1 / 4) * Real.Gamma (1 / 4) := b",
+  "lean4_sketch_archimedes": "import Mathlib.Analysis.SpecialFunctions.Gamma.Basic\nimport Mathlib.Analysis.Summation.Summable\nimport Mathlib.Data.Real.Basic\n\n-- Placeholder for Gaussian hypergeometric function\n-- This function is not yet defined in Mathlib4.\n-- See: https://en.wikipedia.org/wiki/Hypergeometric_function\n-- _2F1(a,b;c;z) = \u2211 (n=0 to \u221e) (a)\u2099(b)\u2099 / (c)\u2099 * z\u207f/n!\nnamespace Real\nnoncomputable def Hypergeometric._2F1 (a b c z : \u211d) : \u211d := sorry\nend Real\n\n-- Theorem: bernstein_constant (v16)\n\ntheorem bernstein_constant :\n    \u2211' (n : \u2115), (Nat.choose (2 * n) n : \u211d) / (4^n * (4 * n + 1)) =\n    (Real.Gamma (1 / 4) * Real.Gamma (1 / 2)) / (4 * Real.Gamma (3 / 4)) := by\n  -- The proof proceeds by identifying the sum as a case of the Gaussian hypergeometric function\n  -- _2F1(a,b;c;z) at z=1, applying Gauss's theorem for its evaluation, and simplifying\n  -- the resulting expression involving the Gamma function.\n\n  -- Sub-Lemma 1 \u2014 \ud83d\udfe2 EASY: Prove positivity / non-vanishing of the special function's values.\n  -- This ensures the denominator of the right-hand side is non-zero.\n  have h_pos_denom_nonzero : 4 * Real.Gamma (3 / 4) \u2260 0 := by\n    have h_gamma_pos : 0 < Real.Gamma (3 / 4) := by\n      apply Real.Gamma_pos_of_pos\n      norm_num\n    exact mul_ne_zero (by norm_num) (ne_of_gt h_gamma_pos)\n\n  -- Sub-Lemma 2 \u2014 \ud83d\udd34 HARD: Establish the absolute summability of the series.\n  -- This is required for the sum to be well-defined.\n  have h_conv : Summable (\u03bb n : \u2115, (Nat.choose (2 * n) n : \u211d) / (4^n * (4 * n + 1))) := by\n    -- The proof of convergence relies on the asymptotic behavior of the central binomial coefficient,\n    -- showing the terms are O(n\u207b\u00b3/\u00b2). Since 3/2 > 1, the series converges by comparison\n    -- with a p-series. This is a non-trivial result from asymptotics.\n    sorry\n\n  -- Sub-Lemma 3 \u2014 \ud83d\udfe1 MEDIUM: Apply the functional equation for the Gamma function.\n  -- This is key to simplifying the expression from Gauss's theorem.\n  have h_rec : Real.Gamma (5 / 4) = (1 / 4) * Real.Gamma (1 / 4) := b",
+  "research_brief": "",
+  "v15_sorry": 2,
+  "domain_prior": 0.25,
+  "gap_probability_map": {},
+  "sorry_guillotine_applied": false,
+  "cost_usd": 0.62,
+  "elapsed_s": 166.76
+}

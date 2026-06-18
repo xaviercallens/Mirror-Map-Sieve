@@ -1,0 +1,15 @@
+{
+  "pid": "dual_risk_pareto_finite_time_ruin",
+  "domain": "special_functions",
+  "solvability": 2,
+  "source": "missing",
+  "pre_decomp_lemmas": 3,
+  "sorry_galois": 5,
+  "sorry_final": 5,
+  "arch_reduction": 0,
+  "verdict": "INCOMPLETE",
+  "euler_confidence": 0.7,
+  "cost_usd": 0.3,
+  "elapsed_s": 140.38,
+  "alexandrie_id": "v16_dryrun_dual_risk_pareto_finite_time_ruin"
+}

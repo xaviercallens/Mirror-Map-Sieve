@@ -1,0 +1,5 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/gen-lang-client-0625573011/agora/lean-compiler:latest', '-f', 'deploy/docker/Dockerfile.lean_compiler', '.']
+images:
+  - 'us-central1-docker.pkg.dev/gen-lang-client-0625573011/agora/lean-compiler:latest'

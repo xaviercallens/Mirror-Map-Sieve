@@ -1,0 +1,14 @@
+{
+  "pid": "merit_factor_6_5",
+  "domain": "coding_theory",
+  "v14_verdict": "INCOMPLETE",
+  "v14_sorry": 1,
+  "sorry_before": 0,
+  "sorry_after": 0,
+  "sorry_eliminated": 0,
+  "pre_decomp_slots": 3,
+  "offline_verdict": "ALREADY_OK",
+  "alexandrie_id": "v16_offline_merit_factor_6_5",
+  "elapsed_s": 0.019,
+  "gap_summary": []
+}

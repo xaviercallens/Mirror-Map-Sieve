@@ -1,0 +1,177 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\title{\textbf{Selected Inventions in Formally Verified, High-Assurance Computational Systems}}
+\author{Gustave Eiffel}
+\date{\today}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document outlines a selection of three highly viable, lucrative, and patentable inventions derived from the synthesis of hypercube-based state-space modeling, exact rational arithmetic (Q-arithmetic), and formal verification methodologies. The selected inventions target critical applications in autonomous navigation, high-frequency financial trading, and robotic telesurgery, where provable correctness and deterministic execution offer transformative improvements in safety, reliability, and performance. For each invention, a set of formal, USPTO-style claims is provided, delineating the scope of the method, system, and apparatus.
+\end{abstract}
+
+\section{Invention 1: Verifiably Safe Motion Planning for Autonomous Systems}
+\subsection{Method Claim}
+\noindent What is claimed is:
+\begin{enumerate}
+    \item A method for verifiably safe motion planning for an autonomous machine, the method comprising:
+    \begin{enumerate}
+        \item[(a)] receiving, by a processing unit, sensor data representing a physical environment of the autonomous machine;
+        \item[(b)] constructing, by the processing unit, a digital state-space model of the physical environment and the autonomous machine, wherein all geometric and state variables within the model are represented using exact rational arithmetic;
+        \item[(c)] defining, within the digital state-space model, a plurality of safety corridors as N-dimensional hypercube bounds, wherein said bounds represent collision-free regions of operation for the autonomous machine;
+        \item[(d)] computing a trajectory for the autonomous machine from a start state to a goal state, wherein said trajectory is constrained to lie entirely within the defined safety corridors;
+        \item[(e)] generating, using a formal verification engine, a non-repudiable mathematical proof, termed an exact rational witness, certifying that the computed trajectory is collision-free and adheres to the hypercube bounds; and
+        \item[(f)] transmitting control signals corresponding to the certified trajectory to an actuation system of the autonomous machine.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{System Claim}
+\noindent What is claimed is:
+\begin{enumerate}
+    \item A system for verifiably safe motion planning, the system comprising:
+    \begin{enumerate}
+        \item[(a)] a sensor suite configured to acquire data representing a physical environment;
+        \item[(b)] a non-transitory computer-readable memory storing a plurality of instructions; and
+        \item[(c)] one or more processors coupled to the memory and the sensor suite, the one or more processors configured to execute the plurality of instructions to:
+        \begin{enumerate}
+            \item[(i)] construct a digital state-space model of the physical environment using the acquired data, wherein numerical representations within the model utilize exact rational arithmetic;
+            \item[(ii)] define a plurality of hypercube bounds within the model to establish safety corridors for an autonomous machine's movement;
+            \item[(iii)] execute a planning module to compute a trajectory for the autonomous machine that is wholly contained within the safety corridors;
+            \item[(iv)] execute a formal verification module to generate a mathematical certificate of safety for the computed trajectory, said certificate proving compliance with the hypercube bounds; and
+            \item[(v)] generate and transmit control instructions based on the certified trajectory to a motion control unit of the autonomous machine.
+        \end{enumerate}
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Apparatus Claim}
+\noindent What is claimed is:
+\begin{enumerate}
+    \item An autonomous apparatus, comprising:
+    \begin{enumerate}
+        \item[(a)] a chassis;
+        \item[(b)] a plurality of actuators coupled to the chassis for effecting motion;
+        \item[(c)] a plurality of sensors configured to perceive an external environment; and
+        \item[(d)] a motion planning computer system comprising a processor and a memory, the memory storing machine-executable code which, when executed by the processor, causes the system to:
+        \begin{enumerate}
+            \item[(i)] represent the external environment and a state of the apparatus as a digital model employing exact rational arithmetic;
+            \item[(ii)] determine a set of N-dimensional hypercube bounds defining a collision-free safety corridor within the digital model;
+            \item[(iii)] calculate a path from a current state to a target state, said path being mathematically constrained within the safety corridor;
+            \item[(iv)] formally verify, using an exact rational witness methodology, that the calculated path is mathematically guaranteed to be collision-free; and
+            \item[(v)] command the plurality of actuators to move the apparatus along the formally verified path.
+        \end{enumerate}
+    \end{enumerate}
+\end{enumerate}
+
+\pagebreak
+
+\section{Invention 2: High-Frequency Trading System with Deterministic Execution}
+\subsection{Method Claim}
+\noindent What is claimed is:
+\begin{enumerate}
+    \item A computer-implemented method for deterministic high-frequency securities trading, the method comprising:
+    \begin{enumerate}
+        \item[(a)] receiving, at a computing system, a stream of market data from a securities exchange;
+        \item[(b)] representing, by the computing system, all numerical values in the market data, including prices and volumes, and all subsequent calculations using an exact rational arithmetic representation (Q-arithmetic) to prevent floating-point imprecision;
+        \item[(c)] defining a set of trading strategy constraints as hypercube bounds within a multi-dimensional market state space, said bounds representing limits on risk, volatility exposure, and order size;
+        \item[(d)] analyzing, using a trading logic module executed by the computing system, the Q-arithmetic representation of the market data to identify a trading opportunity;
+        \item[(e)] generating a proposed trade order based on the identified opportunity, wherein the parameters of the proposed trade order are calculated using Q-arithmetic;
+        \item[(f)] formally verifying, by the computing system, that the proposed trade order and the resulting portfolio state do not violate the predefined hypercube bounds; and
+        \item[(g)] transmitting the verified trade order to the securities exchange for execution.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{System Claim}
+\noindent What is claimed is:
+\begin{enumerate}
+    \item A system for deterministic high-frequency trading, comprising:
+    \begin{enumerate}
+        \item[(a)] a network interface configured to receive market data from and transmit orders to a securities exchange;
+        \item[(b)] a memory storing a trading strategy, said strategy including a plurality of risk constraints defined as hypercube bounds in a market state space; and
+        \item[(c)] a specialized processing unit, operably coupled to the network interface and the memory, configured to:
+        \begin{enumerate}
+            \item[(i)] convert all incoming market data and internal financial state variables into an exact rational arithmetic format;
+            \item[(ii)] perform all trading logic calculations, including order book analysis and risk assessment, exclusively using said exact rational arithmetic format to ensure deterministic outcomes;
+            \item[(iii)] generate a candidate trade order in response to market conditions;
+            \item[(iv)] execute a verification engine to prove that execution of the candidate trade order does not breach any of the stored hypercube bounds; and
+            \item[ (v)] upon successful verification, packetize and transmit the candidate trade order via the network interface.
+        \end{enumerate}
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Apparatus Claim}
+\noindent What is claimed is:
+\begin{enumerate}
+    \item A trading apparatus for deterministic execution of financial transactions, comprising:
+    \begin{enumerate}
+        \item[(a)] a hardware chassis;
+        \item[(b)] a low-latency network interface card housed within the chassis;
+        \item[(c)] a processing architecture within the chassis comprising at least one of a Field-Programmable Gate Array (FPGA) or an Application-Specific Integrated Circuit (ASIC);
+        \item[(d)] wherein the processing architecture is specifically configured at a hardware level to perform arithmetic operations on numerical data represented in an exact rational format; and
+        \item[(e)] wherein the processing architecture is further configured to execute logic to:
+        \begin{enumerate}
+            \item[(i)] receive market data via the network interface card;
+            \item[(ii)] evaluate a trading strategy using the exact rational arithmetic operations against the received market data;
+            \item[(iii)] determine if a generated trade order complies with a set of pre-programmed hypercube risk bounds; and
+            \item[(iv)] transmit a compliant trade order via the network interface card.
+        \end{enumerate}
+    \end{enumerate}
+\end{enumerate}
+
+\pagebreak
+
+\section{Invention 3: Precision Robotics for Telesurgery with Force-Feedback Guarantees}
+\subsection{Method Claim}
+\noindent What is claimed is:
+\begin{enumerate}
+    \item A method for providing verifiably safe force feedback in a robotic telesurgery system, comprising:
+    \begin{enumerate}
+        \item[(a)] generating, by a computer, a three-dimensional digital model of a surgical field, wherein all geometric coordinates and physical parameters in the model are defined using exact rational arithmetic;
+        \item[(b)] defining, within the digital model, a plurality of safety-critical regions as hypercube bounds, said bounds establishing volumetric no-go zones and maximum force thresholds;
+        \item[(c)] receiving, from a surgeon's master control input device, a stream of position commands;
+        \item[(d)] translating the position commands into a planned trajectory for a surgical robot manipulator, wherein said trajectory is calculated using exact rational arithmetic;
+        \item[(e)] dynamically calculating, during motion, a maximum safe feedback force based on the manipulator's proximity to the hypercube bounds;
+        \item[(f)] formally verifying, in real-time, that the planned trajectory and the calculated feedback force annd the manipulator's resulting state will not violate the hypercube bounds; and
+        \item[(g)] rendering the verified feedback force to the surgeon's master control input device.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{System Claim}
+\noindent What is claimed is:
+\begin{enumerate}
+    \item A robotic telesurgery system, comprising:
+    \begin{enumerate}
+        \item[(a)] a surgeon's console including a master input device and a haptic feedback actuator;
+        \item[(b)] a patient-side cart including a robotic manipulator with a surgical instrument and a force sensor; and
+        \item[(c)] a control unit communicatively coupled to the surgeon's console and the patient-side cart, the control unit comprising one or more processors and a memory storing instructions that, when executed, cause the control unit to:
+        \begin{enumerate}
+            \item[(i)] construct and maintain a digital model of the surgical environment using exact rational arithmetic;
+            \item[(ii)] define a set of hypercube safety bounds within the model, said bounds corresponding to anatomical no-go zones and force limits;
+            \item[(iii)] compute manipulator movements and resultant haptic feedback values in response to inputs from the master input device, performing all such computations using exact rational arithmetic; and
+            \item[(iv)] execute a formal verification module to continuously certify that the manipulator movements and haptic feedback values are guaranteed to comply with the hypercube safety bounds before commanding the manipulator and the haptic feedback actuator.
+        \end{enumerate}
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Apparatus Claim}
+\noindent What is claimed is:
+\begin{enumerate}
+    \item A surgical control apparatus, comprising:
+    \begin{enumerate}
+        \item[(a)] a physical housing;
+        \item[(b)] an interface for receiving motion commands from a surgeon's input device;
+        \item[(c)] an interface for transmitting motion commands to a robotic manipulator;
+        \item[(d)] an interface for transmitting force commands to a haptic feedback device; and
+        \item[(e)] a processing unit contained within the housing and coupled to said interfaces, the processing unit configured by machine-readable instructions to:
+        \begin{enumerate}
+            \item[(i)] model a surgical workspace using a coordinate system based on exact rational numbers;
+            \item[(ii)] define one or more safety constraints within the workspace as N-dimensional hypercubes;
+            \item[(iii)] calculate a proposed movement for the robotic manipulator and a corresponding safe haptic feedback force, wherein the calculation uses exact rational arithmetic to prevent precision errors; and
+            \item[(iv)] execute a verification algorithm to generate a mathematical proof that the proposed movement and feedback force are bounded within the safety constraints before transmitting said commands via the respective interfaces.
+        \end{enumerate}
+    \end{enumerate}
+\end{enumerate}
+
+\end{document}

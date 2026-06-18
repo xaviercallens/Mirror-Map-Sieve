@@ -1,0 +1,25 @@
+FROM python:3.12-slim
+
+# Install system dependencies & Elan (Lean 4)
+RUN apt-get update && apt-get install -y curl git && \
+    curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+ENV PATH="/root/.elan/bin:${PATH}"
+
+# Setup working directory
+WORKDIR /app
+
+# Copy dependency files
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt google-antigravity httpx
+
+# Copy LindelofMathlib and compile it
+COPY LindelofMathlib/ /app/LindelofMathlib/
+WORKDIR /app/LindelofMathlib
+RUN lake build
+
+# Copy Agora project
+WORKDIR /app/SocrateAI-Scientific-Agora
+COPY SocrateAI-Scientific-Agora/ .
+
+# Entrypoint is the orchestrator script
+CMD ["python3", "scripts/run_lindelof_agora.py"]

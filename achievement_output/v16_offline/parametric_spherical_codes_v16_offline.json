@@ -1,0 +1,14 @@
+{
+  "pid": "parametric_spherical_codes",
+  "domain": "coding_theory",
+  "v14_verdict": "INCOMPLETE",
+  "v14_sorry": 1,
+  "sorry_before": 0,
+  "sorry_after": 0,
+  "sorry_eliminated": 0,
+  "pre_decomp_slots": 3,
+  "offline_verdict": "ALREADY_OK",
+  "alexandrie_id": "v16_offline_parametric_spherical_codes",
+  "elapsed_s": 0.017,
+  "gap_summary": []
+}

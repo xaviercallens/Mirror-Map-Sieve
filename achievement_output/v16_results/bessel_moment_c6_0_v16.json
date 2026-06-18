@@ -1,0 +1,31 @@
+{
+  "pid": "bessel_moment_c6_0",
+  "domain": "special_functions",
+  "v16_verdict": "REFUTED",
+  "v16_confidence": 0.0,
+  "sorry_count": 0,
+  "sorry_count_after_archimedes": 0,
+  "sorry_count_final": 0,
+  "archimedes_reduction": 0,
+  "pre_decomp_lemmas": 3,
+  "sharding_tier": "",
+  "sharding_region": "",
+  "hypotheses_applied": [
+    "H1_PRE_DECOMP_3L"
+  ],
+  "conjecture_statement": "Let $c \\in \\mathbb{R}$ with $c > 0$, and let $a \\in \\mathbb{R}$. Then the identity\n$$ \\int_0^\\infty x e^{-cx^2} I_0(ax) \\,dx = \\frac{1}{2c} \\exp\\left(\\frac{a^2}{4c}\\right) $$\nholds, where $I_0$ is the modified Bessel function of the first kind of order zero.",
+  "lean4_sketch": "import Mathlib.Analysis.SpecialFunctions.Bessel\nimport Mathlib.Analysis.SpecialFunctions.Gamma.Basic\nimport Mathlib.Analysis.Integration.Integral\nimport Mathlib.Analysis.Summation.Series\n\nopen Real Set Filter Topology Nat\n\ntheorem bessel_moment_c6_0 (c : \u211d) (hc : 0 < c) (a : \u211d) :\n    \u222b x in Ioi 0, x * exp (-c * x^2) * besseli 0 (a * x) = (1 / (2 * c)) * exp (a^2 / (4 * c)) := by\n  -- Rewrite I\u2080 using its series definition and prepare to swap integral and sum.\n  let term (k : \u2115) (x : \u211d) := x * exp (-c * x^2) * ((a * x / 2)^(2 * k) / (\u2191k! * Gamma (\u2191k + 1)))\n  conv_lhs => congr; rfl; congr; rw [besseli_def_of_nonneg (by norm_num) (a*x)]\n\n  -- Sub-Lemma 1: Prove positivity of each term in the series to use Tonelli's theorem.\n  have bessel_moment_c6_0_sub1 : \u2200 (k : \u2115), \u2200 x \u2208 Ioi (0 : \u211d), 0 \u2264 term k x := by\n    intro k x hx\n    have h_denom_pos : 0 < (\u2191k! * Gamma (\u2191k + 1)) := by\n      apply mul_pos\n      \u00b7 exact_mod_cast Nat.factorial_pos k\n      \u00b7 exact Gamma_pos_of_pos (by linarith)\n    -- The positivity tactic should be able to prove this by combining positivity lemmas.\n    positivity\n\n  -- Swap the integral and the infinite sum, justified by non-negativity (Tonelli's theorem).\n  rw [integral_tsum_of_nonneg bessel_moment_c6_0_sub1]\n\n  -- Sub-Lemma 3: Apply functional equations/known results to evaluate the integral for each term k.\n  have bessel_moment_c6_0_sub3 : \u2200 (k : \u2115),\n      \u222b x in Ioi 0, term k x = (1 / (2 * c)) * (a^2 / (4 * c))^k / k! := by\n    intro k\n    rw [Gamma_nat_eq_factorial k, \u2190 pow_two]\n    simp_rw [term, mul_div_assoc, div_right_comm _ _ (\u2191k!^2), pow_mul, div_pow, pow_div]\n    -- Pull constants out of the integral.\n    rw [integral_mul_left, integral_mul_left, integral_mul_right]\n    -- The core integral is of a power of x times a Gaussian.\n    have h_integral : \u222b x in Ioi 0, x * exp (-c * x^2) * x^(2 * k) =\n        \u222b x in Ioi 0, x^(2 * k + 1) * exp (-c * x^2) := by\n      simp_rw [\u2190 pow_add]\n    rw [h_integral, integral_x_pow_mul_exp_neg_mul_sq_Ioi ",
+  "lean4_sketch_archimedes": "import Mathlib.Analysis.SpecialFunctions.Bessel\nimport Mathlib.Analysis.SpecialFunctions.Gamma.Basic\nimport Mathlib.Analysis.Integration.Integral\nimport Mathlib.Analysis.Summation.Series\n\nopen Real Set Filter Topology Nat\n\ntheorem bessel_moment_c6_0 (c : \u211d) (hc : 0 < c) (a : \u211d) :\n    \u222b x in Ioi 0, x * exp (-c * x^2) * besseli 0 (a * x) = (1 / (2 * c)) * exp (a^2 / (4 * c)) := by\n  -- Rewrite I\u2080 using its series definition and prepare to swap integral and sum.\n  let term (k : \u2115) (x : \u211d) := x * exp (-c * x^2) * ((a * x / 2)^(2 * k) / (\u2191k! * Gamma (\u2191k + 1)))\n  conv_lhs => congr; rfl; congr; rw [besseli_def_of_nonneg (by norm_num) (a*x)]\n\n  -- Sub-Lemma 1: Prove positivity of each term in the series to use Tonelli's theorem.\n  have bessel_moment_c6_0_sub1 : \u2200 (k : \u2115), \u2200 x \u2208 Ioi (0 : \u211d), 0 \u2264 term k x := by\n    intro k x hx\n    have h_denom_pos : 0 < (\u2191k! * Gamma (\u2191k + 1)) := by\n      apply mul_pos\n      \u00b7 exact_mod_cast Nat.factorial_pos k\n      \u00b7 exact Gamma_pos_of_pos (by linarith)\n    -- The positivity tactic should be able to prove this by combining positivity lemmas.\n    positivity\n\n  -- Swap the integral and the infinite sum, justified by non-negativity (Tonelli's theorem).\n  rw [integral_tsum_of_nonneg bessel_moment_c6_0_sub1]\n\n  -- Sub-Lemma 3: Apply functional equations/known results to evaluate the integral for each term k.\n  have bessel_moment_c6_0_sub3 : \u2200 (k : \u2115),\n      \u222b x in Ioi 0, term k x = (1 / (2 * c)) * (a^2 / (4 * c))^k / k! := by\n    intro k\n    rw [Gamma_nat_eq_factorial k, \u2190 pow_two]\n    simp_rw [term, mul_div_assoc, div_right_comm _ _ (\u2191k!^2), pow_mul, div_pow, pow_div]\n    -- Pull constants out of the integral.\n    rw [integral_mul_left, integral_mul_left, integral_mul_right]\n    -- The core integral is of a power of x times a Gaussian.\n    have h_integral : \u222b x in Ioi 0, x * exp (-c * x^2) * x^(2 * k) =\n        \u222b x in Ioi 0, x^(2 * k + 1) * exp (-c * x^2) := by\n      simp_rw [\u2190 pow_add]\n    rw [h_integral, integral_x_pow_mul_exp_neg_mul_sq_Ioi ",
+  "research_brief": "",
+  "v15_sorry": 5,
+  "domain_prior": 0.25,
+  "gap_probability_map": {},
+  "sorry_guillotine_applied": false,
+  "cost_usd": 0.57,
+  "elapsed_s": 121.84,
+  "problem_id": "bessel_moment_c6_0",
+  "status": "FAILED (UNRECOVERABLE)",
+  "galileo_valid": false,
+  "galileo_message": "Validation failed",
+  "galileo_diff": "N/A"
+}

@@ -1,0 +1,22 @@
+[package]
+name = "agora-solvers"
+version = "0.1.0"
+edition = "2024"
+authors = ["Xavier Callens <callensxavier@gmail.com>"]
+license = "Apache-2.0"
+description = "Scientific solvers for the SocrateAI Scientific Agora — rusty-SUNDIALS bridges and physics validators"
+repository = "https://github.com/socrate-ai/SocrateAI-Scientific-Agora"
+
+[dependencies]
+agora-core = { path = "../core" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+tracing = "0.1"
+ndarray = { version = "0.16", features = ["serde"] }
+approx = "0.5"
+num-traits = "0.2"
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+tokio = { version = "1", features = ["full", "test-util"] }

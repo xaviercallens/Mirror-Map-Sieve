@@ -1,0 +1,10 @@
+{
+  "model_name": "SymBrain-v6-Galois-Prometheus-Edge-7B",
+  "quantization": "INT4_AWQ",
+  "vram_allocated_gb": 8,
+  "aatt_aligned": true,
+  "gating_sigma_ded_floor": 0.2,
+  "max_latency_ms": 100.0,
+  "mcts_max_nodes": 8,
+  "intended_hardware": "Nvidia Jetson Orin Nano / Apple Silicon Edge"
+}

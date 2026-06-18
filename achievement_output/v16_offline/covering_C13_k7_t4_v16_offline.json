@@ -1,0 +1,14 @@
+{
+  "pid": "covering_C13_k7_t4",
+  "domain": "combinatorics",
+  "v14_verdict": "INCOMPLETE",
+  "v14_sorry": 7,
+  "sorry_before": 0,
+  "sorry_after": 0,
+  "sorry_eliminated": 0,
+  "pre_decomp_slots": 3,
+  "offline_verdict": "ALREADY_OK",
+  "alexandrie_id": "v16_offline_covering_C13_k7_t4",
+  "elapsed_s": 0.017,
+  "gap_summary": []
+}

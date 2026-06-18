@@ -1,0 +1,28 @@
+{
+  "pid": "feigenbaum_delta",
+  "domain": "continuum_physics",
+  "v16_verdict": "REFUTED",
+  "v16_confidence": 0.0,
+  "sorry_count": 2,
+  "sorry_count_after_archimedes": 2,
+  "sorry_count_final": 0,
+  "archimedes_reduction": 0,
+  "pre_decomp_lemmas": 3,
+  "sharding_tier": "",
+  "sharding_region": "",
+  "hypotheses_applied": [
+    "H1_PRE_DECOMP_3L"
+  ],
+  "conjecture_statement": "There exists a real constant $\\delta > 4$ and a real sequence $(\\mu_n)_{n \\in \\mathbb{N}}$ that is strictly increasing and convergent to a limit $\\mu_\\infty \\in \\mathbb{R}$, such that for all $n \\geq 1$, the differences of consecutive terms satisfy the exact scaling relation:\\n$$ \\mu_n - \\mu_{n-1} = \\delta(\\mu_{n+1} - \\mu_n) $$",
+  "lean4_sketch": "import Mathlib.Analysis.SpecialFunctions.Pow.Real\nimport Mathlib.Analysis.SequenceLimit\nimport Mathlib.Tactic.Linarith\n\nopen Filter Topology\n\ntheorem feigenbaum_delta :\n  \u2203 (\u03b4 : \u211d), \u03b4 > 4 \u2227 \u2203 (\u03bc : \u2115 \u2192 \u211d),\n    (\u2200 n, \u03bc n < \u03bc (n + 1)) \u2227\n    (\u2203 \u03bc_inf, Tendsto \u03bc atTop (\ud835\udcdd \u03bc_inf)) \u2227\n    (\u2200 n, n \u2265 1 \u2192 (\u03bc n - \u03bc (n-1)) = \u03b4 * (\u03bc (n+1) - \u03bc n)) := by\n  -- We construct the required objects explicitly.\n  let \u03b4_val := 4.669201609\n  let r_val := 1 / \u03b4_val\n  let \u03bc_val (n : \u2115) : \u211d := -(r_val ^ n)\n  use \u03b4_val, \u03bc_val\n\n  -- Prove the properties of our constructed objects.\n  have h\u03b4_gt_4 : \u03b4_val > 4 := by norm_num\n  have hr_bounds : 0 < r_val \u2227 r_val < 1 := by\n    constructor <;> { simp [r_val, \u03b4_val]; linarith }\n\n  -- The main proof requires proving a series of conjoined propositions.\n  apply And.intro h\u03b4_gt_4\n  apply And.intro\n  \u00b7 -- Goal 1: Prove strict monotonicity.\n    show \u2200 n, \u03bc_val n < \u03bc_val (n + 1)\n    intro n\n    -- Sub-Lemma 1: Establish the key inequality.\n    have h_ineq : \u03bc_val n < \u03bc_val (n + 1) := by\n      -- This is equivalent to -(r^n) < -(r^(n+1)), or r^(n+1) < r^n, which holds for r in (0,1).\n      -- A full proof would use `pow_lt_pow_of_lt_one` from Mathlib.\n      -- Candidate tactic `nlinarith` could potentially solve this.\n      sorry\n    exact h_ineq\n  \u00b7 apply And.intro\n    \u00b7 -- Goal 2: Prove convergence.\n      -- Sub-Lemma 3: Verify the existence claim (of a limit).\n      have h_ex : \u2203 \u03bc_inf, Tendsto \u03bc_val atTop (\ud835\udcdd \u03bc_inf) := by\n        use 0\n        -- The proof relies on `tendsto_pow_atTop_nhds_0_of_lt_one` since |r_val| < 1.\n        -- `Classical.choice` is not needed as we provide the limit explicitly.\n        exact \u27e80, by sorry\u27e9\n      exact h_ex\n    \u00b7 -- Goal 3: Prove the scaling relation holds.\n      show \u2200 n, n \u2265 1 \u2192 (\u03bc_val n - \u03bc_val (n - 1)) = \u03b4_val * (\u03bc_val (n + 1) - \u03bc_val n)\n      intro n hn\n      -- Sub-Lemma 2: Prove the algebraic identity.\n      have h_eq : \u03bc_val n - \u03bc_val (n - 1) = \u03b4_val * (\u03bc_val (n + 1) - \u03bc_val n) := by\n        -- The identity simpli",
+  "lean4_sketch_archimedes": "import Mathlib.Analysis.SpecialFunctions.Pow.Real\nimport Mathlib.Analysis.Calculus.Iterate\nimport Mathlib.Analysis.Asymptotics.Asymptotics\nimport Mathlib.Tactic.Linarith\nimport Mathlib.Topology.Basic\n\nopen Filter Topology Nat Real\n\ntheorem feigenbaum_delta :\n  \u2203 (\u03b4 : \u211d), \u03b4 > 4 \u2227 \u2203 (\u03bc : \u2115 \u2192 \u211d),\n    (\u2200 n, \u03bc n < \u03bc (n + 1)) \u2227\n    (\u2203 \u03bc_inf, Tendsto \u03bc atTop (\ud835\udcdd \u03bc_inf)) \u2227\n    (\u2200 n, n \u2265 1 \u2192 (\u03bc n - \u03bc (n-1)) = \u03b4 * (\u03bc (n+1) - \u03bc n)) := by\n  let \u03b4_val := 4.669201609\n  let r_val := 1 / \u03b4_val\n  let \u03bc_val (n : \u2115) : \u211d := -(r_val ^ n)\n  use \u03b4_val, \u03bc_val\n\n  have h\u03b4_gt_4 : \u03b4_val > 4 := by norm_num\n  have hr_bounds : 0 < r_val \u2227 r_val < 1 := by\n    constructor <;> { simp [r_val, \u03b4_val]; linarith }\n\n  apply And.intro h\u03b4_gt_4\n  apply And.intro\n  \u00b7 intro n\n    have h_ineq : \u03bc_val n < \u03bc_val (n + 1) := by\n      rw [\u03bc_val, \u03bc_val]\n      simp only [neg_lt_neg_iff, gt_iff_lt]\n      apply pow_lt_pow_of_lt_one (hr_bounds.1) (hr_bounds.2)\n      exact lt_succ n\n    exact h_ineq\n  \u00b7 apply And.intro\n    \u00b7 use 0\n      rw [tendsto_nhds]\n      intro \u03b5 h\u03b5\n      obtain \u27e8N, hN\u27e9 := exists_pow_lt_of_lt_one (hr_bounds.2) h\u03b5\n      use N\n      intro n hn\n      rw [\u03bc_val, dist_comm, dist_eq_norm, norm_neg, norm_pow, norm_eq_abs, abs_of_pos (hr_bounds.1)]\n      exact hN n hn\n    \u00b7 intro n hn\n      rw [\u03bc_val, \u03bc_val, \u03bc_val, \u03bc_val]\n      simp only [sub_neg_eq_add, add_comm, neg_add]\n      rw [\u2190 sub_eq_add_neg, \u2190 sub_eq_add_neg, sub_eq_iff_eq_add, mul_comm, \u2190 mul_assoc,\n          \u2190 pow_succ, \u2190 pow_succ, div_eq_mul_inv, mul_comm (r_val ^ n)]\n      ring_nf\n      rw [mul_assoc, mul_inv_cancel (pow_ne_zero n (ne_of_gt (hr_bounds.1))), mul_one]",
+  "research_brief": "",
+  "v15_sorry": 1,
+  "domain_prior": 0.1,
+  "gap_probability_map": {},
+  "sorry_guillotine_applied": false,
+  "cost_usd": 0.57,
+  "elapsed_s": 146.38,
+  "problem_id": "feigenbaum_delta",
+  "status": "FAILED (UNRECOVERABLE)"
+}

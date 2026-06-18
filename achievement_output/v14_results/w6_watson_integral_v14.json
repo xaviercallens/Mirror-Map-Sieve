@@ -1,0 +1,15 @@
+{
+  "pid": "w6_watson_integral",
+  "domain": "stat_mechanics",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.65,
+  "sorry_count": 0,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.15,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 233.1140386670013,
+  "conjecture_statement": "{'conjecture_generator': ConjectureResult(conjectures=[Conjecture(statement='Let $W_d$ be the Watson integral for a simple cubic lattice in $d$ dimensions, defined as $W_d := \\\\frac{1}{(2\\\\pi)^d} \\\\int_{[-\\\\pi,\\\\pi]^d} \\\\frac{d^dx}{1 - \\\\frac{1}{d} \\\\sum_{i=1}^d \\\\cos(x_i)}$. For $d \\\\ge 3$, the integral converges. Let the sequence $A_d$ be defined by $A_d = d(W_d - 1)$. Then the sequence $(A_d)_{d \\\\ge 3}$ is strictly monotonically decreasing, i.e., $A_{d+1} < A_d$ for all $d \\\\ge 3$.', natural",
+  "lean4_sketch": "",
+  "gap_probability_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "name": "turing_edu",
+  "description": "Alan Turing — makes abstract mathematics computable and teachable. Creates layered explanations (expert/intermediate/public).",
+  "role": "EDUCATOR",
+  "endpoints": {
+    "rpc": "https://turing-edu-service-xyz.a.run.app/rpc"
+  },
+  "model": "gemini-2.5-pro"
+}

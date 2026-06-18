@@ -1,0 +1,14 @@
+{
+  "pid": "euler_mascheroni_closed_form",
+  "domain": "number_theory",
+  "v14_verdict": "INCOMPLETE",
+  "v14_sorry": 0,
+  "sorry_before": 0,
+  "sorry_after": 0,
+  "sorry_eliminated": 0,
+  "pre_decomp_slots": 3,
+  "offline_verdict": "ALREADY_OK",
+  "alexandrie_id": "v16_offline_euler_mascheroni_closed_form",
+  "elapsed_s": 0.018,
+  "gap_summary": []
+}

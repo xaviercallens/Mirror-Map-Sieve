@@ -1,0 +1,29 @@
+\contentsline {section}{\numberline {1}Introduction: A Reaffirmation of Purpose and a Roadmap for Revision}{3}{section.1}%
+\contentsline {section}{\numberline {2}Addressing Reviewer 5's Critique: A Point-by-Point Response}{4}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Subject Eligibility: Is This Even a Portfolio?}{4}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Mathematical Content: Where's the Beef?}{5}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}LaTeX-Specific Critiques}{6}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Final Verdict: Major Revisions Required}{7}{subsection.2.4}%
+\contentsline {section}{\numberline {3}Epistemological Defense and Formal Witnesses}{8}{section.3}%
+\contentsline {subsection}{\numberline {3.1}A. The Nature of Mathematical Originality in a Portfolio}{8}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}B. The Role of Formal Witnesses: Rigor as a Testament}{8}{subsection.3.2}%
+\contentsline {section}{\numberline {4}Foundations of Analysis: The Fundamental Theorem of Calculus}{13}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Introduction: A Bridge Between Derivatives and Integrals}{13}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}A. Prerequisites: Continuity and Riemann Integrability}{13}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}B. The Fundamental Theorem of Calculus, Part 1 (FTC1)}{14}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}C. The Fundamental Theorem of Calculus, Part 2 (FTC2)}{14}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}D. Limitations and Counterexamples}{15}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}E. Generalizations and Original Exploration}{15}{subsection.4.6}%
+\contentsline {subsection}{\numberline {4.7}Conclusion: The Enduring Legacy of the FTC}{16}{subsection.4.7}%
+\contentsline {section}{\numberline {5}Abstract Algebra: Group Theory and Symmetries (Conceptual Outline)}{17}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Introduction: The Ubiquity of Symmetry}{17}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}A. Foundations: Groups, Subgroups, and Homomorphisms}{17}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}B. Advanced Concepts: Normal Subgroups, Quotient Groups, and Group Actions}{17}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}C. Original Exploration: Classifying Groups of Small Order}{18}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Conclusion: The Power of Abstraction}{18}{subsection.5.5}%
+\contentsline {section}{\numberline {6}Computational Mathematics: Numerical Methods and Error Analysis (Conceptual Outline)}{19}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Introduction: Bridging Theory and Practice}{19}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}A. Root Finding: Bisection and Newton's Method}{19}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}B. Numerical Linear Algebra: Solving Systems of Linear Equations}{19}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}C. Original Project: A Numerical Solver for a Boundary Value Problem}{20}{subsection.6.4}%
+\contentsline {subsection}{\numberline {6.5}Conclusion: The Algorithmic Heart of Mathematics}{20}{subsection.6.5}%

@@ -1,0 +1,52 @@
+# Rust
+/target/
+Cargo.lock
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# System / IDE
+.DS_Store
+.vscode/
+.idea/
+
+# Models & Datasets
+*.gguf
+*.safetensors
+*.bin
+*.pt
+*.onnx
+
+# Lean 4
+verifiers/lean4/.lake/
+*.olean
+*.ilean
+*.trace
+
+# Generated outputs (large binaries)
+output/
+*.epub
+/*.pdf
+/*.html
+/*.tex
+
+# Logs & Temporary files
+*.log
+/scratch/
+/olympiad_status.json
+
+
+.env
+deploy/terraform/.terraform/
+.env
+infrastructure/gcp/.terraform/
+Miniforge3-*.sh

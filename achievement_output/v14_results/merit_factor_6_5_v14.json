@@ -1,0 +1,15 @@
+{
+  "pid": "merit_factor_6_5",
+  "domain": "coding_theory",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 1,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.3,
+  "cost_usd": 0.41000000000000003,
+  "elapsed_s": 116.80783224999323,
+  "conjecture_statement": "Let $p$ be a prime such that $p \\\\equiv 1 \\\\pmod 4$. Let $L_p = ( (\\\\frac{k}{p}) )_{k=1, \\\\dots, p-1}$ be the Legendre sequence of length $n=p-1$. Let $\\\\mathcal{A}_p$ be the set of all $n$ cyclic shifts of $L_p$. For a sequence $A$ of length $n$, define the 'energy' as $E(A) = 2 \\\\sum_{k=1}^{n-1} C_k(A)^2$, where $C_k(A)$ are the aperiodic autocorrelation coefficients. Let $E_{\\\\text{opt}}(p) = \\\\min_{A \\\\in \\\\mathcal{A}_p} E(A)$. Then the following asymptotic relation holds:$$E_{\\\\text{opt}}(p",
+  "lean4_sketch": "import Mathlib.NumberTheory.LegendreSymbol\nimport Mathlib.Analysis.Asymptotics.Asymptotics\nimport Mathlib.Data.Real.Basic\nimport Mathlib.Data.Fin.VecNotation\nimport Mathlib.Tactic\nimport Mathlib.Analysis.SpecialFunctions.Pow.Real\n\nopen Filter Real Nat Finset\n\nnoncomputable section\n\n-- Define binary sequences as maps to {-1, 1}\nabbrev BinarySeq (n : \u2115) := Fin n \u2192 \u2124\n\n-- Aperiodic autocorrelation function\ndef aperiodicCorr (A : BinarySeq n) (k : \u2115) : \u2124 :=\n  if h : k < n \u2227 k > 0 then\n    \u2211 i in range (n - k), A \u27e8i, lt_of_lt_of_le i.2 (Nat.sub_le n k)\u27e9 * A \u27e8i + k, Nat.add_lt_of_lt_of_le i.2 (Nat.sub_le n k)\u27e9\n  else\n    0\n\n-- Sum of squares of aperiodic autocorrelations, E = 2 * sum\ndef sumSqCorr (A : BinarySeq n) : \u2124 :=\n  2 * \u2211 k in Ico 1 n, (aperiodicCorr A k)^2\n\n-- Legendre sequence of prime ",
+  "gap_probability_map": {}
+}

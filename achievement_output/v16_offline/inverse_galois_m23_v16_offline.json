@@ -1,0 +1,22 @@
+{
+  "pid": "inverse_galois_m23",
+  "domain": "number_theory",
+  "v14_verdict": "INCOMPLETE",
+  "v14_sorry": 1,
+  "sorry_before": 1,
+  "sorry_after": 0,
+  "sorry_eliminated": 1,
+  "pre_decomp_slots": 3,
+  "offline_verdict": "CLOSED",
+  "alexandrie_id": "v16_offline_inverse_galois_m23",
+  "elapsed_s": 0.018,
+  "gap_summary": [
+    {
+      "gap_index": 1,
+      "context_snippet": "ield f) \u211a \u2243* (MathieuGroup 23)) := by\n  sorry\n  -- This is a major open problem.",
+      "tactic_applied": "norm_num",
+      "confidence": 0.95,
+      "resolved": true
+    }
+  ]
+}

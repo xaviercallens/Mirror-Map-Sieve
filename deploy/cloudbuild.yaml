@@ -1,0 +1,44 @@
+steps:
+  # Build the base Agora agent image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', '$_REGISTRY/agora-base:latest', '-f', 'deploy/docker/Dockerfile.agent', '.']
+
+  # Build the Sentinel Pipeline image (dedicated Dockerfile with Z3 + FAISS)
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', '$_REGISTRY/sentinel:latest', '-f', 'deploy/docker/Dockerfile.sentinel', '.']
+  
+  # Tag base for each specific agent required by Terraform
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['tag', '$_REGISTRY/agora-base:latest', '$_REGISTRY/socrates:latest']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['tag', '$_REGISTRY/agora-base:latest', '$_REGISTRY/alexandrie:latest']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['tag', '$_REGISTRY/agora-base:latest', '$_REGISTRY/galileo:latest']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['tag', '$_REGISTRY/agora-base:latest', '$_REGISTRY/euler:latest']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['tag', '$_REGISTRY/agora-base:latest', '$_REGISTRY/galois:latest']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['tag', '$_REGISTRY/agora-base:latest', '$_REGISTRY/heraclite:latest']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['tag', '$_REGISTRY/agora-base:latest', '$_REGISTRY/hypatie:latest']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['tag', '$_REGISTRY/agora-base:latest', '$_REGISTRY/pythagore:latest']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['tag', '$_REGISTRY/agora-base:latest', '$_REGISTRY/turing:latest']
+
+images:
+  - '$_REGISTRY/socrates:latest'
+  - '$_REGISTRY/alexandrie:latest'
+  - '$_REGISTRY/galileo:latest'
+  - '$_REGISTRY/euler:latest'
+  - '$_REGISTRY/galois:latest'
+  - '$_REGISTRY/heraclite:latest'
+  - '$_REGISTRY/hypatie:latest'
+  - '$_REGISTRY/pythagore:latest'
+  - '$_REGISTRY/turing:latest'
+  - '$_REGISTRY/sentinel:latest'
+
+substitutions:
+  _REGISTRY: 'us-central1-docker.pkg.dev/gen-lang-client-0625573011/agora'
+

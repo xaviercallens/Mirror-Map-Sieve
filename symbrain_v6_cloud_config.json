@@ -1,0 +1,10 @@
+{
+  "model_name": "SymBrain-v6-Galois-Prometheus-Cloud-141B",
+  "quantization": "FP8_E4M3",
+  "vram_allocated_gb": 160,
+  "aatt_aligned": true,
+  "gating_sigma_ded_floor": 0.2,
+  "max_latency_ms": 500.0,
+  "mcts_max_nodes": 250,
+  "intended_hardware": "2x Nvidia H100 / L4 Serverless Pool"
+}

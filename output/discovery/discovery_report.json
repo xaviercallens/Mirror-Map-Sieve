@@ -1,0 +1,553 @@
+{
+  "pipeline": "combinatorial_identity_discovery",
+  "version": "0.1.0",
+  "timestamp": "2026-06-14T00:41:07Z",
+  "config": {
+    "max_n": 30
+  },
+  "summary": {
+    "total": 18,
+    "verified": 12,
+    "falsified": 3,
+    "fitted": 2,
+    "non_trivial": 16,
+    "potentially_new": 2,
+    "elapsed_s": 0.0
+  },
+  "results": [
+    {
+      "candidate": {
+        "name": "binomial_sum_p0",
+        "family": "binomial_sum",
+        "lhs_expr": "\u03a3_{k=0}^{n} C(n,k)",
+        "rhs_expr": "2^n",
+        "min_n": 0,
+        "max_test_n": 0,
+        "status": "UNTESTED",
+        "lean_statement": null,
+        "source": "known (Newton's binomial theorem)"
+      },
+      "test": {
+        "status": "VERIFIED",
+        "num_tests": 31
+      },
+      "triviality": {
+        "is_trivial": false,
+        "reason": null,
+        "complexity_score": 2
+      },
+      "novelty": {
+        "is_known": true,
+        "reference": "OEIS A000079 / Newton's binomial theorem",
+        "novelty_score": 0
+      }
+    },
+    {
+      "candidate": {
+        "name": "weighted_binomial_p1",
+        "family": "weighted_binomial",
+        "lhs_expr": "\u03a3_{k=0}^{n} k\u00b7C(n,k)",
+        "rhs_expr": "n\u00b72^(n-1)",
+        "min_n": 1,
+        "max_test_n": 0,
+        "status": "UNTESTED",
+        "lean_statement": null,
+        "source": "known (differentiation of (1+x)^n)"
+      },
+      "test": {
+        "status": "VERIFIED",
+        "num_tests": 30
+      },
+      "triviality": {
+        "is_trivial": false,
+        "reason": null,
+        "complexity_score": 4
+      },
+      "novelty": {
+        "is_known": true,
+        "reference": "OEIS A001787 / Differentiation trick",
+        "novelty_score": 0
+      }
+    },
+    {
+      "candidate": {
+        "name": "weighted_binomial_p2",
+        "family": "weighted_binomial",
+        "lhs_expr": "\u03a3_{k=0}^{n} k\u00b2\u00b7C(n,k)",
+        "rhs_expr": "n\u00b7(n+1)\u00b72^(n-2)",
+        "min_n": 2,
+        "max_test_n": 0,
+        "status": "UNTESTED",
+        "lean_statement": null,
+        "source": "known (second derivative)"
+      },
+      "test": {
+        "status": "VERIFIED",
+        "num_tests": 29
+      },
+      "triviality": {
+        "is_trivial": false,
+        "reason": null,
+        "complexity_score": 24
+      },
+      "novelty": {
+        "is_known": true,
+        "reference": "OEIS A001788",
+        "novelty_score": 0
+      }
+    },
+    {
+      "candidate": {
+        "name": "weighted_binomial_p3",
+        "family": "weighted_binomial",
+        "lhs_expr": "\u03a3_{k=0}^{n} k\u00b3\u00b7C(n,k)",
+        "rhs_expr": "n\u00b2\u00b7(n+3)\u00b72^(n-3)",
+        "min_n": 3,
+        "max_test_n": 0,
+        "status": "UNTESTED",
+        "lean_statement": null,
+        "source": "known (third derivative)"
+      },
+      "test": {
+        "status": "VERIFIED",
+        "num_tests": 28
+      },
+      "triviality": {
+        "is_trivial": false,
+        "reason": null,
+        "complexity_score": 4
+      },
+      "novelty": {
+        "is_known": true,
+        "reference": "OEIS A001789",
+        "novelty_score": 0
+      }
+    },
+    {
+      "candidate": {
+        "name": "weighted_binomial_p4",
+        "family": "weighted_binomial",
+        "lhs_expr": "\u03a3_{k=0}^{n} k\u2074\u00b7C(n,k)",
+        "rhs_expr": "n\u00b7(n\u00b3+6n\u00b2+7n+1)\u00b72^(n-4)  [CANDIDATE]",
+        "min_n": 4,
+        "max_test_n": 0,
+        "status": "UNTESTED",
+        "lean_statement": null,
+        "source": "candidate (polynomial fitting of derivatives)"
+      },
+      "test": {
+        "status": "FALSIFIED",
+        "num_tests": 1
+      },
+      "triviality": {
+        "is_trivial": false,
+        "reason": null,
+        "complexity_score": 4
+      },
+      "novelty": {
+        "is_known": true,
+        "reference": "OEIS (Stirling numbers of 2nd kind, degree 4)",
+        "novelty_score": 1
+      }
+    },
+    {
+      "candidate": {
+        "name": "weighted_binomial_p5",
+        "family": "weighted_binomial",
+        "lhs_expr": "\u03a3_{k=0}^{n} k\u2075\u00b7C(n,k)",
+        "rhs_expr": "[TO BE DISCOVERED]",
+        "min_n": 5,
+        "max_test_n": 0,
+        "status": "UNTESTED",
+        "lean_statement": null,
+        "source": "discovery target"
+      },
+      "test": {
+        "status": "NEEDS_FITTING",
+        "num_tests": 1
+      },
+      "fit": {
+        "status": "FITTED",
+        "polynomial_degree": 5,
+        "closed_form_hint": "LHS(n) = Q(n) \u00b7 2^n where Q is degree-5 polynomial",
+        "fit_verified": true
+      },
+      "sample_values": [
+        "f(5)=11000",
+        "f(6)=47232",
+        "f(7)=181888",
+        "f(8)=646144",
+        "f(9)=2156544",
+        "f(10)=6848000",
+        "f(11)=20877824",
+        "f(12)=61526016"
+      ],
+      "triviality": {
+        "is_trivial": false,
+        "reason": null,
+        "complexity_score": 7
+      },
+      "novelty": {
+        "is_known": true,
+        "reference": "OEIS (Stirling numbers of 2nd kind, degree 5)",
+        "novelty_score": 1
+      }
+    },
+    {
+      "candidate": {
+        "name": "weighted_binomial_p6",
+        "family": "weighted_binomial",
+        "lhs_expr": "\u03a3_{k=0}^{n} k\u2076\u00b7C(n,k)",
+        "rhs_expr": "[TO BE DISCOVERED]",
+        "min_n": 6,
+        "max_test_n": 0,
+        "status": "UNTESTED",
+        "lean_statement": null,
+        "source": "discovery target"
+      },
+      "test": {
+        "status": "NEEDS_FITTING",
+        "num_tests": 1
+      },
+      "fit": {
+        "status": "FITTED",
+        "polynomial_degree": 6,
+        "closed_form_hint": "LHS(n) = Q(n) \u00b7 2^n where Q is degree-6 polynomial",
+        "fit_verified": true
+      },
+      "sample_values": [
+        "f(6)=217392",
+        "f(7)=942592",
+        "f(8)=3714048",
+        "f(9)=13593600",
+        "f(10)=46914560",
+        "f(11)=154328064",
+        "f(12)=487778304",
+        "f(13)=1490384896"
+      ],
+      "triviality": {
+        "is_trivial": false,
+        "reason": null,
+        "complexity_score": 7
+      },
+      "novelty": {
+        "is_known": true,
+        "reference": "OEIS (Stirling numbers of 2nd kind, degree 6)",
+        "novelty_score": 1
+      }
+    },
+    {
+      "candidate": {
+        "name": "squared_binomial_vandermonde",
+        "family": "squared",
+        "lhs_expr": "\u03a3_{k=0}^{n} C(n,k)\u00b2",
+        "rhs_expr": "C(2n, n)",
+        "min_n": 0,
+        "max_test_n": 0,
+        "status": "UNTESTED",
+        "lean_statement": null,
+        "source": "known (Vandermonde self-convolution)"
+      },
+      "test": {
+        "status": "VERIFIED",
+        "num_tests": 31
+      },
+      "triviality": {
+        "is_trivial": false,
+        "reason": null,
+        "complexity_score": 5
+      },
+      "novelty": {
+        "is_known": true,
+        "reference": "Vandermonde's identity / OEIS A000984",
+        "novelty_score": 0
+      }
+    },
+    {
+      "candidate": {
+        "name": "cubed_binomial_franel",
+        "family": "squared",
+        "lhs_expr": "\u03a3_{k=0}^{n} C(n,k)\u00b3",
+        "rhs_expr": "Franel number f_n (no simple closed form)",
+        "min_n": 0,
+        "max_test_n": 0,
+        "status": "UNTESTED",
+        "lean_statement": null,
+        "source": "known (Franel numbers, OEIS A000172)"
+      },
+      "test": {
+        "status": "VERIFIED",
+        "num_tests": 31
+      },
+      "triviality": {
+        "is_trivial": false,
+        "reason": null,
+        "complexity_score": 2
+      },
+      "novelty": {
+        "is_known": true,
+        "reference": "Franel numbers / OEIS A000172",
+        "novelty_score": 0
+      }
+    },
+    {
+      "candidate": {
+        "name": "weighted_squared_binomial",
+        "family": "squared",
+        "lhs_expr": "\u03a3_{k=0}^{n} k\u00b7C(n,k)\u00b2",
+        "rhs_expr": "n\u00b7C(2n-1, n-1)  [CANDIDATE]",
+        "min_n": 1,
+        "max_test_n": 0,
+        "status": "UNTESTED",
+        "lean_statement": null,
+        "source": "candidate (weighted Vandermonde variant)"
+      },
+      "test": {
+        "status": "VERIFIED",
+        "num_tests": 30
+      },
+      "triviality": {
+        "is_trivial": false,
+        "reason": null,
+        "complexity_score": 5
+      },
+      "novelty": {
+        "is_known": false,
+        "reference": null,
+        "novelty_score": 3
+      }
+    },
+    {
+      "candidate": {
+        "name": "weighted_squared_binomial_p2",
+        "family": "squared",
+        "lhs_expr": "\u03a3_{k=0}^{n} k\u00b2\u00b7C(n,k)\u00b2",
+        "rhs_expr": "[TO BE DISCOVERED]",
+        "min_n": 1,
+        "max_test_n": 0,
+        "status": "UNTESTED",
+        "lean_statement": null,
+        "source": "discovery target"
+      },
+      "test": {
+        "status": "NEEDS_FITTING",
+        "num_tests": 1
+      },
+      "fit": {
+        "status": "NO_POLYNOMIAL_FIT",
+        "polynomial_degree": null,
+        "closed_form_hint": null,
+        "fit_verified": null
+      },
+      "sample_values": [
+        "f(1)=1",
+        "f(2)=8",
+        "f(3)=54",
+        "f(4)=320",
+        "f(5)=1750",
+        "f(6)=9072",
+        "f(7)=45276",
+        "f(8)=219648"
+      ],
+      "triviality": {
+        "is_trivial": false,
+        "reason": null,
+        "complexity_score": 30
+      },
+      "novelty": {
+        "is_known": false,
+        "reference": null,
+        "novelty_score": 4
+      }
+    },
+    {
+      "candidate": {
+        "name": "alternating_binomial_sum",
+        "family": "alternating",
+        "lhs_expr": "\u03a3_{k=0}^{n} (-1)^k\u00b7C(n,k)",
+        "rhs_expr": "0",
+        "min_n": 1,
+        "max_test_n": 0,
+        "status": "UNTESTED",
+        "lean_statement": null,
+        "source": "known ((1-1)^n = 0)"
+      },
+      "test": {
+        "status": "VERIFIED",
+        "num_tests": 30
+      },
+      "triviality": {
+        "is_trivial": true,
+        "reason": "LHS is constant (= 0)",
+        "complexity_score": 0
+      },
+      "novelty": {
+        "is_known": true,
+        "reference": "(1-1)^n = 0",
+        "novelty_score": 0
+      }
+    },
+    {
+      "candidate": {
+        "name": "alternating_weighted_p1",
+        "family": "alternating",
+        "lhs_expr": "\u03a3_{k=0}^{n} (-1)^k\u00b7k\u00b7C(n,k)",
+        "rhs_expr": "0",
+        "min_n": 2,
+        "max_test_n": 0,
+        "status": "UNTESTED",
+        "lean_statement": null,
+        "source": "known (derivative of (1-x)^n at x=1)"
+      },
+      "test": {
+        "status": "VERIFIED",
+        "num_tests": 29
+      },
+      "triviality": {
+        "is_trivial": true,
+        "reason": "LHS is constant (= 0)",
+        "complexity_score": 0
+      },
+      "novelty": {
+        "is_known": true,
+        "reference": "Derivative of (1-x)^n",
+        "novelty_score": 0
+      }
+    },
+    {
+      "candidate": {
+        "name": "alternating_squared_binomial",
+        "family": "alternating",
+        "lhs_expr": "\u03a3_{k=0}^{n} (-1)^k\u00b7C(n,k)\u00b2",
+        "rhs_expr": "(-1)^(n/2)\u00b7C(n, n/2) if n even, 0 if n odd",
+        "min_n": 0,
+        "max_test_n": 0,
+        "status": "UNTESTED",
+        "lean_statement": null,
+        "source": "known (evaluation of Legendre polynomial at 0)"
+      },
+      "test": {
+        "status": "VERIFIED",
+        "num_tests": 31
+      },
+      "triviality": {
+        "is_trivial": false,
+        "reason": null,
+        "complexity_score": 7
+      },
+      "novelty": {
+        "is_known": true,
+        "reference": "Legendre polynomial P_n(0)",
+        "novelty_score": 0
+      }
+    },
+    {
+      "candidate": {
+        "name": "alternating_mixed_binomial",
+        "family": "alternating",
+        "lhs_expr": "\u03a3_{k=0}^{n} (-1)^k\u00b7C(n,k)\u00b7C(n+k, k)",
+        "rhs_expr": "[TO BE DISCOVERED]",
+        "min_n": 0,
+        "max_test_n": 0,
+        "status": "UNTESTED",
+        "lean_statement": null,
+        "source": "discovery target (mixed upper-lower binomials)"
+      },
+      "test": {
+        "status": "FALSIFIED",
+        "num_tests": 1
+      },
+      "triviality": {
+        "is_trivial": false,
+        "reason": null,
+        "complexity_score": 4
+      },
+      "novelty": {
+        "is_known": false,
+        "reference": null,
+        "novelty_score": 2
+      }
+    },
+    {
+      "candidate": {
+        "name": "vandermonde_self",
+        "family": "convolution",
+        "lhs_expr": "\u03a3_{k=0}^{n} C(n,k)\u00b7C(n, n-k)",
+        "rhs_expr": "C(2n, n)",
+        "min_n": 0,
+        "max_test_n": 0,
+        "status": "UNTESTED",
+        "lean_statement": null,
+        "source": "known (Vandermonde's identity, m=n, r=n)"
+      },
+      "test": {
+        "status": "VERIFIED",
+        "num_tests": 31
+      },
+      "triviality": {
+        "is_trivial": false,
+        "reason": null,
+        "complexity_score": 2
+      },
+      "novelty": {
+        "is_known": true,
+        "reference": "Vandermonde's identity (m=n, r=n)",
+        "novelty_score": 0
+      }
+    },
+    {
+      "candidate": {
+        "name": "central_binomial_convolution",
+        "family": "convolution",
+        "lhs_expr": "\u03a3_{k=0}^{n} C(2k,k)\u00b7C(2(n-k), n-k)",
+        "rhs_expr": "4^n",
+        "min_n": 0,
+        "max_test_n": 0,
+        "status": "UNTESTED",
+        "lean_statement": null,
+        "source": "known (central binomial convolution)"
+      },
+      "test": {
+        "status": "VERIFIED",
+        "num_tests": 31
+      },
+      "triviality": {
+        "is_trivial": false,
+        "reason": null,
+        "complexity_score": 2
+      },
+      "novelty": {
+        "is_known": true,
+        "reference": "Central binomial convolution",
+        "novelty_score": 0
+      }
+    },
+    {
+      "candidate": {
+        "name": "mixed_convolution_discovery",
+        "family": "convolution",
+        "lhs_expr": "\u03a3_{k=0}^{n} C(n,k)\u00b2\u00b7C(2n-2k, n-k)",
+        "rhs_expr": "[TO BE DISCOVERED]",
+        "min_n": 0,
+        "max_test_n": 0,
+        "status": "UNTESTED",
+        "lean_statement": null,
+        "source": "discovery target (mixed squared-central convolution)"
+      },
+      "test": {
+        "status": "FALSIFIED",
+        "num_tests": 1
+      },
+      "triviality": {
+        "is_trivial": false,
+        "reason": null,
+        "complexity_score": 5
+      },
+      "novelty": {
+        "is_known": false,
+        "reference": null,
+        "novelty_score": 2
+      }
+    }
+  ]
+}

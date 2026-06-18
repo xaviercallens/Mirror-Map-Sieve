@@ -1,0 +1,66 @@
+{
+  "name": "hilbert",
+  "description": "Axiomatic Program Builder + Sorry Completion Engine — Formalizes research programs into Lean 4 axiomatic frameworks AND automatically closes sorry gaps via 10-hypothesis autoresearch ratchet loop.",
+  "version": "2.1.0",
+  "endpoints": {
+    "rpc": "https://hilbert-service.internal.a.run.app/rpc"
+  },
+  "model": "gemini-2.5-pro-deep-think",
+  "ingress": "INTERNAL_ONLY",
+  "resources": {
+    "cpu": 4,
+    "memory": "8Gi",
+    "min_instances": 0,
+    "max_instances": 4
+  },
+  "budget": {
+    "per_experiment_usd": 100.0,
+    "project_usd": 500.0
+  },
+  "proof_backends": {
+    "leanbert": {
+      "type": "gan_critic",
+      "endpoint": "local",
+      "description": "LeanBERT GAN latent-space tactic generator + NeuroSymbolicCritic scoring"
+    },
+    "deepseek_prover_7b": {
+      "type": "llm",
+      "model": "deepseek-ai/DeepSeek-Prover-V2-7B",
+      "endpoint": "https://deepseek-prover-v2.internal.a.run.app/prove",
+      "gpu": "nvidia-t4",
+      "quantization": "awq-4bit",
+      "min_replicas": 0,
+      "max_replicas": 1,
+      "cost_per_hour_usd": 0.35
+    },
+    "deepseek_prover_671b": {
+      "type": "api",
+      "model": "deepseek-prover-v2",
+      "endpoint": "https://api.deepseek.com/chat/completions",
+      "description": "Premium 671B MoE escalation for extreme-difficulty sorrys",
+      "enabled_for": ["extreme"]
+    }
+  },
+  "skills": [
+    {
+      "name": "axiomatize_field",
+      "description": "Distill empirical results and known theorems into a coherent Lean 4 axiomatic system."
+    },
+    {
+      "name": "identify_open_problems",
+      "description": "Enumerate and rank open problems in a mathematical field, with difficulty scores and Lean 4 blueprint stubs."
+    },
+    {
+      "name": "propose_research_program",
+      "description": "Compose a formal research program blueprint with milestones, A2A delegations, and Lean 4 skeleton proofs."
+    },
+    {
+      "name": "scan_sorrys",
+      "description": "Scan Lean 4 codebase for sorry gaps and axiom stubs, with difficulty classification and Mathlib replacement lookup."
+    },
+    {
+      "name": "complete_sorrys",
+      "description": "Automatically close sorry gaps using 10-hypothesis autoresearch pipeline: LeanBERT (3) + DeepSeek-Prover-V2-7B (4) + Gemini Deep-Think (3). Includes ratchet retry and LeanBERT latent-space probability scoring."
+    }
+  ]
+}

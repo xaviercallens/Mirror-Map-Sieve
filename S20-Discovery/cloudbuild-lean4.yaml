@@ -1,0 +1,7 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/agora-autoresearch-001/s20-lean4', '-f', 'S20-Discovery/Dockerfile.lean4', '.']
+images: ['gcr.io/agora-autoresearch-001/s20-lean4']
+timeout: '1800s'
+options:
+  machineType: 'E2_HIGHCPU_8'

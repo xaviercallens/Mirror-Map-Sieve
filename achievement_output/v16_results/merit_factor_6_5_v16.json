@@ -1,0 +1,31 @@
+{
+  "pid": "merit_factor_6_5",
+  "domain": "coding_theory",
+  "v16_verdict": "REFUTED",
+  "v16_confidence": 0.0,
+  "sorry_count": 1,
+  "sorry_count_after_archimedes": 1,
+  "sorry_count_final": 0,
+  "archimedes_reduction": 0,
+  "pre_decomp_lemmas": 3,
+  "sharding_tier": "",
+  "sharding_region": "",
+  "hypotheses_applied": [
+    "H1_PRE_DECOMP_3L"
+  ],
+  "conjecture_statement": "For any binary linear code $C \\subset \\mathbb{F}_2^{13}$ with parameters $[n,k,d] = [13, 6, 5]$, and for any non-zero codeword $c \\in C \\setminus \\{0\\}$, let $s_c \\in \\{-1, 1\\}^{13}$ be the sequence given by the mapping $c_i \\mapsto (-1)^{c_i}$. The merit factor of $s_c$, defined as $MF(s_c) = \\frac{n^2}{2 \\sum_{k=1}^{n-1} C_k(s_c)^2}$ where $C_k(s_c) = \\sum_{j=1}^{n-k} (s_c)_j (s_c)_{j+k}$, satisfies the inequality $MF(s_c) \\ge 6.5$.",
+  "lean4_sketch": "import Mathlib.Data.Real.Basic\nimport Mathlib.Data.Fin.VecNotation\nimport Mathlib.InformationTheory.Coding.Linear.Basic\nimport Mathlib.Algebra.BigOperators.Module\n\nopen Real Fintype\n\n-- Local definitions for the scope of this conjecture.\nnamespace MeritFactorConjecture\n\ndef toBipolar {n : \u2115} (v : Fin n \u2192 Fin 2) : Fin n \u2192 \u211d :=\n  fun i => (-1 : \u211d) ^ (v i).val\n\ndef aperiodicAutocorrelation {n : \u2115} (s : Fin n \u2192 \u211d) (k : \u2115) (h : 0 < k \u2227 k < n) : \u211d :=\n  \u2211 i in Finset.range (n - k), s \u27e8i, Nat.lt_of_le_of_lt (Nat.sub_le n k) h.2\u27e9 * s \u27e8i + k, Nat.add_lt_of_lt_sub h.2\u27e9\n\ndef meritFactor {n : \u2115} [NeZero n] (s : Fin n \u2192 \u211d) : \u211d :=\n  (n : \u211d)^2 / (2 * \u2211 k in Finset.range (n - 1), (aperiodicAutocorrelation s (k+1) (by simp_all; omega)).pow(2))\n\nend MeritFactorConjecture\nopen MeritFactorConjecture\n\n-- Conjecture: All non-zero codewords in any optimal [13, 6, 5] binary linear code\n-- correspond to sequences with a merit factor of at least 6.5.\ntheorem merit_factor_6_5 :\n  \u2200 (C : LinearCode (Fin 2) (Fin 13))\n    (h_dim : C.dim = 6) (h_dist_ge : C.minimumDistance \u2265 5),\n    \u2200 c \u2208 C, c \u2260 0 \u2192 meritFactor (toBipolar c) \u2265 6.5 := by\n  intro C h_dim h_dist_ge c hc h_c_ne_zero\n\n  -- Sub-Lemma 2: Verify the generator matrix spans the code.\n  -- In Mathlib, the generator matrix is defined to be a basis for the code's vector space.\n  have h_span : Submodule.span (Fin 2) (Set.range C.generatorMatrix) = C.toSubmodule := by\n    exact (LinearCode.span_generatorMatrix C).symm\n\n  -- Sub-Lemma 1: Establish the Hamming distance lower bound.\n  -- This is a premise of the theorem. A constructive proof would need to demonstrate\n  -- this from a specific generator matrix for an optimal [13,6,5] code.\n  have h_dist : C.minimumDistance \u2265 5 := by\n    exact h_dist_ge\n\n  -- Sub-Lemma 3: Apply the Singleton bound as a sanity check.\n  -- This verifies the code parameters are not impossible.\n  have h_bound : C.minimumDistance \u2264 13 - C.dim + 1 := by\n    rw [h_dim]\n    apply LinearCode.singleton_bound\n    omega -- 5 \u2264 1",
+  "lean4_sketch_archimedes": "import Mathlib.Data.Real.Basic\nimport Mathlib.Data.Fin.VecNotation\nimport Mathlib.InformationTheory.Coding.Linear.Basic\nimport Mathlib.Algebra.BigOperators.Module\n\nopen Real Fintype\n\n-- Local definitions for the scope of this conjecture.\nnamespace MeritFactorConjecture\n\ndef toBipolar {n : \u2115} (v : Fin n \u2192 Fin 2) : Fin n \u2192 \u211d :=\n  fun i => (-1 : \u211d) ^ (v i).val\n\ndef aperiodicAutocorrelation {n : \u2115} (s : Fin n \u2192 \u211d) (k : \u2115) (h : 0 < k \u2227 k < n) : \u211d :=\n  \u2211 i in Finset.range (n - k), s \u27e8i, Nat.lt_of_le_of_lt (Nat.sub_le n k) h.2\u27e9 * s \u27e8i + k, Nat.add_lt_of_lt_sub h.2\u27e9\n\ndef meritFactor {n : \u2115} [NeZero n] (s : Fin n \u2192 \u211d) : \u211d :=\n  (n : \u211d)^2 / (2 * \u2211 k in Finset.range (n - 1), (aperiodicAutocorrelation s (k+1) (by simp_all; omega)).pow(2))\n\nend MeritFactorConjecture\nopen MeritFactorConjecture\n\n-- Conjecture: All non-zero codewords in any optimal [13, 6, 5] binary linear code\n-- correspond to sequences with a merit factor of at least 6.5.\ntheorem merit_factor_6_5 :\n  \u2200 (C : LinearCode (Fin 2) (Fin 13))\n    (h_dim : C.dim = 6) (h_dist_ge : C.minimumDistance \u2265 5),\n    \u2200 c \u2208 C, c \u2260 0 \u2192 meritFactor (toBipolar c) \u2265 6.5 := by\n  intro C h_dim h_dist_ge c hc h_c_ne_zero\n\n  -- Sub-Lemma 2: Verify the generator matrix spans the code.\n  -- In Mathlib, the generator matrix is defined to be a basis for the code's vector space.\n  have h_span : Submodule.span (Fin 2) (Set.range C.generatorMatrix) = C.toSubmodule := by\n    exact (LinearCode.span_generatorMatrix C).symm\n\n  -- Sub-Lemma 1: Establish the Hamming distance lower bound.\n  -- This is a premise of the theorem. A constructive proof would need to demonstrate\n  -- this from a specific generator matrix for an optimal [13,6,5] code.\n  have h_dist : C.minimumDistance \u2265 5 := by\n    exact h_dist_ge\n\n  -- Sub-Lemma 3: Apply the Singleton bound as a sanity check.\n  -- This verifies the code parameters are not impossible.\n  have h_bound : C.minimumDistance \u2264 13 - C.dim + 1 := by\n    rw [h_dim]\n    apply LinearCode.singleton_bound\n    omega -- 5 \u2264 1",
+  "research_brief": "",
+  "v15_sorry": 2,
+  "domain_prior": 0.3,
+  "gap_probability_map": {},
+  "sorry_guillotine_applied": false,
+  "cost_usd": 0.42,
+  "elapsed_s": 104.91,
+  "problem_id": "merit_factor_6_5",
+  "status": "FAILED (UNRECOVERABLE)",
+  "galileo_valid": false,
+  "galileo_message": "Validation failed",
+  "galileo_diff": "N/A"
+}

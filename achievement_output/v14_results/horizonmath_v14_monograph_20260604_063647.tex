@@ -1,0 +1,1268 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{listings}
+\usepackage{microtype}
+
+\geometry{margin=2.5cm}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+
+\definecolor{verifiedgreen}{RGB}{0,128,0}
+\definecolor{incompleteamber}{RGB}{200,120,0}
+\definecolor{refutedred}{RGB}{180,0,0}
+\definecolor{sorryred}{RGB}{220,50,50}
+\definecolor{leanblue}{RGB}{0,0,180}
+
+\lstset{
+  language=,
+  basicstyle=\small\ttfamily,
+  breaklines=true,
+  frame=single,
+  keywordstyle=\color{leanblue}\bfseries,
+  commentstyle=\color{gray},
+  stringstyle=\color{verifiedgreen},
+}
+
+\newtheorem{conjecture}{Conjecture}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+
+\title{
+  \textbf{SocrateAI Agora v14}\\
+  \large HorizonMath Re-Run Mathematical Monograph\\
+  \normalsize SymBrain v11 Dual-Hemisphere $\cdot$ Zero-Sorry Guillotine $\cdot$ Bayesian Euler
+}
+\author{
+  Galois (Gemini 2.5 Pro + Mistral MCTS) \and
+  Euler (Skeptical Auditor + Zero-Sorry Guillotine) \and
+  Pythagore (Probabilistic Gap Classifier)\\
+  \small Orchestrated by SocratesAgent $\cdot$ Infrastructure by TuringAgent
+}
+\date{June 04, 2026}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+%% ============================================================
+\section{Executive Summary}
+%% ============================================================
+
+This monograph presents the results of the SocrateAI Agora v14 re-run on the
+\textbf{HorizonMath} benchmark \cite{horizonmath2024}, focusing on problems that
+were INCOMPLETE, REFUTED, or skipped (Circuit Breaker) in the v13 run.
+
+\subsection*{Epistemic Architecture Upgrade: Zero-Sorry Guillotine}
+
+The v13 run contained a \textbf{critical epistemic flaw}: three problems were
+marked \textcolor{verifiedgreen}{\textbf{VERIFIED}} despite containing 23--35
+\texttt{sorry} stubs in their Lean 4 proof sketches. In Lean 4, \texttt{sorry}
+is a kernel-level axiom that discharges any goal without proof. The compiler
+exits with code 0 even when \texttt{sorry} is present---it only emits a
+warning. Our v13 Euler agent was thresholding on Galois's self-reported
+confidence score rather than checking for \texttt{sorry} stubs.
+
+\medskip
+The \textbf{Zero-Sorry Guillotine} (v14) adds a regex scan over the Lean 4
+proof code \emph{before} any compiler verdict is accepted. Any occurrence of
+\texttt{sorry} is an automatic \textcolor{incompleteamber}{\textbf{INCOMPLETE}},
+regardless of compiler exit code or confidence score.
+
+\subsection*{Summary Statistics}
+
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+\textbf{Verdict} & \textbf{v13 Count} & \textbf{v14 Count (re-run)} \\
+\midrule
+\textcolor{verifiedgreen}{VERIFIED} (sorry-free, $\geq 0.85$) & 0 & (see table) \\
+\textcolor{incompleteamber}{INCOMPLETE} (sorry gaps, $0.70$) & 29 & (see table) \\
+\textcolor{refutedred}{REFUTED} ($\leq 0.35$) & 5 & (see table) \\
+CB Tripped (API/parse fail) & 0 & (see table) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\newpage
+
+%% ============================================================
+\section{Results Table}
+%% ============================================================
+
+\begin{longtable}{llcccc}
+\toprule
+\textbf{Problem ID} & \textbf{Domain} & \textbf{v13} & \textbf{v14} &
+\textbf{Conf} & \textbf{Sorry} \\
+\midrule
+\endhead
+  \texttt{bessel\textbackslash{}_moment\textbackslash{}_c5\textbackslash{}_1} & special\textbackslash{}_functions & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 2 \\
+  \texttt{elliptic\textbackslash{}_k\textbackslash{}_moment\textbackslash{}_4} & special\textbackslash{}_functions & \textcolor{gray}{\textbf{CB\textbackslash{}_}} & \textcolor{refutedred}{\textbf{REF}}  & 0.57 & 1 \\
+  \texttt{autocorr\textbackslash{}_signed\textbackslash{}_upper} & combinatorics & \textcolor{gray}{\textbf{CB\textbackslash{}_}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 1 \\
+  \texttt{calabi\textbackslash{}_yau\textbackslash{}_c5} & special\textbackslash{}_functions & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 5 \\
+  \texttt{knot\textbackslash{}_volume\textbackslash{}_7\textbackslash{}_2} & discrete\textbackslash{}_geometry & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 7 \\
+  \texttt{anderson\textbackslash{}_lyapunov\textbackslash{}_exponent} & mathematical\textbackslash{}_physics & \textcolor{gray}{\textbf{CB\textbackslash{}_}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 4 \\
+  \texttt{quartic\textbackslash{}_oscillator\textbackslash{}_lambda} & spectral\textbackslash{}_theory & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 4 \\
+  \texttt{spheroidal\textbackslash{}_eigenvalue\textbackslash{}_lambda\textbackslash{}_m} & spectral\textbackslash{}_theory & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 1 \\
+  \texttt{nested\textbackslash{}_radical\textbackslash{}_kasner} & number\textbackslash{}_theory & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 5 \\
+  \texttt{mrb\textbackslash{}_constant} & number\textbackslash{}_theory & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{refutedred}{\textbf{REF}}  & 0.57 & 3 \\
+  \texttt{torsional\textbackslash{}_rigidity\textbackslash{}_square} & special\textbackslash{}_functions & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 4 \\
+  \texttt{schur\textbackslash{}_6} & combinatorics & \textcolor{gray}{\textbf{CB\textbackslash{}_}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 3 \\
+  \texttt{diff\textbackslash{}_basis\textbackslash{}_optimal\textbackslash{}_10000} & combinatorics & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{refutedred}{\textbf{REF}}  & 0.57 & 1 \\
+  \texttt{general\textbackslash{}_diff\textbackslash{}_basis\textbackslash{}_algo} & combinatorics & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{refutedred}{\textbf{REF}}  & 0.62 & 3 \\
+  \texttt{merit\textbackslash{}_factor\textbackslash{}_6\textbackslash{}_5} & coding\textbackslash{}_theory & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 1 \\
+  \texttt{parametric\textbackslash{}_spherical\textbackslash{}_codes} & coding\textbackslash{}_theory & \textcolor{gray}{\textbf{CB\textbackslash{}_}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 1 \\
+  \texttt{bklc\textbackslash{}_68\textbackslash{}_15} & coding\textbackslash{}_theory & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 3 \\
+  \texttt{lattice\textbackslash{}_packing\textbackslash{}_dim10} & discrete\textbackslash{}_geometry & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 1 \\
+  \texttt{periodic\textbackslash{}_packing\textbackslash{}_dim10} & discrete\textbackslash{}_geometry & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 4 \\
+  \texttt{bessel\textbackslash{}_moment\textbackslash{}_c6\textbackslash{}_0} & special\textbackslash{}_functions & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 6 \\
+  \texttt{feynman\textbackslash{}_3loop\textbackslash{}_sunrise} & mathematical\textbackslash{}_physics & \textcolor{refutedred}{\textbf{REF}} & \textcolor{refutedred}{\textbf{REF}}  & 0.57 & 8 \\
+  \texttt{townes\textbackslash{}_soliton} & mathematical\textbackslash{}_physics & \textcolor{gray}{\textbf{CB\textbackslash{}_}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 2 \\
+  \texttt{elliptic\textbackslash{}_curve\textbackslash{}_rank\textbackslash{}_30} & number\textbackslash{}_theory & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 1 \\
+  \texttt{elliptic\textbackslash{}_curve\textbackslash{}_rank\textbackslash{}_torsion\textbackslash{}_z7} & number\textbackslash{}_theory & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 2 \\
+  \texttt{mzv\textbackslash{}_decomposition\textbackslash{}_c5} & number\textbackslash{}_theory & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 6 \\
+  \texttt{tracy\textbackslash{}_widom\textbackslash{}_f2\textbackslash{}_mean} & mathematical\textbackslash{}_physics & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 2 \\
+  \texttt{tracy\textbackslash{}_widom\textbackslash{}_f2\textbackslash{}_variance} & mathematical\textbackslash{}_physics & \textcolor{gray}{\textbf{CB\textbackslash{}_}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 3 \\
+  \texttt{crossing\textbackslash{}_number\textbackslash{}_kn} & combinatorics & \textcolor{refutedred}{\textbf{REF}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 2 \\
+  \texttt{kcore\textbackslash{}_threshold\textbackslash{}_c3} & combinatorics & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 4 \\
+  \texttt{covering\textbackslash{}_C13\textbackslash{}_k7\textbackslash{}_t4} & combinatorics & \textcolor{gray}{\textbf{CB\textbackslash{}_}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 7 \\
+  \texttt{cwcode\textbackslash{}_29\textbackslash{}_8\textbackslash{}_5} & coding\textbackslash{}_theory & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 10 \\
+  \texttt{inverse\textbackslash{}_galois\textbackslash{}_m23} & number\textbackslash{}_theory & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 1 \\
+  \texttt{hensley\textbackslash{}_hausdorff\textbackslash{}_dim} & number\textbackslash{}_theory & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 2 \\
+  \texttt{spherical\textbackslash{}_mode\textbackslash{}_quality\textbackslash{}_factor\textbackslash{}_} & spectral\textbackslash{}_theory & \textcolor{incompleteamber}{\textbf{INC}} & \textcolor{incompleteamber}{\textbf{INC}}  \textcolor{sorryred}{ZSG} & 0.70 & 6 \\
+
+\bottomrule
+\end{longtable}
+
+\textbf{Note:} ZSG = Zero-Sorry Guillotine applied (confidence capped, verdict downgraded from VERIFIED to INCOMPLETE).
+
+\newpage
+
+%% ============================================================
+\section{Per-Problem Analysis}
+%% ============================================================
+
+\subsection*{\texttt{bessel\textbackslash{}_moment\textbackslash{}_c5\textbackslash{}_1}}
+
+\textbf{Domain:} special\textbackslash{}_functions \quad \textbf{Class:} 3 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.25 \quad \textbf{Sorry gaps:} 2
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 2 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}text\textbackslash{}{Let \textbackslash{}} I\textbackslash{}_0(x) \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}text\textbackslash{}{ and \textbackslash{}} K\textbackslash{}_0(x) \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}text\textbackslash{}{ be the modified Bessel functions of the first and second kind of order 0. Then,\textbackslash{}}\textbackslash{}\textbackslash{}n\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}[\textbackslash{}\textbackslash{}n\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}int\textbackslash{}_0\textbackslash{}textasciicircum{}\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}infty x\textbackslash{}textasciicircum{}5 I\textbackslash{}_0(x) K\textbackslash{}_0(x)\textbackslash{}textasciicircum{}3 \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{},dx = \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}frac\textbackslash{}{1\textbackslash{}}\textbackslash{}{2\textbackslash{}}\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}zeta(5) + \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}frac\textbackslash{}{\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}pi\textbackslash{}textasciicircum{}2\textbackslash{}}\textbackslash{}{36\textbackslash{}}\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}zeta(3)\textbackslash{}\textbackslash{}n\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}]
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Analysis.SpecialFunctions.Bessel\
+import Analysis.SpecialFunctions.Integrals\
+import Analysis.SpecialFunctions.Zeta\
+\
+open Real\
+\
+/- This conjecture states the value of a specific Bessel function moment in terms of\
+   the Riemann zeta function at odd integer values. Such identities are motivated by\
+   calculations in quantum field theory and are numerically verified to high precision.\
+   A full proof would require a formalization of advanced techniques for evaluating\
+   Feynman integrals, such as the differential equations method or the theory of motives\
+   for Feynman graphs, wh
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{elliptic\textbackslash{}_k\textbackslash{}_moment\textbackslash{}_4}}
+
+\textbf{Domain:} special\textbackslash{}_functions \quad \textbf{Class:} 4 \quad \textbf{Verdict:} \textcolor{refutedred}{\textbf{REFUTED}}
+
+\textbf{Confidence:} 0.57 \quad \textbf{Domain Prior:} 0.25 \quad \textbf{Sorry gaps:} 1
+
+\begin{conjecture}
+Let \textbackslash{}$K(k) = \textbackslash{}\textbackslash{}int\textbackslash{}_0\textbackslash{}textasciicircum{}\textbackslash{}{\textbackslash{}\textbackslash{}pi/2\textbackslash{}} (1 - k\textbackslash{}textasciicircum{}2 \textbackslash{}\textbackslash{}sin\textbackslash{}textasciicircum{}2\textbackslash{}\textbackslash{}theta)\textbackslash{}textasciicircum{}\textbackslash{}{-1/2\textbackslash{}} d\textbackslash{}\textbackslash{}theta\textbackslash{}$ be the complete elliptic integral of the first kind, and let \textbackslash{}$K'(k) = K(\textbackslash{}\textbackslash{}sqrt\textbackslash{}{1-k\textbackslash{}textasciicircum{}2\textbackslash{}})\textbackslash{}$ be its complementary counterpart. The following identity holds:\textbackslash{}$\textbackslash{}$3 \textbackslash{}\textbackslash{}int\textbackslash{}_0\textbackslash{}textasciicircum{}1 k \textbackslash{}\textbackslash{}, K(k)\textbackslash{}textasciicircum{}4 \textbackslash{}\textbackslash{}, dk = \textbackslash{}\textbackslash{}int\textbackslash{}_0\textbackslash{}textasciicircum{}1 k \textbackslash{}\textbackslash{}, K(k)\textbackslash{}textasciicircum{}2 K'(k)\textbackslash{}textasciicircum{}2 \textbackslash{}\textbackslash{}, dk\textbackslash{}$\textbackslash{}$
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import analysis.special_functions.elliptic_integrals
+import analysis.special_functions.integrals
+
+open real filter measure_theory set
+
+-- Define the complementary elliptic integral K'(k)
+noncomputable def elliptic_K' (k : ℝ) : ℝ :=
+  if h : 1 - k^2 ≥ 0 then elliptic_integrals.K (sqrt (1 - k^2)) else 0
+
+-- Conjecture: A structural identity for the 4th moment of K(k)
+theorem elliptic_moment_4_structural_conjecture :
+  3 * (∫ k in (0)..1, k * (elliptic_integrals.K k)^4) = ∫ k in (0)..1, k * (elliptic_integrals.K k)^2 * (elliptic_K' k)^2 := 
+begin
+  -- The proof of this identity is highly non-triv
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{autocorr\textbackslash{}_signed\textbackslash{}_upper}}
+
+\textbf{Domain:} combinatorics \quad \textbf{Class:} 3 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.35 \quad \textbf{Sorry gaps:} 1
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 1 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$s = (s\textbackslash{}_1, s\textbackslash{}_2, \textbackslash{}\textbackslash{}dots, s\textbackslash{}_n)\textbackslash{}$ be a sequence with \textbackslash{}$s\textbackslash{}_i \textbackslash{}\textbackslash{}in \textbackslash{}\textbackslash{}\textbackslash{}{-1, 1\textbackslash{}\textbackslash{}\textbackslash{}}\textbackslash{}$. Let its aperiodic autocorrelation be defined as \textbackslash{}$C\textbackslash{}_k(s) = \textbackslash{}\textbackslash{}sum\textbackslash{}_\textbackslash{}{i=1\textbackslash{}}\textbackslash{}textasciicircum{}\textbackslash{}{n-k\textbackslash{}} s\textbackslash{}_i s\textbackslash{}_\textbackslash{}{i+k\textbackslash{}}\textbackslash{}$ for \textbackslash{}$k \textbackslash{}\textbackslash{}in \textbackslash{}\textbackslash{}\textbackslash{}{1, 2, \textbackslash{}\textbackslash{}dots, n-1\textbackslash{}\textbackslash{}\textbackslash{}}\textbackslash{}$. Then the alternating sum of the absolute values of the autocorrelations is bounded by:\textbackslash{}n\textbackslash{}n\textbackslash{}$\textbackslash{}$ \textbackslash{}\textbackslash{}sum\textbackslash{}_\textbackslash{}{k=1\textbackslash{}}\textbackslash{}textasciicircum{}\textbackslash{}{n-1\textbackslash{}} (-1)\textbackslash{}textasciicircum{}\textbackslash{}{k-1\textbackslash{}} |C\textbackslash{}_k(s)| \textbackslash{}\textbackslash{}le \textbackslash{}\textbackslash{}left\textbackslash{}\textbackslash{}lfloor \textbackslash{}\textbackslash{}frac\textbackslash{}{n\textbackslash{}}\textbackslash{}{2\textbackslash{}} \textbackslash{}\textbackslash{}right\textbackslash{}\textbackslash{}rfloor \textbackslash{}$\textbackslash{}$
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Finset.Sum
+import Mathlib.Tactic.Linarith
+
+open Finset BigOperators
+
+-- A sequence of length n with elements in {-1, 1}
+abbrev BinarySeq (n : ℕ) := {s : Fin n → ℤ // ∀ i, s i = 1 ∨ s i = -1}
+
+-- Aperiodic autocorrelation C_k(s)
+def autocorr {n : ℕ} (s : Fin n → ℤ) (k : ℕ) : ℤ := 
+  if h : k > 0 ∧ k < n then
+    let N := n - k
+    -- sum over i from 0 to n-k-1
+    ∑ i : Fin N, s ⟨i, by linarith [i.isLt, h.2]⟩ * s ⟨i + k, by linarith [i.isLt, h.2]⟩
+  else
+    0
+
+theorem autocorrelation_signed_abs_upper_bound (n
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{calabi\textbackslash{}_yau\textbackslash{}_c5}}
+
+\textbf{Domain:} special\textbackslash{}_functions \quad \textbf{Class:} 4 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.25 \quad \textbf{Sorry gaps:} 5
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 5 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+\textbackslash{}\textbackslash{}int\textbackslash{}_0\textbackslash{}textasciicircum{}1 \textbackslash{}\textbackslash{}frac\textbackslash{}{\textbackslash{}\textbackslash{}mathrm\textbackslash{}{Li\textbackslash{}}\textbackslash{}_3(x)\textbackslash{}\textbackslash{}log(1-x)\textbackslash{}}\textbackslash{}{x\textbackslash{}}dx = \textbackslash{}\textbackslash{}zeta(2)\textbackslash{}\textbackslash{}zeta(3) - 3\textbackslash{}\textbackslash{}zeta(5)
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Analysis.SpecialFunctions.Log.Polylog
+import Mathlib.Analysis.SpecialFunctions.Zeta.Basic
+import Mathlib.Analysis.Calculus.Integration.Api
+
+open Real Set Filter Topology
+
+-- Define the integrand of the conjectural identity.
+noncomputable def integrand (x : ℝ) : ℝ :=
+  (polylog 3 x * log (1 - x)) / x
+
+-- The formal statement of the conjecture.
+theorem CalabiYauC5_Conjecture : 
+    ∫ x in Ioc 0 1, integrand x = zeta 2 * zeta 3 - 3 * zeta 5 := by
+  -- The proof proceeds by expanding log(1-x) and polylog 3 x into their series
+  -- representations, integrating term-by-term, and evalu
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{knot\textbackslash{}_volume\textbackslash{}_7\textbackslash{}_2}}
+
+\textbf{Domain:} discrete\textbackslash{}_geometry \quad \textbf{Class:} 3 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.20 \quad \textbf{Sorry gaps:} 7
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 7 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$K\textbackslash{}$ be the \textbackslash{}$7\textbackslash{}_2\textbackslash{}$ knot. Let \textbackslash{}$s(K) = 7\textbackslash{}$ be its stick number and let \textbackslash{}$\textbackslash{}\textbackslash{}mathcal\textbackslash{}{P\textbackslash{}}\textbackslash{}_n(K)\textbackslash{}$ denote the space of all \textbackslash{}$n\textbackslash{}$-vertex polygonal knots in \textbackslash{}$\textbackslash{}\textbackslash{}mathbb\textbackslash{}{R\textbackslash{}}\textbackslash{}textasciicircum{}3\textbackslash{}$ of type \textbackslash{}$K\textbackslash{}$. For a polygon \textbackslash{}$P \textbackslash{}\textbackslash{}in \textbackslash{}\textbackslash{}mathcal\textbackslash{}{P\textbackslash{}}\textbackslash{}_n(K)\textbackslash{}$, let \textbackslash{}$\textbackslash{}\textbackslash{}text\textbackslash{}{Vol\textbackslash{}}(\textbackslash{}\textbackslash{}text\textbackslash{}{conv\textbackslash{}}(P))\textbackslash{}$ be the Euclidean volume of the convex hull of its vertices and let \textbackslash{}$L(P)\textbackslash{}$ be its total length. Let \textbackslash{}$V\textbackslash{}_\textbackslash{}{\textbackslash{}\textbackslash{}text\textbackslash{}{hyp\textbackslash{}}\textbackslash{}}(K)\textbackslash{}$ be the hyperbolic volume of th
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Topology.KnotTheory
+import Mathlib.Geometry.Euclidean.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+
+-- We would need a formalization of polygonal knots and their properties
+-- For now, we use stubs.
+
+abbrev PolygonalKnot := List (EuclideanSpace ℝ (Fin 3))
+
+-- A rigorous definition of knot type equivalence for polygonal knots
+def IsKnotTypeOf (P1 P2 : PolygonalKnot) : Prop := sorry
+
+-- The specific knot type 7_2
+axiom k7_2_type : Type
+axiom k7_2 : k7_2_type
+
+-- A predicate for a polygon to be of a certain knot type
+def IsOfKnotType (P : PolygonalKnot) (k : 
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{anderson\textbackslash{}_lyapunov\textbackslash{}_exponent}}
+
+\textbf{Domain:} mathematical\textbackslash{}_physics \quad \textbf{Class:} 4 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.15 \quad \textbf{Sorry gaps:} 4
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 4 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}gamma(E, W)\textbackslash{}$ be the Lyapunov exponent for the one-dimensional Anderson-Bernoulli model on \textbackslash{}$\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}mathbb\textbackslash{}{Z\textbackslash{}}\textbackslash{}$ with Hamiltonian \textbackslash{}$(H\textbackslash{}_\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}omega \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}psi)\textbackslash{}_n = \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}psi\textbackslash{}_\textbackslash{}{n+1\textbackslash{}} + \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}psi\textbackslash{}_\textbackslash{}{n-1\textbackslash{}} + W\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}sigma\textbackslash{}_n \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}psi\textbackslash{}_n\textbackslash{}$, where \textbackslash{}$\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}sigma\textbackslash{}_n\textbackslash{}$ are i.i.d. random variables with \textbackslash{}$\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}mathbb\textbackslash{}{P\textbackslash{}}(\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}sigma\textbackslash{}_n = \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}pm 1) = 1/2\textbackslash{}$. Let \textbackslash{}$T\textbackslash{}_\textbackslash{}{\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}pm\textbackslash{}}(E,W) = \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}begin\textbackslash{}{pmatrix\textbackslash{}} E \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}mp W \textbackslash{}& -1 \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{} 1 \textbackslash{}& 0 \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}end\textbackslash{}{pma
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Analysis.Analytic.Basic\
+import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup\
+import Mathlib.Probability.MeasureTheory.Measure.ProbabilityMeasure\
+\
+open Matrix Set MeasureTheory\
+\
+-- We postulate the existence of the Lyapunov exponent and its properties,\
+-- as its full formalization is a major project.\
+noncomputable axiom lyapunovExponent (E W : ℝ) : ℝ\
+\
+-- We define the transfer matrices for the 1D Anderson-Bernoulli model.\
+noncomputable def transferMatrix (E W : ℝ) (s : Bool) : SL(2, ℝ) :=\
+  let V := if s then W else -W\
+  let M : Matrix (Fin 2) (Fin 2) ℝ := !![E - V
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{quartic\textbackslash{}_oscillator\textbackslash{}_lambda}}
+
+\textbf{Domain:} spectral\textbackslash{}_theory \quad \textbf{Class:} 3 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.20 \quad \textbf{Sorry gaps:} 4
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 4 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$H = -\textbackslash{}\textbackslash{}frac\textbackslash{}{d\textbackslash{}textasciicircum{}2\textbackslash{}}\textbackslash{}{dx\textbackslash{}textasciicircum{}2\textbackslash{}} + x\textbackslash{}textasciicircum{}4\textbackslash{}$ be the Schrödinger operator on \textbackslash{}$L\textbackslash{}textasciicircum{}2(\textbackslash{}\textbackslash{}mathbb\textbackslash{}{R\textbackslash{}})\textbackslash{}$. Let its discrete, positive eigenvalues be ordered as \textbackslash{}$0 < \textbackslash{}\textbackslash{}lambda\textbackslash{}_0 < \textbackslash{}\textbackslash{}lambda\textbackslash{}_1 < \textbackslash{}\textbackslash{}lambda\textbackslash{}_2 < \textbackslash{}\textbackslash{}dots\textbackslash{}$. Then the alternating sum of the reciprocals of these eigenvalues evaluates to a specific constant related to the period of the classical quartic oscillator:\textbackslash{}n\textbackslash{}n\textbackslash{}$\textbackslash{}$\textbackslash{}\textbackslash{}sum\textbackslash{}_\textbackslash{}{n=0\textbackslash{}}\textbackslash{}textasciicircum{}\textbackslash{}\textbackslash{}infty \textbackslash{}\textbackslash{}frac\textbackslash{}{(-1)\textbackslash{}textasciicircum{}n\textbackslash{}}\textbackslash{}{\textbackslash{}\textbackslash{}lambda\textbackslash{}_n\textbackslash{}}
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+import Mathlib.Analysis.InnerProductSpace.Spectrum
+
+open Real Filter Topology
+
+-- This conjecture concerns the eigenvalues of the Schrödinger operator with a quartic potential.
+-- The full definition of this unbounded operator and the proof of its spectral properties
+-- are beyond the current scope of Mathlib. We axiomatically assume the existence of its
+-- ordered sequence of eigenvalues with standard properties.
+axiom quartic_eigenvalues : ℕ → ℝ
+axiom quartic_eigenvalues_pos (n : ℕ) : 0 < quartic_eigenvalues n
+axiom quartic_eigenvalues_str
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{spheroidal\textbackslash{}_eigenvalue\textbackslash{}_lambda\textbackslash{}_m0}}
+
+\textbf{Domain:} spectral\textbackslash{}_theory \quad \textbf{Class:} 3 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.20 \quad \textbf{Sorry gaps:} 1
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 1 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$\textbackslash{}\textbackslash{}lambda\textbackslash{}_\textbackslash{}{0,n\textbackslash{}}(c)\textbackslash{}$ for \textbackslash{}$n \textbackslash{}\textbackslash{}in \textbackslash{}\textbackslash{}mathbb\textbackslash{}{N\textbackslash{}}\textbackslash{}$ be the sequence of eigenvalues of the angular prolate spheroidal differential equation, indexed in increasing order, for a fixed parameter \textbackslash{}$c \textbackslash{}\textbackslash{}in \textbackslash{}\textbackslash{}mathbb\textbackslash{}{R\textbackslash{}}\textbackslash{}_\textbackslash{}{>0\textbackslash{}}\textbackslash{}$. The equation is given by \textbackslash{}$\textbackslash{}\textbackslash{}frac\textbackslash{}{d\textbackslash{}}\textbackslash{}{dx\textbackslash{}}\textbackslash{}\textbackslash{}left((1-x\textbackslash{}textasciicircum{}2)\textbackslash{}\textbackslash{}frac\textbackslash{}{dS\textbackslash{}}\textbackslash{}{dx\textbackslash{}}\textbackslash{}\textbackslash{}right) + \textbackslash{}\textbackslash{}left(\textbackslash{}\textbackslash{}lambda - c\textbackslash{}textasciicircum{}2 x\textbackslash{}textasciicircum{}2\textbackslash{}\textbackslash{}right)S = 0\textbackslash{}$ on the interval \textbackslash{}$x \textbackslash{}\textbackslash{}in [-1, 1]\textbackslash{}$, with the condition that the solut
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Analysis.SpecialFunctions.Legendre
+import Mathlib.Data.Real.Basic
+
+/-!
+# Convexity of Spheroidal Eigenvalues
+
+This file states a conjecture about the eigenvalues of the prolate spheroidal wave equation
+for azimuthal quantum number m=0. We postulate the existence of these eigenvalues as a
+function `spheroidalEigenvalue` and state some of its known properties.
+
+A full formalization would require defining the spheroidal differential operator on a
+weighted Sobolev space and proving the existence of a discrete, ordered spectrum via the
+spectral theory of self-adjoint operators.
+-/
+
+/
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{nested\textbackslash{}_radical\textbackslash{}_kasner}}
+
+\textbf{Domain:} number\textbackslash{}_theory \quad \textbf{Class:} 3 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.05 \quad \textbf{Sorry gaps:} 5
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 5 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$(a\textbackslash{}_n)\textbackslash{}_\textbackslash{}{n \textbackslash{}\textbackslash{}ge 1\textbackslash{}}\textbackslash{}$ be a sequence of positive integers defined by a polynomial \textbackslash{}$Q(n) \textbackslash{}\textbackslash{}in \textbackslash{}\textbackslash{}mathbb\textbackslash{}{Z\textbackslash{}}[n]\textbackslash{}$ of degree \textbackslash{}$2d\textbackslash{}$, i.e., \textbackslash{}$a\textbackslash{}_n = Q(n)\textbackslash{}$ for all \textbackslash{}$n \textbackslash{}\textbackslash{}ge 1\textbackslash{}$. The nested radical \textbackslash{}$X = \textbackslash{}\textbackslash{}sqrt\textbackslash{}{a\textbackslash{}_1 + \textbackslash{}\textbackslash{}sqrt\textbackslash{}{a\textbackslash{}_2 + \textbackslash{}\textbackslash{}sqrt\textbackslash{}{a\textbackslash{}_3 + \textbackslash{}\textbackslash{}dots\textbackslash{}}\textbackslash{}}\textbackslash{}}\textbackslash{}$ converges to an integer \textbackslash{}$N\textbackslash{}$ if and only if there exists a polynomial \textbackslash{}$P(n) \textbackslash{}\textbackslash{}in \textbackslash{}\textbackslash{}mathbb\textbackslash{}{Q\textbackslash{}}[n]\textbackslash{}$ of degree \textbackslash{}$d\textbackslash{}$ such that:\textbackslash{}n\textbackslash{}n1.  \textbackslash{}$Q(n) = P(n)\textbackslash{}textasciicircum{}2 - P(n+1)\textbackslash{}$ for all \textbackslash{}$
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Data.Polynomial.Basic
+import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Data.Rat.Defs
+
+open Polynomial Filter
+
+-- We assume the existence of a formal definition for the value of a nested radical,
+-- which involves proving the convergence of the sequence of finite approximations.
+-- `h_conv` would be a proof that the sequence converges.
+def NestedRadical (a : ℕ → ℝ) (h_conv : ∃ l, Tendsto (fun n ↦ sorry) atTop (𝓝 l)) : ℝ := sorry
+
+-- The conjecture statement
+theorem nested_radical_kasner_conjecture
+  (Q : Polynomial ℤ) (h_pos : ∀ n : ℕ, n > 0 → 0 < (Q.eval (n : ℤ))) :
+ 
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{mrb\textbackslash{}_constant}}
+
+\textbf{Domain:} number\textbackslash{}_theory \quad \textbf{Class:} 3 \quad \textbf{Verdict:} \textcolor{refutedred}{\textbf{REFUTED}}
+
+\textbf{Confidence:} 0.57 \quad \textbf{Domain Prior:} 0.05 \quad \textbf{Sorry gaps:} 3
+
+\begin{conjecture}
+Let \textbackslash{}$\textbackslash{}\textbackslash{}mathcal\textbackslash{}{P\textbackslash{}}\textbackslash{}$ be the ring of periods, defined as the set of all real numbers that can be expressed as the value of an absolutely convergent integral of a rational function with rational coefficients over a semi-algebraic set in \textbackslash{}$\textbackslash{}\textbackslash{}mathbb\textbackslash{}{R\textbackslash{}}\textbackslash{}textasciicircum{}n\textbackslash{}$ defined by polynomial inequalities with rational coefficients. The MRB constant, \textbackslash{}$C\textbackslash{}_\textbackslash{}{MRB\textbackslash{}} = \textbackslash{}\textbackslash{}int\textbackslash{}_0\textbackslash{}textasciicircum{}1 x\textbackslash{}textasciicircum{}\textbackslash{}{-x\textbackslash{}} dx = \textbackslash{}\textbackslash{}sum\textbackslash{}_\textbackslash{}{n=1\textbackslash{}}\textbackslash{}textasciicircum{}\textbackslash{}\textbackslash{}infty n\textbackslash{}textasciicircum{}\textbackslash{}{-n\textbackslash{}}\textbackslash{}$, is not a
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.NumberTheory.Liouville.Basic
+
+open Real Set MeasureTheory Filter
+
+-- We define the MRB constant via its integral representation.
+-- The integrand x ↦ x⁻ˣ is continuous on (0, 1], and its limit at 0 is 1.
+-- We define a function equal to x⁻ˣ on (0, 1] and 1 at 0, which is continuous on [0, 1].
+noncomputable def mrbIntegrand' (x : ℝ) : ℝ := if x > 0 then x ^ (-x) else 1
+
+-- A proof of continuity on the closed interval [0,1].
+lemma mrbIntegrand'_continuous_on : ContinuousOn mrbInteg
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{torsional\textbackslash{}_rigidity\textbackslash{}_square}}
+
+\textbf{Domain:} special\textbackslash{}_functions \quad \textbf{Class:} 3 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.25 \quad \textbf{Sorry gaps:} 4
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 4 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$S = \textbackslash{}\textbackslash{}sum\textbackslash{}_\textbackslash{}{n,m \textbackslash{}\textbackslash{}in 2\textbackslash{}\textbackslash{}mathbb\textbackslash{}{N\textbackslash{}}-1\textbackslash{}} \textbackslash{}\textbackslash{}frac\textbackslash{}{1\textbackslash{}}\textbackslash{}{n\textbackslash{}textasciicircum{}2 m\textbackslash{}textasciicircum{}2 (n\textbackslash{}textasciicircum{}2+m\textbackslash{}textasciicircum{}2)\textbackslash{}}\textbackslash{}$. The value of this sum is given by the identity: \textbackslash{}n\textbackslash{}$\textbackslash{}$ S = \textbackslash{}\textbackslash{}frac\textbackslash{}{\textbackslash{}\textbackslash{}pi\textbackslash{}textasciicircum{}6\textbackslash{}}\textbackslash{}{2048\textbackslash{}} \textbackslash{}\textbackslash{}left( \textbackslash{}\textbackslash{}frac\textbackslash{}{16\textbackslash{}}\textbackslash{}{3\textbackslash{}} - \textbackslash{}\textbackslash{}frac\textbackslash{}{1024\textbackslash{}}\textbackslash{}{\textbackslash{}\textbackslash{}pi\textbackslash{}textasciicircum{}5\textbackslash{}} \textbackslash{}\textbackslash{}sum\textbackslash{}_\textbackslash{}{k=1, k \textbackslash{}\textbackslash{}text\textbackslash{}{ odd\textbackslash{}}\textbackslash{}}\textbackslash{}}\textbackslash{}textasciicircum{}\textbackslash{}{\textbackslash{}\textbackslash{}infty\textbackslash{}} \textbackslash{}\textbackslash{}frac\textbackslash{}{\textbackslash{}\textbackslash{}tanh(k\textbackslash{}\textbackslash{}pi/2)\textbackslash{}}\textbackslash{}{k\textbackslash{}textasciicircum{}5\textbackslash{}} \textbackslash{}\textbackslash{}right) \textbackslash{}$\textbackslash{}$
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
+import Mathlib.Analysis.Fourier.FourierSeries
+import Mathlib.Analysis.Calculus.ParametricIntegral
+
+open Nat Real BigOperators Filter Topology
+
+/- 
+  Let S be the double summation over odd natural numbers n, m of 1 / (n^2 * m^2 * (n^2 + m^2)).
+  This conjecture states that S can be expressed in terms of a single, faster-converging series
+  involving the hyperbolic tangent function. This identity is motivated by equating two distinct
+  series representations for the torsional rigidity of a square domain. 
+-/
+theorem torsional_rigidity
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{schur\textbackslash{}_6}}
+
+\textbf{Domain:} combinatorics \quad \textbf{Class:} 4 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.35 \quad \textbf{Sorry gaps:} 3
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 3 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$N\textbackslash{}_6(c)\textbackslash{}$ be the least integer \textbackslash{}$N\textbackslash{}$ such that for any coloring \textbackslash{}$f: \textbackslash{}\textbackslash{}\textbackslash{}{1, \textbackslash{}\textbackslash{}dots, N\textbackslash{}\textbackslash{}\textbackslash{}} \textbackslash{}\textbackslash{}to \textbackslash{}\textbackslash{}\textbackslash{}{1, \textbackslash{}\textbackslash{}dots, c\textbackslash{}\textbackslash{}\textbackslash{}}\textbackslash{}$, there exist \textbackslash{}$x\textbackslash{}_1, \textbackslash{}\textbackslash{}dots, x\textbackslash{}_6 \textbackslash{}\textbackslash{}in \textbackslash{}\textbackslash{}\textbackslash{}{1, \textbackslash{}\textbackslash{}dots, N\textbackslash{}\textbackslash{}\textbackslash{}}\textbackslash{}$ satisfying \textbackslash{}$f(x\textbackslash{}_1) = f(x\textbackslash{}_2) = \textbackslash{}\textbackslash{}dots = f(x\textbackslash{}_6)\textbackslash{}$ and \textbackslash{}$x\textbackslash{}_1+x\textbackslash{}_2+x\textbackslash{}_3=x\textbackslash{}_4+x\textbackslash{}_5+x\textbackslash{}_6\textbackslash{}$. Then the asymptotic growth rate of \textbackslash{}$N\textbackslash{}_6(c)\textbackslash{}$ is given by \textbackslash{}$N\textbackslash{}_6(c) = \textbackslash{}\textbackslash{}Theta(c\textbackslash{}textasciicircum{}\textbackslash{}{3/2\textbackslash{}})\textbackslash{}$.
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Data.Finset.Card
+import Mathlib.Data.Nat.Basic
+import Mathlib.Tactic
+
+open Finset Asymptotics Filter
+open scoped BigOperators Nat
+
+/-- A finite set of natural numbers `S` has a Schur-6 solution if there exist
+    elements (not necessarily distinct) `x, y, z, a, b, c` in `S` such that `x+y+z = a+b+c`. -/
+def HasSchur6Solution (S : Finset ℕ) : Prop := 
+  ∃ x y z a b c, x ∈ S ∧ y ∈ S ∧ z ∈ S ∧ a ∈ S ∧ b ∈ S ∧ c ∈ S ∧ x + y + z = a + b + c
+
+/-- The Schur-6 number for `c` colors, `Schur6Number c`, is the smallest `n` such that any
+    `
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{diff\textbackslash{}_basis\textbackslash{}_optimal\textbackslash{}_10000}}
+
+\textbf{Domain:} combinatorics \quad \textbf{Class:} 3 \quad \textbf{Verdict:} \textcolor{refutedred}{\textbf{REFUTED}}
+
+\textbf{Confidence:} 0.57 \quad \textbf{Domain Prior:} 0.35 \quad \textbf{Sorry gaps:} 1
+
+\begin{conjecture}
+Let \textbackslash{}$S \textbackslash{}\textbackslash{}subset \textbackslash{}\textbackslash{}mathbb\textbackslash{}{Z\textbackslash{}}\textbackslash{}$ be a finite set. Define the set of positive differences as \textbackslash{}$D(S) := \textbackslash{}\textbackslash{}\textbackslash{}{ s\textbackslash{}_i - s\textbackslash{}_j \textbackslash{}\textbackslash{}mid s\textbackslash{}_i, s\textbackslash{}_j \textbackslash{}\textbackslash{}in S, s\textbackslash{}_i > s\textbackslash{}_j \textbackslash{}\textbackslash{}\textbackslash{}}\textbackslash{}$. Define the contiguous range covered by these differences as \textbackslash{}$n(S) := \textbackslash{}\textbackslash{}sup \textbackslash{}\textbackslash{}\textbackslash{}{ n \textbackslash{}\textbackslash{}in \textbackslash{}\textbackslash{}mathbb\textbackslash{}{N\textbackslash{}} \textbackslash{}\textbackslash{}cup \textbackslash{}\textbackslash{}\textbackslash{}{0\textbackslash{}\textbackslash{}\textbackslash{}} \textbackslash{}\textbackslash{}mid \textbackslash{}\textbackslash{}\textbackslash{}{1, 2, \textbackslash{}\textbackslash{}dots, n\textbackslash{}\textbackslash{}\textbackslash{}} \textbackslash{}\textbackslash{}subseteq D(S) \textbackslash{}\textbackslash{}\textbackslash{}}\textbackslash{}$. A set \textbackslash{}$S\textbackslash{}$ is called an optimal difference basis if for any set \textbackslash{}$S'\textbackslash{}$ with \textbackslash{}$|S'| < |S|\textbackslash{}$, w
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Data.Finset.Pointwise
+import Mathlib.Data.Finset.Card
+import Mathlib.Tactic
+
+-- Let S be a finite set of integers
+variable (S : Finset ℤ)
+
+-- The set of positive differences of S
+def positive_differences (S : Finset ℤ) : Finset ℤ := 
+  Finset.image (fun p : ℤ × ℤ ↦ p.2 - p.1) (S.offDiag.filter (fun p ↦ p.1 < p.2))
+
+-- The length of the initial segment of integers covered by the differences of S
+-- We search up to a loose bound Nat.choose S.card 2, the max possible number of positive diffs
+def n (S : Finset ℤ) : ℕ :=
+  if h : S.card < 2 then 0
+  else Nat.findGreatest 
+    (fun m 
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{general\textbackslash{}_diff\textbackslash{}_basis\textbackslash{}_algo}}
+
+\textbf{Domain:} combinatorics \quad \textbf{Class:} 3 \quad \textbf{Verdict:} \textcolor{refutedred}{\textbf{REFUTED}}
+
+\textbf{Confidence:} 0.62 \quad \textbf{Domain Prior:} 0.35 \quad \textbf{Sorry gaps:} 3
+
+\begin{conjecture}
+Let \textbackslash{}$(Q, *)\textbackslash{}$ be a finite quasigroup of order \textbackslash{}$n\textbackslash{}$. Let the right division operator be defined by \textbackslash{}$x/y = z\textbackslash{}$ if and only if \textbackslash{}$z*y=x\textbackslash{}$. A set \textbackslash{}$B \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}subseteq Q\textbackslash{}$ is a right quotient basis if the set of quotients \textbackslash{}$\textbackslash{}\textbackslash{}\textbackslash{}{x/y \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}mid x, y \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}in B\textbackslash{}\textbackslash{}\textbackslash{}}\textbackslash{}$ is equal to \textbackslash{}$Q\textbackslash{}$. Let \textbackslash{}$\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}mu\textbackslash{}_r(Q)\textbackslash{}$ denote the minimum size of a right quotient basis for \textbackslash{}$Q\textbackslash{}$. Let \textbackslash{}$\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}text\textbackslash{}{Mlt\textbackslash{}}\textbackslash{}_r(Q)\textbackslash{}$ be the right multiplication group of \textbackslash{}$Q\textbackslash{}$, 
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Algebra.Group.Defs\
+import Mathlib.GroupTheory.Solvable\
+import Mathlib.GroupTheory.Subgroup.Basic\
+import Mathlib.Data.Set.Finite\
+import Mathlib.Data.Nat.Log\
+import Mathlib.Tactic\
+\
+universe u\
+\
+variable {Q : Type u} [Quasigroup Q] [Fintype Q]\
+\
+/-- The set of elements representable as a right quotient of elements from a set B. -/\
+def right_quotient_set (B : Set Q) : Set Q := \
+  {q | ∃ x ∈ B, ∃ y ∈ B, q = x / y}\
+\
+/-- A set B is a right quotient basis if its right quotient set is the entire quasigroup. -/\
+def is_right_quotient_basis (B : Set Q) : Prop := \
+  right_quot
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{merit\textbackslash{}_factor\textbackslash{}_6\textbackslash{}_5}}
+
+\textbf{Domain:} coding\textbackslash{}_theory \quad \textbf{Class:} 3 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.30 \quad \textbf{Sorry gaps:} 1
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 1 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$p\textbackslash{}$ be a prime such that \textbackslash{}$p \textbackslash{}\textbackslash{}equiv 1 \textbackslash{}\textbackslash{}pmod 4\textbackslash{}$. Let \textbackslash{}$L\textbackslash{}_p = ( (\textbackslash{}\textbackslash{}frac\textbackslash{}{k\textbackslash{}}\textbackslash{}{p\textbackslash{}}) )\textbackslash{}_\textbackslash{}{k=1, \textbackslash{}\textbackslash{}dots, p-1\textbackslash{}}\textbackslash{}$ be the Legendre sequence of length \textbackslash{}$n=p-1\textbackslash{}$. Let \textbackslash{}$\textbackslash{}\textbackslash{}mathcal\textbackslash{}{A\textbackslash{}}\textbackslash{}_p\textbackslash{}$ be the set of all \textbackslash{}$n\textbackslash{}$ cyclic shifts of \textbackslash{}$L\textbackslash{}_p\textbackslash{}$. For a sequence \textbackslash{}$A\textbackslash{}$ of length \textbackslash{}$n\textbackslash{}$, define the 'energy' as \textbackslash{}$E(A) = 2 \textbackslash{}\textbackslash{}sum\textbackslash{}_\textbackslash{}{k=1\textbackslash{}}\textbackslash{}textasciicircum{}\textbackslash{}{n-1\textbackslash{}} C\textbackslash{}_k(A)\textbackslash{}textasciicircum{}2\textbackslash{}$, where \textbackslash{}$C\textbackslash{}_k(A)\textbackslash{}$ are the aperiodic autocorrelation coefficients. Let \textbackslash{}$E\textbackslash{}_\textbackslash{}{\textbackslash{}\textbackslash{}text\textbackslash{}{opt\textbackslash{}}\textbackslash{}}(p) = \textbackslash{}
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.NumberTheory.LegendreSymbol
+import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Data.Real.Basic
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Tactic
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+
+open Filter Real Nat Finset
+
+noncomputable section
+
+-- Define binary sequences as maps to {-1, 1}
+abbrev BinarySeq (n : ℕ) := Fin n → ℤ
+
+-- Aperiodic autocorrelation function
+def aperiodicCorr (A : BinarySeq n) (k : ℕ) : ℤ :=
+  if h : k < n ∧ k > 0 then
+    ∑ i in range (n - k), A ⟨i, lt_of_lt_of_le i.2 (Nat.sub_le n k)⟩ * A ⟨i + k, Nat.add_lt_of_lt_of_le i.2 (Nat.su
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{parametric\textbackslash{}_spherical\textbackslash{}_codes}}
+
+\textbf{Domain:} coding\textbackslash{}_theory \quad \textbf{Class:} 4 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.30 \quad \textbf{Sorry gaps:} 1
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 1 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$C \textbackslash{}\textbackslash{}subset S\textbackslash{}textasciicircum{}\textbackslash{}{n-1\textbackslash{}} \textbackslash{}\textbackslash{}subset \textbackslash{}\textbackslash{}mathbb\textbackslash{}{R\textbackslash{}}\textbackslash{}textasciicircum{}n\textbackslash{}$ be a finite set of points (a spherical code). If \textbackslash{}$C\textbackslash{}$ is DGS-tight, meaning it achieves the Delsarte-Goethals-Seidel linear programming bound for some auxiliary polynomial \textbackslash{}$f(t)\textbackslash{}$ derived from Gegenbauer polynomials, then the set of all inner products between distinct points of \textbackslash{}$C\textbackslash{}$, \textbackslash{}$A = \textbackslash{}\textbackslash{}\textbackslash{}{ \textbackslash{}\textbackslash{}langle x, y \textbackslash{}\textbackslash{}rangle \textbackslash{}\textbackslash{}mid x, y \textbackslash{}\textbackslash{}in C, x \textbackslash{}\textbackslash{}neq y \textbackslash{}\textbackslash{}\textbackslash{}}\textbackslash{}$, mus
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Data.Real.Basic
+import Mathlib.Data.Rat.Cast
+import Mathlib.Topology.MetricSpace.Sphere
+import Mathlib.Algebra.Polynomial.Roots
+
+open InnerProductSpace Finset Real
+
+-- Let E be a finite-dimensional real inner product space.
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+
+/-- A spherical code is a finite set of points on the unit sphere. -/
+def SphericalCode := { C : Finset E // ∀ x ∈ C, ‖x‖ = 1 }
+
+/-- The set of inner products between distinct points of a code. -/
+def innerProducts (C : 
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{bklc\textbackslash{}_68\textbackslash{}_15}}
+
+\textbf{Domain:} coding\textbackslash{}_theory \quad \textbf{Class:} 3 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.30 \quad \textbf{Sorry gaps:} 3
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 3 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$C\textbackslash{}_\textbackslash{}{\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}text\textbackslash{}{GRS\textbackslash{}}\textbackslash{}}\textbackslash{}$ be a Generalized Reed-Solomon code over the finite field \textbackslash{}$\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}mathbb\textbackslash{}{F\textbackslash{}}\textbackslash{}_\textbackslash{}{16\textbackslash{}}\textbackslash{}$ with parameters \textbackslash{}$[n,k,d] = [17, 3, 15]\textbackslash{}$. Let \textbackslash{}$\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}phi: \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}mathbb\textbackslash{}{F\textbackslash{}}\textbackslash{}_\textbackslash{}{16\textbackslash{}} \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}to (\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}mathbb\textbackslash{}{F\textbackslash{}}\textbackslash{}_2)\textbackslash{}textasciicircum{}4\textbackslash{}$ be an isomorphism of \textbackslash{}$\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}mathbb\textbackslash{}{F\textbackslash{}}\textbackslash{}_2\textbackslash{}$-vector spaces. The binary code \textbackslash{}$C\textbackslash{}_\textbackslash{}{\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}text\textbackslash{}{bin\textbackslash{}}\textbackslash{}} = \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}{ (\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}phi(c\textbackslash{}_0), \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}dots, \textbackslash{}\textbackslash{}phi(c\textbackslash{}_\textbackslash{}{16\textbackslash{}})) \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}mid (c\textbackslash{}_0, \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}dots, c\textbackslash{}_\textbackslash{}{16\textbackslash{}}) \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}in C\textbackslash{}_\textbackslash{}{\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}text\textbackslash{}{GRS\textbackslash{}}\textbackslash{}} \textbackslash{}\textbackslash{}
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Data.Fintype.Card\
+import Mathlib.FieldTheory.Finite.Basic\
+import Mathlib.LinearAlgebra.Basis\
+import Mathlib.Code.LinearCode\
+\
+-- Conjectured setup\
+namespace Bklc6815\
+\
+-- Let F be the finite field with 16 elements.\
+variable (F : Type) [Field F] [Fintype F] (hF : Fintype.card F = 16)\
+\
+-- A GRS code is a type of evaluation code.\
+-- We postulate its existence and key properties as it is not yet defined in Mathlib.\
+-- A full proof would require constructing evaluation codes.\
+-- Parameters: n=17, k=3, over F\
+\
+-- We model the code as a subspace of (Fin 17 → F)\
+variable 
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{lattice\textbackslash{}_packing\textbackslash{}_dim10}}
+
+\textbf{Domain:} discrete\textbackslash{}_geometry \quad \textbf{Class:} 3 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.20 \quad \textbf{Sorry gaps:} 1
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 1 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$\textbackslash{}\textbackslash{}Lambda \textbackslash{}\textbackslash{}subset \textbackslash{}\textbackslash{}mathbb\textbackslash{}{R\textbackslash{}}\textbackslash{}textasciicircum{}\textbackslash{}{10\textbackslash{}}\textbackslash{}$ be a lattice. Let \textbackslash{}$\textbackslash{}\textbackslash{}mu(\textbackslash{}\textbackslash{}Lambda) = \textbackslash{}\textbackslash{}min\textbackslash{}_\textbackslash{}{\textbackslash{}\textbackslash{}mathbf\textbackslash{}{v\textbackslash{}} \textbackslash{}\textbackslash{}in \textbackslash{}\textbackslash{}Lambda \textbackslash{}\textbackslash{}setminus \textbackslash{}\textbackslash{}\textbackslash{}{0\textbackslash{}\textbackslash{}\textbackslash{}}\textbackslash{}} \textbackslash{}\textbackslash{}|\textbackslash{}\textbackslash{}mathbf\textbackslash{}{v\textbackslash{}}\textbackslash{}\textbackslash{}|\textbackslash{}textasciicircum{}2\textbackslash{}$ be its minimal squared norm and \textbackslash{}$k(\textbackslash{}\textbackslash{}Lambda) = |\textbackslash{}\textbackslash{}\textbackslash{}{\textbackslash{}\textbackslash{}mathbf\textbackslash{}{v\textbackslash{}} \textbackslash{}\textbackslash{}in \textbackslash{}\textbackslash{}Lambda : \textbackslash{}\textbackslash{}|\textbackslash{}\textbackslash{}mathbf\textbackslash{}{v\textbackslash{}}\textbackslash{}\textbackslash{}|\textbackslash{}textasciicircum{}2 = \textbackslash{}\textbackslash{}mu(\textbackslash{}\textbackslash{}Lambda)\textbackslash{}\textbackslash{}\textbackslash{}}|\textbackslash{}$ be its kissing number. If \textbackslash{}$\textbackslash{}\textbackslash{}mu(\textbackslash{}\textbackslash{}Lambda) = 4\textbackslash{}$ and \textbackslash{}$k(\textbackslash{}\textbackslash{}Lambda) = 336\textbackslash{}$, then the determinant of any Gram matrix for \textbackslash{}$\textbackslash{}\textbackslash{}Lambda\textbackslash{}$, 
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Analysis.InnerProductSpace.Lattice
+import Mathlib.LinearAlgebra.Gram
+
+open Real InnerProductSpace
+
+-- Using Fin 10 for the 10-dimensional Euclidean space
+abbrev E10 := EuclideanSpace ℝ (Fin 10)
+
+-- Define minimal squared norm for a lattice Λ
+noncomputable def minNormSq (Λ : AddSubgroup E10) : ℝ :=
+  inf { ‖v‖^2 | (v : E10) ∈ Λ ∧ v ≠ 0 }
+
+-- Define kissing number for a lattice Λ
+-- Assumes the set of minimal vectors is finite, which is true for lattices.
+noncomputable def kissingNumber (Λ : AddSubgroup E10) : ℕ :=
+  Nat.card { v : Λ | ‖v‖^2 = minNormSq Λ }
+
+-- Define what it mean
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{periodic\textbackslash{}_packing\textbackslash{}_dim10}}
+
+\textbf{Domain:} discrete\textbackslash{}_geometry \quad \textbf{Class:} 3 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.20 \quad \textbf{Sorry gaps:} 4
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 4 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$\textbackslash{}\textbackslash{}mathcal\textbackslash{}{P\textbackslash{}}\textbackslash{}_n\textbackslash{}$ be the set of all periodic sphere packings in \textbackslash{}$\textbackslash{}\textbackslash{}mathbb\textbackslash{}{R\textbackslash{}}\textbackslash{}textasciicircum{}n\textbackslash{}$, and let \textbackslash{}$\textbackslash{}\textbackslash{}Delta\textbackslash{}_n = \textbackslash{}\textbackslash{}sup\textbackslash{}_\textbackslash{}{P \textbackslash{}\textbackslash{}in \textbackslash{}\textbackslash{}mathcal\textbackslash{}{P\textbackslash{}}\textbackslash{}_n\textbackslash{}} \textbackslash{}\textbackslash{}text\textbackslash{}{density\textbackslash{}}(P)\textbackslash{}$ be the maximum possible density. Let \textbackslash{}$\textbackslash{}\textbackslash{}Lambda\textbackslash{}_9 \textbackslash{}\textbackslash{}subset \textbackslash{}\textbackslash{}mathbb\textbackslash{}{R\textbackslash{}}\textbackslash{}textasciicircum{}9\textbackslash{}$ be the optimal lattice for sphere packing in 9 dimensions (conjecturally, the Coxeter-Todd lattice). We conjecture that \textbackslash{}$\textbackslash{}\textbackslash{}Delta\textbackslash{}_\textbackslash{}{10\textbackslash{}}\textbackslash{}$ is achieved not by a unique packing, 
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Geometry.Euclidean.SpherePacking.Basic
+import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.LinearAlgebra.Matrix.Gram
+
+open Set Metric
+
+/- We model R^n as `EuclideanSpace ℝ (Fin n)` -/
+
+/-- A predicate asserting that a sphere packing `P` in `n+1` dimensions is a
+    periodic stacking of a layer packing `P_layer` in `n` dimensions. -/
+def IsPeriodicStacking {n : ℕ} (P : SpherePacking (Fin (n+1))) (P_layer : SpherePacking (Fin n)) : Prop := sorry
+  -- sorry justification: This definition is non-trivial. It requires formalizing the geometric
+  -- concept of slicing a point
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{bessel\textbackslash{}_moment\textbackslash{}_c6\textbackslash{}_0}}
+
+\textbf{Domain:} special\textbackslash{}_functions \quad \textbf{Class:} 3 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.25 \quad \textbf{Sorry gaps:} 6
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 6 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$L\textbackslash{}_n := \textbackslash{}\textbackslash{}int\textbackslash{}_0\textbackslash{}textasciicircum{}\textbackslash{}\textbackslash{}infty x K\textbackslash{}_0(x)\textbackslash{}textasciicircum{}n dx\textbackslash{}$ for \textbackslash{}$n \textbackslash{}\textbackslash{}in \textbackslash{}\textbackslash{}mathbb\textbackslash{}{N\textbackslash{}}\textbackslash{}$, where \textbackslash{}$K\textbackslash{}_0\textbackslash{}$ is the modified Bessel function of the second kind of order zero. Then the following equality holds:\textbackslash{}n\textbackslash{}$\textbackslash{}$ L\textbackslash{}_6 = \textbackslash{}\textbackslash{}frac\textbackslash{}{3645\textbackslash{}}\textbackslash{}{128\textbackslash{}\textbackslash{}pi\textbackslash{}textasciicircum{}2\textbackslash{}} \textbackslash{}\textbackslash{}zeta(3) L(\textbackslash{}\textbackslash{}chi\textbackslash{}_\textbackslash{}{-3\textbackslash{}}, 4) \textbackslash{}$\textbackslash{}$ \textbackslash{}nwhere \textbackslash{}$\textbackslash{}\textbackslash{}zeta\textbackslash{}$ is the Riemann zeta function and \textbackslash{}$L(\textbackslash{}\textbackslash{}chi\textbackslash{}_\textbackslash{}{-3\textbackslash{}}, s) := \textbackslash{}\textbackslash{}sum\textbackslash{}_\textbackslash{}{k=1\textbackslash{}}\textbackslash{}textasciicircum{}\textbackslash{}\textbackslash{}infty \textbackslash{}\textbackslash{}frac\textbackslash{}{\textbackslash{}\textbackslash{}chi\textbackslash{}_\textbackslash{}{-3\textbackslash{}}(k)\textbackslash{}}\textbackslash{}{k\textbackslash{}textasciicircum{}s\textbackslash{}}\textbackslash{}$ is the Dirichlet L-function for the
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Analysis.SpecialFunctions.Bessel
+import Analysis.SpecialFunctions.Zeta
+import Analysis.SpecialFunctions.Trigonometric.Core
+import NumberTheory.DirichletCharacter
+import Mathlib.Data.Real.Pi
+
+open Real Nat Filter Asymptotics
+
+/- Define the Dirichlet L-function for the primitive character mod 3, χ₃(k) = (k/3) -/
+noncomputable def dirichletL_chi_neg_3 (s : ℝ) : ℝ := ∑' k, (if k % 3 = 1 then 1 else if k % 3 = 2 then -1 else 0) / (k : ℝ) ^ s
+
+-- Conjectured property: Convergence for s > 0
+-- theorem dirichletL_chi_neg_3_converges {s : ℝ} (hs : 0 < s) : Summable (fun k ↦ (if k % 3 = 1 then 1 
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{feynman\textbackslash{}_3loop\textbackslash{}_sunrise}}
+
+\textbf{Domain:} mathematical\textbackslash{}_physics \quad \textbf{Class:} 4 \quad \textbf{Verdict:} \textcolor{refutedred}{\textbf{REFUTED}}
+
+\textbf{Confidence:} 0.57 \quad \textbf{Domain Prior:} 0.15 \quad \textbf{Sorry gaps:} 8
+
+\begin{conjecture}
+Let \textbackslash{}$\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}mathcal\textbackslash{}{J\textbackslash{}}\textbackslash{}textasciicircum{}\textbackslash{}{(0)\textbackslash{}}(t)\textbackslash{}$ be the renormalized finite part of the dimensionless equal-mass three-loop sunrise integral, where \textbackslash{}$t=p\textbackslash{}textasciicircum{}2/m\textbackslash{}textasciicircum{}2\textbackslash{}$. Let \textbackslash{}$f \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}in S\textbackslash{}_4(\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}Gamma\textbackslash{}_0(6))\textbackslash{}$ be the unique normalized newform with Fourier expansion \textbackslash{}$f(z) = q - 4q\textbackslash{}textasciicircum{}2 - 3q\textbackslash{}textasciicircum{}3 + O(q\textbackslash{}textasciicircum{}4)\textbackslash{}$, and let \textbackslash{}$L(f,s)\textbackslash{}$ be its associated L-series. There exists a rational number \textbackslash{}$r \textbackslash{}\textbackslash{}in \textbackslash{}\textbackslash{}mathbb\textbackslash{}{Q\textbackslash{}}\textbackslash{}$ such that the value of the integral
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Analysis.SpecialFunctions.LSeries\
+import NumberTheory.ModularForms\
+import Analysis.SpecialFunctions.Zeta\
+import NumberTheory.Clausen\
+\
+open Complex Topos\
+\
+-- We postulate the existence of the finite part of the three-loop sunrise integral.\
+-- A full definition would require the theory of dimensional regularization and renormalization.\
+noncomputable def threeLoopSunriseFinitePart (t : ℝ) : ℝ := sorry\
+\
+-- Let f be the unique newform in S_4(Γ₀(6)). Mathlib's modular form library\
+-- can in principle define this object.\
+def Gamma0_6_weight4_newform : CuspForm (Gamma0 6) 4 := sorr
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{townes\textbackslash{}_soliton}}
+
+\textbf{Domain:} mathematical\textbackslash{}_physics \quad \textbf{Class:} 4 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.15 \quad \textbf{Sorry gaps:} 2
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 2 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$G=(V,E)\textbackslash{}$ be a finite simple connected graph with \textbackslash{}$n=|V|\textbackslash{}$ vertices and \textbackslash{}$m=|E|\textbackslash{}$ edges. Let \textbackslash{}$L\textbackslash{}$ be the normalized graph Laplacian of \textbackslash{}$G\textbackslash{}$. For a given mass \textbackslash{}$M>0\textbackslash{}$, consider the energy functional \textbackslash{}$E: \textbackslash{}\textbackslash{}mathbb\textbackslash{}{R\textbackslash{}}\textbackslash{}textasciicircum{}n \textbackslash{}\textbackslash{}to \textbackslash{}\textbackslash{}mathbb\textbackslash{}{R\textbackslash{}}\textbackslash{}$ defined by \textbackslash{}$E(u) = \textbackslash{}\textbackslash{}frac\textbackslash{}{1\textbackslash{}}\textbackslash{}{2\textbackslash{}} \textbackslash{}\textbackslash{}sum\textbackslash{}_\textbackslash{}{(i,j) \textbackslash{}\textbackslash{}in E\textbackslash{}} (u\textbackslash{}_i - u\textbackslash{}_j)\textbackslash{}textasciicircum{}2 - \textbackslash{}\textbackslash{}frac\textbackslash{}{1\textbackslash{}}\textbackslash{}{4\textbackslash{}} \textbackslash{}\textbackslash{}sum\textbackslash{}_\textbackslash{}{v \textbackslash{}\textbackslash{}in V\textbackslash{}} u\textbackslash{}_v\textbackslash{}textasciicircum{}4\textbackslash{}$, restricted to the sphere \textbackslash{}$S\textbackslash{}_M = \textbackslash{}\textbackslash{}\textbackslash{}{ u \textbackslash{}\textbackslash{}in \textbackslash{}\textbackslash{}mathbb\textbackslash{}{R\textbackslash{}}\textbackslash{}textasciicircum{}n : \textbackslash{}\textbackslash{}|
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.Analysis.Calculus.FDeriv.Manifold
+import Mathlib.Geometry.Manifold.Instances.Sphere
+import Mathlib.Topology.Homology.Simplicial
+
+/- We model the space of functions on the vertices of G as a finite-dimensional real vector space. -/
+variable {V : Type*} [Fintype V] [DecidableEq V]
+variable (G : SimpleGraph V)
+
+/- The energy functional for the discrete nonlinear Schrödinger equation (DNLS). -/
+noncomputable def dnlsEnergy (u : V → ℝ) : ℝ :=
+  (1/2) * (∑ e in G.edgeSet, (u e.val.1 - u e.val.2)^2) - (1/4) * (∑ v, (u v)^4)
+
+/- The 
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{elliptic\textbackslash{}_curve\textbackslash{}_rank\textbackslash{}_30}}
+
+\textbf{Domain:} number\textbackslash{}_theory \quad \textbf{Class:} 4 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.05 \quad \textbf{Sorry gaps:} 1
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 1 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$E\textbackslash{}_d\textbackslash{}$ be the family of elliptic curves over \textbackslash{}$\textbackslash{}\textbackslash{}mathbb\textbackslash{}{Q\textbackslash{}}\textbackslash{}$ defined by the equation \textbackslash{}$y\textbackslash{}textasciicircum{}2 = x\textbackslash{}textasciicircum{}3 - dx\textbackslash{}$. Let \textbackslash{}$P\textbackslash{}_4 = 2 \textbackslash{}\textbackslash{}cdot 3 \textbackslash{}\textbackslash{}cdot 5 \textbackslash{}\textbackslash{}cdot 7 = 210\textbackslash{}$ be the fourth primorial. The sum of the Mordell-Weil ranks of the twists of \textbackslash{}$E\textbackslash{}_1\textbackslash{}$ by the positive square-free divisors of \textbackslash{}$P\textbackslash{}_4\textbackslash{}$ is exactly 30. Formally, let \textbackslash{}$S = \textbackslash{}\textbackslash{}\textbackslash{}{d \textbackslash{}\textbackslash{}in \textbackslash{}\textbackslash{}mathbb\textbackslash{}{N\textbackslash{}}\textbackslash{}textasciicircum{}* \textbackslash{}\textbackslash{}mid d \textbackslash{}\textbackslash{}text\textbackslash{}{ is square-free and \textbackslash{}} d|P\textbackslash{}_4\textbackslash{}\textbackslash{}\textbackslash{}}\textbackslash{}$. Then: \textbackslash{}$\textbackslash{}$\textbackslash{}\textbackslash{}sum\textbackslash{}_\textbackslash{}{
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.NumberTheory.EllipticCurve.Rank
+import Mathlib.Data.Nat.Squarefree
+
+open EllipticCurve Finset
+
+-- Define the family of elliptic curves E_d: y^2 = x^3 - d*x
+def E_twist (d : ℤ) : EllipticCurve ℚ :=
+  EllipticCurve.of_ainvs 0 (-(d : ℚ)) 0 0 0
+
+-- The conjecture states that the sum of ranks of twists of E_1 by the
+-- positive square-free divisors of the 4th primorial (210) is 30.
+-- Since 210 is square-free, its divisors are all square-free.
+theorem galois_conjecture_elliptic_curve_rank_30 : 
+  ∑ d in Nat.divisors 210, rank (E_twist d) = 30 := by
+  -- This identity is computational
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{elliptic\textbackslash{}_curve\textbackslash{}_rank\textbackslash{}_torsion\textbackslash{}_z7z}}
+
+\textbf{Domain:} number\textbackslash{}_theory \quad \textbf{Class:} 4 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.05 \quad \textbf{Sorry gaps:} 2
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 2 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$K\textbackslash{}$ be a number field and \textbackslash{}$E\textbackslash{}$ be an elliptic curve defined over \textbackslash{}$K\textbackslash{}$. If the torsion subgroup of the Mordell-Weil group \textbackslash{}$E(K)\textbackslash{}$ contains a subgroup isomorphic to \textbackslash{}$\textbackslash{}\textbackslash{}mathbb\textbackslash{}{Z\textbackslash{}}/7\textbackslash{}\textbackslash{}mathbb\textbackslash{}{Z\textbackslash{}} \textbackslash{}\textbackslash{}times \textbackslash{}\textbackslash{}mathbb\textbackslash{}{Z\textbackslash{}}/7\textbackslash{}\textbackslash{}mathbb\textbackslash{}{Z\textbackslash{}}\textbackslash{}$, then the rank of \textbackslash{}$E(K)\textbackslash{}$ is zero. Formally, if \textbackslash{}$(\textbackslash{}\textbackslash{}mathbb\textbackslash{}{Z\textbackslash{}}/7\textbackslash{}\textbackslash{}mathbb\textbackslash{}{Z\textbackslash{}})\textbackslash{}textasciicircum{}2 \textbackslash{}\textbackslash{}hookrightarrow E(K)\textbackslash{}_\textbackslash{}{\textbackslash{}\textbackslash{}text\textbackslash{}{tors\textbackslash{}}\textbackslash{}}\textbackslash{}$, then \textbackslash{}$\textbackslash{}\textbackslash{}text\textbackslash{}{rank\textbackslash{}}\textbackslash{}_\textbackslash{}{\textbackslash{}\textbackslash{}mathbb\textbackslash{}{Z\textbackslash{}}\textbackslash{}}(E(K)) = 0\textbackslash{}$.
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.NumberTheory.EllipticCurve.Point
+import Mathlib.NumberTheory.NumberField.Basic
+import Mathlib.GroupTheory.Finiteness
+import Mathlib.Algebra.Module.Rank
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
+
+open EllipticCurve Additive
+
+-- This conjecture proposes a strong structural property for a specific class of elliptic curves.
+-- It connects the torsion structure to the rank of the Mordell-Weil group.
+-- A proof would be a major result in the arithmetic of elliptic curves.
+-- We use `Module.rank ℤ (Point E)` for the Mordell-Weil rank of E(K).
+
+-- We define a placeholder for the 
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{mzv\textbackslash{}_decomposition\textbackslash{}_c5}}
+
+\textbf{Domain:} number\textbackslash{}_theory \quad \textbf{Class:} 4 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.05 \quad \textbf{Sorry gaps:} 6
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 6 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$I\textbackslash{}_k\textbackslash{}textasciicircum{}d = \textbackslash{}\textbackslash{}\textbackslash{}{(k\textbackslash{}_1, \textbackslash{}\textbackslash{}dots, k\textbackslash{}_d) \textbackslash{}\textbackslash{}in \textbackslash{}\textbackslash{}mathbb\textbackslash{}{Z\textbackslash{}}\textbackslash{}textasciicircum{}d \textbackslash{}\textbackslash{}mid \textbackslash{}\textbackslash{}sum\textbackslash{}_\textbackslash{}{i=1\textbackslash{}}\textbackslash{}textasciicircum{}d k\textbackslash{}_i = k, k\textbackslash{}_1 > 1, k\textbackslash{}_i \textbackslash{}\textbackslash{}ge 1 \textbackslash{}\textbackslash{}\textbackslash{}}\textbackslash{}$. The sum of all admissible multiple zeta values of weight 5 with depth greater than or equal to 2 is equal to \textbackslash{}$2\textbackslash{}\textbackslash{}zeta(5)\textbackslash{}$. Formally, \textbackslash{}$\textbackslash{}$ \textbackslash{}\textbackslash{}sum\textbackslash{}_\textbackslash{}{d=2\textbackslash{}}\textbackslash{}textasciicircum{}\textbackslash{}{4\textbackslash{}} \textbackslash{}\textbackslash{}sum\textbackslash{}_\textbackslash{}{\textbackslash{}\textbackslash{}mathbf\textbackslash{}{k\textbackslash{}} \textbackslash{}\textbackslash{}in I\textbackslash{}_5\textbackslash{}textasciicircum{}d\textbackslash{}} \textbackslash{}\textbackslash{}zeta(\textbackslash{}\textbackslash{}mathbf\textbackslash{}{k\textbackslash{}}) = 2\textbackslash{}\textbackslash{}zeta(5) \textbackslash{}$\textbackslash{}$
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Analysis.SpecialFunctions.Zeta
+import Mathlib.Data.Real.Basic
+
+-- We postulate the existence of a Multiple Zeta Value function and its fundamental properties.
+-- A full formalization would require a significant library development.
+
+-- Represents ζ(k₁, ..., kᵣ) for k = [k₁, ..., kᵣ]
+opaque mzv (k : List ℕ) : ℝ
+
+-- Postulate: The sum of depth-2 MZVs of weight 5 is ζ(5).
+-- This is a specific instance of the Sum Formula.
+theorem mzv_sum_formula_d2_w5 : mzv [4,1] + mzv [3,2] + mzv [2,3] = Real.zeta 5 := sorry
+
+-- Postulate: Duality relations for weight 5.
+-- These are instances of 
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{tracy\textbackslash{}_widom\textbackslash{}_f2\textbackslash{}_mean}}
+
+\textbf{Domain:} mathematical\textbackslash{}_physics \quad \textbf{Class:} 3 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.15 \quad \textbf{Sorry gaps:} 2
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 2 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$F\textbackslash{}_2(s)\textbackslash{}$ be the Tracy-Widom GUE distribution function. The mean of this distribution, \textbackslash{}$\textbackslash{}\textbackslash{}mu\textbackslash{}_2 = \textbackslash{}\textbackslash{}int\textbackslash{}_\textbackslash{}{-\textbackslash{}\textbackslash{}infty\textbackslash{}}\textbackslash{}textasciicircum{}\textbackslash{}{\textbackslash{}\textbackslash{}infty\textbackslash{}} s \textbackslash{}\textbackslash{}, dF\textbackslash{}_2(s)\textbackslash{}$, is given by the exact expression: \textbackslash{}\textbackslash{}n\textbackslash{}\textbackslash{}[ \textbackslash{}\textbackslash{}mu\textbackslash{}_2 = - \textbackslash{}\textbackslash{}left( \textbackslash{}\textbackslash{}frac\textbackslash{}{3\textbackslash{}\textbackslash{}pi \textbackslash{}\textbackslash{}zeta(3)\textbackslash{}}\textbackslash{}{2\textbackslash{}} \textbackslash{}\textbackslash{}right)\textbackslash{}textasciicircum{}\textbackslash{}{1/3\textbackslash{}} \textbackslash{}\textbackslash{}]\textbackslash{}nwhere \textbackslash{}$\textbackslash{}\textbackslash{}zeta(s)\textbackslash{}$ is the Riemann zeta function.
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Analysis.SpecialFunctions.Zeta
+import Mathlib.Analysis.SpecialFunctions.Airy
+import Mathlib.Analysis.Calculus.ParametricIntegral
+
+open Real Set Filter Topology
+
+-- We postulate the existence and properties of the Hastings-McLeod solution
+-- to the Painlevé II equation q'' = 2q^3 + xq.
+postulate q_HM (x : ℝ) : ℝ
+postulate q_HM_is_solution : ∀ x, Differentiable.DifferentiableAt ℝ (fun y ↦ deriv q_HM y) x ∧
+  deriv (deriv q_HM) x = 2 * (q_HM x)^3 + x * q_HM x
+postulate q_HM_asymptotics : (fun x ↦ q_HM x / airyAi x) →* (nhds_atTop) (const ℝ 1)
+
+-- We also need integrability properti
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{tracy\textbackslash{}_widom\textbackslash{}_f2\textbackslash{}_variance}}
+
+\textbf{Domain:} mathematical\textbackslash{}_physics \quad \textbf{Class:} 3 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.15 \quad \textbf{Sorry gaps:} 3
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 3 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$\textbackslash{}\textbackslash{}mu\textbackslash{}_1, \textbackslash{}\textbackslash{}sigma\textbackslash{}_1\textbackslash{}textasciicircum{}2\textbackslash{}$ be the mean and variance of the GUE Tracy-Widom distribution \textbackslash{}$F\textbackslash{}_1\textbackslash{}$, and let \textbackslash{}$\textbackslash{}\textbackslash{}mu\textbackslash{}_2, \textbackslash{}\textbackslash{}sigma\textbackslash{}_2\textbackslash{}textasciicircum{}2\textbackslash{}$ be the mean and variance of the GOE Tracy-Widom distribution \textbackslash{}$F\textbackslash{}_2\textbackslash{}$. Then these quantities are related by the linear identity:\textbackslash{}\textbackslash{}n\textbackslash{}\textbackslash{}[ \textbackslash{}\textbackslash{}sigma\textbackslash{}_2\textbackslash{}textasciicircum{}2 + 2\textbackslash{}\textbackslash{}mu\textbackslash{}_2 + \textbackslash{}\textbackslash{}sigma\textbackslash{}_1\textbackslash{}textasciicircum{}2 = 0 \textbackslash{}\textbackslash{}]
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Probability.Theory.Variance
+
+-- We axiomatically define the Tracy-Widom distributions as they are not yet in Mathlib.
+-- A full definition would require the theory of Fredholm determinants of Airy kernel operators.
+axiom tracyWidomF1 : Measure ℝ
+axiom tracyWidomF2 : Measure ℝ
+
+-- We assume they are probability measures with finite second moments.
+@[instance] axiom F1_isProb : IsProbabilityMeasure tracyWidomF1
+@[instance] axiom F2_isProb : IsProbabilityMeasure tracyWidomF2
+axiom F1_finite_moment_2 : (∫⁻ x, ‖x^2‖₊ ∂tracyWidomF1) <
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{crossing\textbackslash{}_number\textbackslash{}_kn}}
+
+\textbf{Domain:} combinatorics \quad \textbf{Class:} 4 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.35 \quad \textbf{Sorry gaps:} 2
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 2 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$\textbackslash{}\textbackslash{}text\textbackslash{}{cr\textbackslash{}}(K\textbackslash{}_n)\textbackslash{}$ denote the crossing number of the complete graph on \textbackslash{}$n\textbackslash{}$ vertices. For any integer \textbackslash{}$n \textbackslash{}\textbackslash{}ge 3\textbackslash{}$, the following inequality holds: \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}$\textbackslash{}$ \textbackslash{}\textbackslash{}text\textbackslash{}{cr\textbackslash{}}(K\textbackslash{}_\textbackslash{}{n+1\textbackslash{}}) \textbackslash{}\textbackslash{}ge \textbackslash{}\textbackslash{}text\textbackslash{}{cr\textbackslash{}}(K\textbackslash{}_n) + \textbackslash{}{\textbackslash{}\textbackslash{}lfloor n/2 \textbackslash{}\textbackslash{}rfloor \textbackslash{}\textbackslash{}choose 2\textbackslash{}} \textbackslash{}\textbackslash{}left\textbackslash{}\textbackslash{}lfloor \textbackslash{}\textbackslash{}frac\textbackslash{}{n-1\textbackslash{}}\textbackslash{}{2\textbackslash{}} \textbackslash{}\textbackslash{}right\textbackslash{}\textbackslash{}rfloor. \textbackslash{}\textbackslash{}\textbackslash{}$\textbackslash{}$
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Tactic
+
+-- We postulate the existence of the crossing number function for the complete graph K_n.
+-- In a full formalization, this would be defined as the minimum number of crossings
+-- over all planar drawings of K_n.
+opaque cr_K (n : ℕ) : ℕ
+
+-- Postulate a basic, known property that cr_K is non-decreasing.
+axiom cr_K_mono : Monotone cr_K
+
+/-- The conjectured incremental lower bound for `cr(K_{n+1}) - cr(K_n)`.
+This value is equivalent to `Z(n+1) - Z(n)`, where `Z` is the conjectured
+formula for `cr(K_n)`. -/
+def incremental_crossing_lower_b
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{kcore\textbackslash{}_threshold\textbackslash{}_c3}}
+
+\textbf{Domain:} combinatorics \quad \textbf{Class:} 3 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.35 \quad \textbf{Sorry gaps:} 4
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 4 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$G(n, p)\textbackslash{}$ be the Erdős–Rényi random graph with \textbackslash{}$p=c/n\textbackslash{}$. Let \textbackslash{}$C\textbackslash{}_k(G)\textbackslash{}$ be the \textbackslash{}$k\textbackslash{}$-core of \textbackslash{}$G\textbackslash{}$. Let \textbackslash{}$C\textbackslash{}_\textbackslash{}\textbackslash{}triangle(G)\textbackslash{}$ be the triangle-core of \textbackslash{}$G\textbackslash{}$, defined as the largest induced subgraph of \textbackslash{}$G\textbackslash{}$ where every vertex is part of at least one triangle. Let \textbackslash{}$c\textbackslash{}_k\textbackslash{}$ and \textbackslash{}$c\textbackslash{}_\textbackslash{}\textbackslash{}triangle\textbackslash{}$ be the respective threshold constants for the emergence of a non-empty \textbackslash{}$C\textbackslash{}_k(G)\textbackslash{}$ and \textbackslash{}$C\textbackslash{}_\textbackslash{}\textbackslash{}triangle(G)\textbackslash{}$. The conjecture is th
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import analysis.special_functions.exp_log
+import combinatorics.simple_graph.core
+import probability_theory.borel_cantelli
+
+noncomputable theory
+open filter
+
+/- We assume a framework for G(n,p) random graphs, providing a probability space
+   on `simple_graph (fin n)` for each n. -/
+axiom gnp (n : ℕ) (p : ℝ) : Type*
+axiom gnp_prob {n : ℕ} {p : ℝ} : measure_space (gnp n p)
+
+-- Definition of the triangle-core vertices via a peeling operator
+def is_in_triangle {V : Type*} (G : simple_graph V) (v : V) (S : set V) : Prop :=
+  ∃ u w ∈ S, G.adj v u ∧ G.adj v w ∧ G.adj u w
+
+def triangle_core_peeling_ope
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{covering\textbackslash{}_C13\textbackslash{}_k7\textbackslash{}_t4}}
+
+\textbf{Domain:} combinatorics \quad \textbf{Class:} 3 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.35 \quad \textbf{Sorry gaps:} 7
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 7 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$V\textbackslash{}$ be a set of 13 points, and \textbackslash{}$\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}mathcal\textbackslash{}{B\textbackslash{}}\textbackslash{}$ be a collection of 7-subsets of \textbackslash{}$V\textbackslash{}$ (called blocks) such that every 4-subset of \textbackslash{}$V\textbackslash{}$ is contained in at least one block of \textbackslash{}$\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}mathcal\textbackslash{}{B\textbackslash{}}\textbackslash{}$. Let \textbackslash{}$C(13, 7, 4)\textbackslash{}$ be the minimum possible size of such a collection \textbackslash{}$\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}mathcal\textbackslash{}{B\textbackslash{}}\textbackslash{}$. The conjecture is twofold: (1) \textbackslash{}$C(13, 7, 4) = 23\textbackslash{}$. (2) For any such minimal collection \textbackslash{}$\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}mathcal\textbackslash{}{B\textbackslash{}}\textbackslash{}$ of size 23, the mu
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Data.Finset.Card\
+import Mathlib.Data.Fintype.Card\
+import Mathlib.Data.Multiset.Basic\
+\
+open Finset\
+\
+/-! # Formalization of Covering Designs -/\
+\
+structure CoveringDesign (n k t : ℕ) where\
+  V : Type*\
+  [fintypeV : Fintype V]\
+  card_V : Fintype.card V = n\
+  blocks : Finset (Finset V)\
+  card_block_prop : ∀ B ∈ blocks, B.card = k\
+  covering_prop : ∀ T : Finset V, T.card = t → ∃ B ∈ blocks, T ⊆ B\
+\
+def covering_number (n k t : ℕ) : ℕ :=\
+  sInf { b : ℕ | ∃ (D : CoveringDesign n k t), D.blocks.card = b }\
+\
+def replication_number {n k t : ℕ} (D : CoveringDesign n k t) (x
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{cwcode\textbackslash{}_29\textbackslash{}_8\textbackslash{}_5}}
+
+\textbf{Domain:} coding\textbackslash{}_theory \quad \textbf{Class:} 3 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.30 \quad \textbf{Sorry gaps:} 10
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 10 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$C\textbackslash{}$ be a binary linear code with parameters \textbackslash{}$[n, k, d] = [29, 8, 5]\textbackslash{}$. Let \textbackslash{}$C\textbackslash{}textasciicircum{}\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}perp\textbackslash{}$ be the dual code of \textbackslash{}$C\textbackslash{}$, with minimum distance \textbackslash{}$d\textbackslash{}textasciicircum{}\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}perp\textbackslash{}$. Then, \textbackslash{}$d\textbackslash{}textasciicircum{}\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}perp = 2\textbackslash{}$.
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.LinearAlgebra.FiniteDimensional\
+import Mathlib.Data.ZMod.Basic\
+import Mathlib.Data.Fintype.Card\
+import Mathlib.Data.Fin.VecNotation\
+\
+universe u\
+\
+-- Define a binary linear code as a subspace of (Fin n → ZMod 2)\
+structure LinearCode (n : ℕ) where\
+  carrier : Subspace (ZMod 2) (Fin n → ZMod 2)\
+\
+-- Hamming weight of a vector\
+def hammingWeight {n : ℕ} (v : Fin n → ZMod 2) : ℕ :=\
+  Fintype.card {i | v i ≠ 0}\
+\
+-- Minimum distance of a code (excluding the zero vector)\
+def minDist (C : LinearCode n) : ℕ :=\
+  if h : C.carrier = ⊥ then 0\
+  else sInf {w | ∃ v ∈ C.carrier, 
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{inverse\textbackslash{}_galois\textbackslash{}_m23}}
+
+\textbf{Domain:} number\textbackslash{}_theory \quad \textbf{Class:} 4 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.05 \quad \textbf{Sorry gaps:} 1
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 1 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$M\textbackslash{}_\textbackslash{}{23\textbackslash{}}\textbackslash{}$ be the Mathieu group on 23 points. There exists an irreducible polynomial \textbackslash{}$f \textbackslash{}\textbackslash{}in \textbackslash{}\textbackslash{}mathbb\textbackslash{}{Q\textbackslash{}}[X]\textbackslash{}$ of degree 23 such that the Galois group of the splitting field of \textbackslash{}$f\textbackslash{}$ over \textbackslash{}$\textbackslash{}\textbackslash{}mathbb\textbackslash{}{Q\textbackslash{}}\textbackslash{}$ is isomorphic to \textbackslash{}$M\textbackslash{}_\textbackslash{}{23\textbackslash{}}\textbackslash{}$. Formally: \textbackslash{}$\textbackslash{}$\textbackslash{}\textbackslash{}exists f \textbackslash{}\textbackslash{}in \textbackslash{}\textbackslash{}mathbb\textbackslash{}{Q\textbackslash{}}[X] \textbackslash{}\textbackslash{}text\textbackslash{}{ s.t. \textbackslash{}} \textbackslash{}\textbackslash{}text\textbackslash{}{Irreducible\textbackslash{}}(f) \textbackslash{}\textbackslash{}land \textbackslash{}\textbackslash{}deg(f) = 23 \textbackslash{}\textbackslash{}land \textbackslash{}\textbackslash{}text\textbackslash{}{Gal\textbackslash{}}(\textbackslash{}\textbackslash{}text\textbackslash{}{SplittingField\textbackslash{}}\textbackslash{}_\textbackslash{}{\textbackslash{}\textbackslash{}mathbb\textbackslash{}{Q\textbackslash{}}\textbackslash{}}(f) / \textbackslash{}\textbackslash{}mathbb\textbackslash{}{Q
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.FieldTheory.IsGalois
+import Mathlib.FieldTheory.SplittingField
+import Mathlib.GroupTheory.SpecificGroups.Mathieu
+
+open Polynomial
+
+/--
+Conjecture (Inverse Galois Problem for M₂₃): The Mathieu group M₂₃ can be realized as the
+Galois group of a degree 23 irreducible polynomial over the rational numbers.
+-/
+theorem M23_is_Galois_over_Q :
+  ∃ (f : ℚ[X]), Irreducible f ∧ f.natDegree = 23 ∧
+    Nonempty (Gal (SplittingField f) ℚ ≃* (MathieuGroup 23)) := by
+  sorry
+  -- This is a major open problem. A proof is expected to proceed via the rigidity method.
+  -- Step 1: Prove the existenc
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{hensley\textbackslash{}_hausdorff\textbackslash{}_dim}}
+
+\textbf{Domain:} number\textbackslash{}_theory \quad \textbf{Class:} 4 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.05 \quad \textbf{Sorry gaps:} 2
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 2 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$d(A) := \textbackslash{}\textbackslash{}dim\textbackslash{}_H(\textbackslash{}\textbackslash{}\textbackslash{}{x \textbackslash{}\textbackslash{}in [0,1] \textbackslash{}\textbackslash{}setminus \textbackslash{}\textbackslash{}mathbb\textbackslash{}{Q\textbackslash{}} \textbackslash{}\textbackslash{}mid a\textbackslash{}_i(x) \textbackslash{}\textbackslash{}in A, \textbackslash{}\textbackslash{}forall i \textbackslash{}\textbackslash{}ge 1\textbackslash{}\textbackslash{}\textbackslash{}})\textbackslash{}$, where \textbackslash{}$a\textbackslash{}_i(x)\textbackslash{}$ are the partial quotients of the continued fraction of \textbackslash{}$x\textbackslash{}$ and \textbackslash{}$\textbackslash{}\textbackslash{}dim\textbackslash{}_H\textbackslash{}$ is the Hausdorff dimension. For \textbackslash{}$N \textbackslash{}\textbackslash{}in \textbackslash{}\textbackslash{}mathbb\textbackslash{}{N\textbackslash{}}\textbackslash{}_\textbackslash{}{\textbackslash{}\textbackslash{}ge 1\textbackslash{}}\textbackslash{}$, let \textbackslash{}$A\textbackslash{}_N = \textbackslash{}\textbackslash{}\textbackslash{}{1, 2, \textbackslash{}\textbackslash{}dots, N\textbackslash{}\textbackslash{}\textbackslash{}}\textbackslash{}$ and \textbackslash{}$B\textbackslash{}_N = \textbackslash{}\textbackslash{}\textbackslash{}{N+1, N+2, \textbackslash{}\textbackslash{}dots\textbackslash{}\textbackslash{}\textbackslash{}}\textbackslash{}$. Define the function \textbackslash{}$S(N) := d(A\textbackslash{}_N) + d(B\textbackslash{}_N)\textbackslash{}$. Then \textbackslash{}$S(N)\textbackslash{}$ is a strictly m
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.NumberTheory.ContinuedFractions.Basic
+import Mathlib.Analysis.Calculus.MeanValue
+import Mathlib.MeasureTheory.Measure.Hausdorff
+
+open Real Set Metric MeasureTheory
+
+/-- The set of irrationals in [0,1] whose continued fraction digits are in a given set A. -/
+noncomputable def ContinuedFraction.setOfDigits (A : Set ℕ) : Set ℝ :=
+  {x | 0 ≤ x ∧ x ≤ 1 ∧ ¬ Irrational x ∧ ∀ i, (continuedFraction x).digits i ∈ A}
+
+/-- The Hausdorff dimension of the set of numbers with continued fraction digits in A. -/
+noncomputable def dimH_cf (A : Set ℕ) : ℝ := hausdorffDimension (ContinuedFraction.s
+\end{lstlisting}
+
+\hrule\medskip
+
+\subsection*{\texttt{spherical\textbackslash{}_mode\textbackslash{}_quality\textbackslash{}_factor\textbackslash{}_te\textbackslash{}_tm}}
+
+\textbf{Domain:} spectral\textbackslash{}_theory \quad \textbf{Class:} 3 \quad \textbf{Verdict:} \textcolor{incompleteamber}{\textbf{INCOMPLETE}}
+
+\textbf{Confidence:} 0.70 \quad \textbf{Domain Prior:} 0.20 \quad \textbf{Sorry gaps:} 6
+
+\textcolor{sorryred}{\textbf{Zero-Sorry Guillotine Applied:} 6 \texttt{sorry} stubs detected. Verdict downgraded from VERIFIED to INCOMPLETE.}
+
+\begin{conjecture}
+Let \textbackslash{}$z\textbackslash{}_\textbackslash{}{l,n\textbackslash{}}\textbackslash{}$ be the \textbackslash{}$n\textbackslash{}$-th positive zero of the spherical Bessel function of the first kind \textbackslash{}$j\textbackslash{}_l(x)\textbackslash{}$, for integers \textbackslash{}$l \textbackslash{}\textbackslash{}ge 1, n \textbackslash{}\textbackslash{}ge 1\textbackslash{}$. Define the total normalized excess loss for a given angular momentum number \textbackslash{}$l\textbackslash{}$ as the convergent series \textbackslash{}$S\textbackslash{}_l := \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}sum\textbackslash{}_\textbackslash{}{n=1\textbackslash{}}\textbackslash{}textasciicircum{}\textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}infty \textbackslash{}\textbackslash{}\textbackslash{}\textbackslash{}frac\textbackslash{}{l(l+1)\textbackslash{}}\textbackslash{}{z\textbackslash{}_\textbackslash{}{l,n\textbackslash{}}\textbackslash{}textasciicircum{}2 - l(l+1)\textbackslash{}}\textbackslash{}$. Then the sequence \textbackslash{}$(S\textbackslash{}_l)\textbackslash{}_\textbackslash{}{l \textbackslash{}\textbackslash{}ge 1\textbackslash{}}\textbackslash{}$ is strictly increasing and satisfies the sharp bo
+\end{conjecture}
+
+\begin{lstlisting}[caption={Lean 4 Sketch (v14 Galois)}]
+import Mathlib.Analysis.SpecialFunctions.Bessel\
+import Mathlib.Topology.Instances.Real\
+\
+open Real SpecialFunctions\
+\
+-- We postulate the existence and properties of the n-th zero of the l-th spherical Bessel function.\
+-- A full formalization would require developing the theory of zeros of these functions.\
+axiom sphericalBessel_zero_exists (l n : ℕ) (hl : l ≥ 1) (hn : n ≥ 1): ∃! z, (sphericalBesselJ l z = 0) ∧ z > 0 ∧\
+  (∀ y, 0 < y ∧ y < z → sphericalBesselJ l y ≠ 0 → ∀ m < n, Classical.choose (sphericalBessel_zero_exists l m hl (by linarith)) < y)\
+\
+-- Define z_{l,n} using the axiom\
+d
+\end{lstlisting}
+
+\hrule\medskip
+
+
+\newpage
+%% ============================================================
+\section{Open Problems and Future Work}
+%% ============================================================
+
+The following problems remain unresolved after the v14 re-run and represent
+the frontier of formal AI mathematics:
+
+\begin{itemize}
+  \item \textbf{euler\_mascheroni\_closed\_form}: The irrationality of the
+    Euler--Mascheroni constant $\gamma = \lim_{n\to\infty}(H_n - \ln n)$ is a
+    major open problem. No closed-form algebraic expression is known.
+  \item \textbf{feigenbaum\_alpha, feigenbaum\_delta}: The universality
+    constants $\alpha \approx 2.502$ and $\delta \approx 4.669$ arise in
+    period-doubling bifurcations. No algebraic proof of their transcendence exists.
+  \item \textbf{anderson\_lyapunov\_exponent}: The Lyapunov exponent for
+    the Anderson localization model requires deep results in random matrix theory.
+\end{itemize}
+
+\begin{thebibliography}{9}
+\bibitem{horizonmath2024} Wang, E. et al.\ (2024). ``HorizonMath: A Benchmark
+  for Open Mathematical Problems.'' arXiv preprint.
+\bibitem{lean4} de Moura, L., Ullrich, S.\ (2021). ``The Lean 4 Theorem Prover
+  and Programming Language.'' CADE-28.
+\bibitem{mathlib4} The Mathlib Community (2024). ``Mathlib4.'' GitHub.
+\bibitem{lakatos} Lakatos, I.\ (1976). \textit{Proofs and Refutations}.
+  Cambridge University Press.
+\end{thebibliography}
+
+\end{document}

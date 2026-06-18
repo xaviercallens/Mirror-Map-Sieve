@@ -1,0 +1,15 @@
+{
+  "pid": "spheroidal_eigenvalue_lambda_m0",
+  "domain": "spectral_theory",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 1,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.2,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 79.98409191600513,
+  "conjecture_statement": "Let $\\\\lambda_{0,n}(c)$ for $n \\\\in \\\\mathbb{N}$ be the sequence of eigenvalues of the angular prolate spheroidal differential equation, indexed in increasing order, for a fixed parameter $c \\\\in \\\\mathbb{R}_{>0}$. The equation is given by $\\\\frac{d}{dx}\\\\left((1-x^2)\\\\frac{dS}{dx}\\\\right) + \\\\left(\\\\lambda - c^2 x^2\\\\right)S = 0$ on the interval $x \\\\in [-1, 1]$, with the condition that the solution $S(x)$ is regular at the endpoints. Then for any $n \\\\in \\\\mathbb{N}$ and any $c > 0$, the seque",
+  "lean4_sketch": "import Mathlib.Analysis.SpecialFunctions.Legendre\nimport Mathlib.Data.Real.Basic\n\n/-!\n# Convexity of Spheroidal Eigenvalues\n\nThis file states a conjecture about the eigenvalues of the prolate spheroidal wave equation\nfor azimuthal quantum number m=0. We postulate the existence of these eigenvalues as a\nfunction `spheroidalEigenvalue` and state some of its known properties.\n\nA full formalization would require defining the spheroidal differential operator on a\nweighted Sobolev space and proving the existence of a discrete, ordered spectrum via the\nspectral theory of self-adjoint operators.\n-/\n\n/-- `spheroidalEigenvalue c n` represents the `n`-th eigenvalue `\u03bb_{0,n}(c)` of the\nangular prolate spheroidal wave equation for a given real parameter `c`. -/\naxiom spheroidalEigenvalue (c : \u211d) (n : \u2115",
+  "gap_probability_map": {}
+}

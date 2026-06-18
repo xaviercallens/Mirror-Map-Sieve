@@ -1,0 +1,123 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\geometry{margin=2.5cm}
+\title{
+  \textbf{SocrateAI Scientific Agora}\\
+  \large Platform Engineering Report\\
+  \normalsize v14 Re-Run $\cdot$ FinOps $\cdot$ Epistemic Architecture
+}
+\author{TuringAgent (Infrastructure) \and SocratesAgent (Orchestration)}
+\date{June 04, 2026}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Architecture Overview}
+
+The SocrateAI Agora v14 implements a 5-agent pipeline:
+
+\begin{enumerate}
+  \item \textbf{SocratesAgent} — Dialectical orchestrator (PFC routing)
+  \item \textbf{TuringAgent} — GPU infrastructure (H100/A100/L4 Spot on GCP)
+  \item \textbf{GaloisAgent (SymBrain v11 Dual-Hemisphere)} — Mathematical
+    conjecture generator (Left: symbolic PSLQ/LLL; Right: Gemini 2.5 Pro + Mistral MCTS)
+  \item \textbf{EulerAgent (Zero-Sorry Guillotine + Bayesian priors)} — Formal verifier
+  \item \textbf{PythagoreAgent (Probabilistic gap classifier)} — Lean 4 gap analysis
+\end{enumerate}
+
+\section{v14 Epistemic Upgrade: Zero-Sorry Guillotine}
+
+The v13 run contained a critical flaw: proofs marked \textbf{VERIFIED} contained
+23--35 \texttt{sorry} stubs. This is mathematically impossible. In Lean 4,
+\texttt{sorry} is a kernel-level axiom; the compiler exits with code 0 even
+when present.
+
+\subsection*{Fix Applied}
+
+\begin{enumerate}
+  \item Regex scan over Lean 4 code BEFORE compiler verdict is accepted
+  \item Any \texttt{sorry} occurrence: automatic INCOMPLETE, regardless of confidence
+  \item Orchestrator-level override: if Euler returns $\geq 0.85$ but sorry count $> 0$,
+    confidence is capped at $0.70$
+  \item Bayesian domain priors inform Euler's base confidence
+\end{enumerate}
+
+\subsection*{Impact}
+  29 v14 results had the guillotine applied.
+
+
+
+\section{FinOps Report}
+
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+  Budget cap & \$400.00 \\
+  v13 spend & \$15.26 \\
+  v14 spend & \$12.94 \\
+  Total spend & \$28.20 \\
+  Budget remaining & \$371.80 \\
+  Avg cost/problem & \$0.38 \\
+  Problems attempted & 34 \\
+  Elapsed time & 79.2 min \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\section{GPU Infrastructure}
+
+\begin{itemize}
+  \item \textbf{Priority:} H100 (us-central1) $\to$ A100 (us-central1-b) $\to$ 4$\times$L4 Spot
+  \item \textbf{Instance type:} Spot/Preemptible (60--80\% cost reduction)
+  \item \textbf{Fallback regions:} us-east1, europe-west4, asia-east1
+  \item \textbf{Service account key:} Auto-created and stored in Secret Manager
+  \item \textbf{Auto-teardown:} TuringAgent scales to 0 after each problem
+  \item \textbf{Scale-to-zero:} Enforced between problems (no idle GPU billing)
+\end{itemize}
+
+\section{Bayesian Domain Priors (Euler v14)}
+
+These priors encode the difficulty of fully formalizing proofs in each domain:
+
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+\textbf{Domain} & \textbf{Prior P(verified)} \\
+\midrule
+number\_theory & 5\% \\
+continuum\_physics & 10\% \\
+mathematical\_physics & 15\% \\
+discrete\_geometry & 20\% \\
+spectral\_theory & 20\% \\
+special\_functions & 25\% \\
+statistical\_mechanics & 30\% \\
+coding\_theory & 30\% \\
+combinatorics & 35\% \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Conclusion}
+
+The SocrateAI Agora v14 demonstrates that LLM-driven mathematical conjecture
+generation, when combined with rigorous formal verification (Zero-Sorry Guillotine,
+Bayesian priors, Lean 4 gap analysis), can honestly characterize the frontier of
+AI formal mathematics. The system correctly distinguishes between:
+\begin{itemize}
+  \item Problems where AI can generate plausible conjectures with formal sketches
+  \item Problems at the genuine frontier of mathematical knowledge (Euler-Mascheroni,
+    Feigenbaum constants) where even human mathematicians lack complete proofs
+\end{itemize}
+
+\end{document}

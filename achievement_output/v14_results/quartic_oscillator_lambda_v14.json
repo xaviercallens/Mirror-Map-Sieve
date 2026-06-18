@@ -1,0 +1,15 @@
+{
+  "pid": "quartic_oscillator_lambda",
+  "domain": "spectral_theory",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 4,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.2,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 102.24710362499172,
+  "conjecture_statement": "Let $H = -\\\\frac{d^2}{dx^2} + x^4$ be the Schr\u00f6dinger operator on $L^2(\\\\mathbb{R})$. Let its discrete, positive eigenvalues be ordered as $0 < \\\\lambda_0 < \\\\lambda_1 < \\\\lambda_2 < \\\\dots$. Then the alternating sum of the reciprocals of these eigenvalues evaluates to a specific constant related to the period of the classical quartic oscillator:\\n\\n$$\\\\sum_{n=0}^\\\\infty \\\\frac{(-1)^n}{\\\\lambda_n} = \\\\frac{\\\\Gamma(1/4)^2}{4\\\\sqrt{\\\\pi}}$$\\n\\nwhere $\\\\Gamma$ is the Euler gamma function.",
+  "lean4_sketch": "import Mathlib.Analysis.SpecialFunctions.Gamma.Basic\nimport Mathlib.Analysis.InnerProductSpace.Spectrum\n\nopen Real Filter Topology\n\n-- This conjecture concerns the eigenvalues of the Schr\u00f6dinger operator with a quartic potential.\n-- The full definition of this unbounded operator and the proof of its spectral properties\n-- are beyond the current scope of Mathlib. We axiomatically assume the existence of its\n-- ordered sequence of eigenvalues with standard properties.\naxiom quartic_eigenvalues : \u2115 \u2192 \u211d\naxiom quartic_eigenvalues_pos (n : \u2115) : 0 < quartic_eigenvalues n\naxiom quartic_eigenvalues_strictMono : StrictMono quartic_eigenvalues\naxiom quartic_eigenvalues_tendsto_atTop : Tendsto quartic_eigenvalues atTop atTop\n\n-- The conjecture states that the alternating sum of the reciprocals of thes",
+  "gap_probability_map": {}
+}

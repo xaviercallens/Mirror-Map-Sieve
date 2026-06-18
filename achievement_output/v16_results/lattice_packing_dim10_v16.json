@@ -1,0 +1,31 @@
+{
+  "pid": "lattice_packing_dim10",
+  "domain": "discrete_geometry",
+  "v16_verdict": "REFUTED",
+  "v16_confidence": 0.0,
+  "sorry_count": 9,
+  "sorry_count_after_archimedes": 9,
+  "sorry_count_final": 3,
+  "archimedes_reduction": 0,
+  "pre_decomp_lemmas": 3,
+  "sharding_tier": "",
+  "sharding_region": "",
+  "hypotheses_applied": [
+    "H1_PRE_DECOMP_3L"
+  ],
+  "conjecture_statement": "Let $\\mathcal{L}_{10}$ be the set of all lattices in $\\mathbb{R}^{10}$, and let $\\delta(\\Lambda)$ denote the packing density of a lattice $\\Lambda \\in \\mathcal{L}_{10}$. We conjecture that the maximal lattice packing density $\\Delta_{10} = \\sup_{\\Lambda \\in \\mathcal{L}_{10}} \\delta(\\Lambda)$ is bounded above as follows: $$\\Delta_{10} \\le \\frac{\\pi^5}{3840}$$",
+  "lean4_sketch": "import Analysis.NormedSpace.Basic\nimport MeasureTheory.Measure.Lebesgue.Basic\nimport Geometry.Euclidean.Sphere.Basic\nimport Analysis.SpecialFunctions.Gamma.Basic\nimport Analysis.Convex.Basic\n\nnoncomputable section\n\n-- Assume definitions for lattice-related concepts are available.\n-- These would be part of a full formalization in a library like Mathlib.\nclass IsLattice (\u039b : AddSubgroup (EuclideanSpace \u211d (Fin 10))) : Prop\n\ndef packing_radius (\u039b : AddSubgroup (EuclideanSpace \u211d (Fin 10))) : \u211d :=\n  (1/2) * sInf {\u2016v\u2016 | v \u2208 \u039b \\ {0}}\n\ndef ball_volume (n : \u2115) (r : \u211d) : \u211d :=\n  (Real.pi^(n/2) / Real.Gamma (n/2 + 1)) * r^n\n\ndef covolume (\u039b : AddSubgroup (EuclideanSpace \u211d (Fin 10))) : \u211d := sorry\n\ndef packing_density (\u039b : AddSubgroup (EuclideanSpace \u211d (Fin 10))) : \u211d :=\n  ball_volume 10 (packing_radius \u039b) / covolume \u039b\n\ndef kissing_number (\u039b : AddSubgroup (EuclideanSpace \u211d (Fin 10))) : \u2115 :=\n  let m := 2 * packing_radius \u039b\n  Set.encard {v \u2208 \u039b | \u2016v\u2016 = m}\n\n-- Placeholder for the Voronoi cell of the origin for a lattice.\ndef voronoiCell (\u039b : AddSubgroup (EuclideanSpace \u211d (Fin 10))) (p : EuclideanSpace \u211d (Fin 10))) : Set (EuclideanSpace \u211d (Fin 10)) := sorry\n\n-- Placeholder for a known result from the literature.\ntheorem known_kissing_number_bound_dim10 (\u039b : AddSubgroup (EuclideanSpace \u211d (Fin 10))) (h_lattice : IsLattice \u039b) : kissing_number \u039b \u2264 372 := by sorry\n\ntheorem lattice_packing_dim10 (\u039b : AddSubgroup (EuclideanSpace \u211d (Fin 10))) (h_lattice : IsLattice \u039b) :\n  packing_density \u039b \u2264 Real.pi^5 / 3840 := by\n  -- Setup of key geometric quantities\n  let n : \u2115 := 10\n  let R := packing_radius \u039b\n  let m := 2 * R\n  let V_B := ball_volume n R\n  let V_F := covolume \u039b\n  let \u03c4 := kissing_number \u039b\n  let W := voronoiCell \u039b 0\n  let K := {v \u2208 \u039b | \u2016v\u2016 = m}\n  -- P is the convex body formed by the origin and half the kissing vectors.\n  let P := convexHull \u211d (insert 0 ((fun v => v / 2) '' K))\n\n  -- The covolume is the measure of the Voronoi cell.\n  have h_covol_is_vol : V_F = (MeasureTheory.volume W).toRe",
+  "lean4_sketch_archimedes": "import Analysis.NormedSpace.Basic\nimport MeasureTheory.Measure.Lebesgue.Basic\nimport Geometry.Euclidean.Sphere.Basic\nimport Analysis.SpecialFunctions.Gamma.Basic\nimport Analysis.Convex.Basic\n\nnoncomputable section\n\n-- Assume definitions for lattice-related concepts are available.\n-- These would be part of a full formalization in a library like Mathlib.\nclass IsLattice (\u039b : AddSubgroup (EuclideanSpace \u211d (Fin 10))) : Prop\n\ndef packing_radius (\u039b : AddSubgroup (EuclideanSpace \u211d (Fin 10))) : \u211d :=\n  (1/2) * sInf {\u2016v\u2016 | v \u2208 \u039b \\ {0}}\n\ndef ball_volume (n : \u2115) (r : \u211d) : \u211d :=\n  (Real.pi^(n/2) / Real.Gamma (n/2 + 1)) * r^n\n\ndef covolume (\u039b : AddSubgroup (EuclideanSpace \u211d (Fin 10))) : \u211d := sorry\n\ndef packing_density (\u039b : AddSubgroup (EuclideanSpace \u211d (Fin 10))) : \u211d :=\n  ball_volume 10 (packing_radius \u039b) / covolume \u039b\n\ndef kissing_number (\u039b : AddSubgroup (EuclideanSpace \u211d (Fin 10))) : \u2115 :=\n  let m := 2 * packing_radius \u039b\n  Set.encard {v \u2208 \u039b | \u2016v\u2016 = m}\n\n-- Placeholder for the Voronoi cell of the origin for a lattice.\ndef voronoiCell (\u039b : AddSubgroup (EuclideanSpace \u211d (Fin 10))) (p : EuclideanSpace \u211d (Fin 10))) : Set (EuclideanSpace \u211d (Fin 10)) := sorry\n\n-- Placeholder for a known result from the literature.\ntheorem known_kissing_number_bound_dim10 (\u039b : AddSubgroup (EuclideanSpace \u211d (Fin 10))) (h_lattice : IsLattice \u039b) : kissing_number \u039b \u2264 372 := by sorry\n\ntheorem lattice_packing_dim10 (\u039b : AddSubgroup (EuclideanSpace \u211d (Fin 10))) (h_lattice : IsLattice \u039b) :\n  packing_density \u039b \u2264 Real.pi^5 / 3840 := by\n  -- Setup of key geometric quantities\n  let n : \u2115 := 10\n  let R := packing_radius \u039b\n  let m := 2 * R\n  let V_B := ball_volume n R\n  let V_F := covolume \u039b\n  let \u03c4 := kissing_number \u039b\n  let W := voronoiCell \u039b 0\n  let K := {v \u2208 \u039b | \u2016v\u2016 = m}\n  -- P is the convex body formed by the origin and half the kissing vectors.\n  let P := convexHull \u211d (insert 0 ((fun v => v / 2) '' K))\n\n  -- The covolume is the measure of the Voronoi cell.\n  have h_covol_is_vol : V_F = (MeasureTheory.volume W).toRe",
+  "research_brief": "",
+  "v15_sorry": 3,
+  "domain_prior": 0.2,
+  "gap_probability_map": {},
+  "sorry_guillotine_applied": false,
+  "cost_usd": 0.44,
+  "elapsed_s": 253.82,
+  "problem_id": "lattice_packing_dim10",
+  "status": "FAILED (UNRECOVERABLE)",
+  "galileo_valid": false,
+  "galileo_message": "Validation failed",
+  "galileo_diff": "N/A"
+}

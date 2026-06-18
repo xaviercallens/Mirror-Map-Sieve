@@ -1,0 +1,14 @@
+{
+  "pid": "cwcode_29_8_5",
+  "domain": "coding_theory",
+  "v14_verdict": "INCOMPLETE",
+  "v14_sorry": 10,
+  "sorry_before": 0,
+  "sorry_after": 0,
+  "sorry_eliminated": 0,
+  "pre_decomp_slots": 3,
+  "offline_verdict": "ALREADY_OK",
+  "alexandrie_id": "v16_offline_cwcode_29_8_5",
+  "elapsed_s": 0.02,
+  "gap_summary": []
+}

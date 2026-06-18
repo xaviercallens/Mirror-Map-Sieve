@@ -1,0 +1,36 @@
+# Copyright (c) 2026 Xavier Callens / Socrate AI Lab
+# Licensed under Apache 2.0 - see LICENSE file
+#
+# Dockerfile for the Alexandrie scientific vault backend server
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy configuration files
+COPY pyproject.toml /app/
+
+# Install python dependencies
+RUN pip install --no-cache-dir .
+
+# Copy source code
+COPY alexandrie/ /app/alexandrie/
+COPY agents/ /app/agents/
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV ALEXANDRIE_VAULT_ROOT=/app/alexandrie_vault
+
+# Create data vault directories
+RUN mkdir -p /app/alexandrie_vault
+
+# Expose FastAPI port
+EXPOSE 8080
+
+# Run FastAPI uvicorn server
+CMD ["uvicorn", "alexandrie.server:app", "--host", "0.0.0.0", "--port", "8080"]

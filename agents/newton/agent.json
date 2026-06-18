@@ -1,0 +1,9 @@
+{
+  "name": "newton",
+  "description": "Isaac Newton — rigorous formal proof from first principles. Lean 4 theorem formalization, breaking proofs into lemmas, systematic sorry→theorem promotion.",
+  "role": "THEOREM_PROVER",
+  "endpoints": {
+    "rpc": "https://newton-service-xyz.a.run.app/rpc"
+  },
+  "model": "gemini-2.5-pro"
+}

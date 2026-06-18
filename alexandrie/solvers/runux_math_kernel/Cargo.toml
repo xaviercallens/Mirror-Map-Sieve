@@ -1,0 +1,20 @@
+# Copyright (c) 2026 Xavier Callens and Socrate AI. All rights reserved.
+# Runux Math Kernel: A Hexagonal-Architecture Mathematical Solver & API Gateway
+
+[package]
+name = "runux_math_kernel"
+version = "0.1.0"
+edition = "2021"
+authors = ["Xavier Callens", "Socrate AI"]
+description = "High-performance generic solver and API Gateway for K_n Crossing Numbers and Calabi-Yau periods"
+
+[dependencies]
+clarabel = "0.9"     # Interior point solver for SDP bounds
+rayon = "1.10"       # Concurrency (inspired by RunuX multi-threading)
+serde = { version = "1.0", features = ["derive"] } # Serialization/Checkpointing
+serde_json = "1.0"
+log = "0.4"
+env_logger = "0.11"
+axum = "0.7"         # API Gateway
+tokio = { version = "1.37", features = ["full"] } # Async runtime
+tower-http = { version = "0.5", features = ["cors"] } # CORS handling

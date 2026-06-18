@@ -1,0 +1,38 @@
+steps:
+# Build the container image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/s15-benchmark', '-f', 'Dockerfile.s15_benchmark', '.']
+
+# Push the container image to Container Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/s15-benchmark']
+
+# Run the benchmark job on L4 GPU using gcloud compute instances or Cloud Run
+# Cloud Run Jobs now support L4 GPUs!
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      echo "Deploying S15 benchmark job..."
+      gcloud beta run jobs create s15-benchmark-job \
+        --image gcr.io/$PROJECT_ID/s15-benchmark \
+        --tasks 1 \
+        --max-retries 0 \
+        --region us-central1 \
+        --memory 32Gi \
+        --cpu 8 \
+        --gpu 1 \
+        --gpu-type nvidia-l4 \
+        || gcloud beta run jobs update s15-benchmark-job \
+        --image gcr.io/$PROJECT_ID/s15-benchmark \
+        --memory 32Gi \
+        --cpu 8 \
+        --gpu 1 \
+        --gpu-type nvidia-l4
+      
+      echo "Executing S15 benchmark job..."
+      gcloud beta run jobs execute s15-benchmark-job --wait --region us-central1
+      
+images:
+- 'gcr.io/$PROJECT_ID/s15-benchmark'

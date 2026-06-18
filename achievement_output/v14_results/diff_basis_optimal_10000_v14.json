@@ -1,0 +1,15 @@
+{
+  "pid": "diff_basis_optimal_10000",
+  "domain": "combinatorics",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "REFUTED",
+  "v14_confidence": 0.57,
+  "sorry_count": 1,
+  "sorry_guillotine_applied": false,
+  "domain_prior": 0.35,
+  "cost_usd": 0.46,
+  "elapsed_s": 176.30845374999626,
+  "conjecture_statement": "Let $S \\\\subset \\\\mathbb{Z}$ be a finite set. Define the set of positive differences as $D(S) := \\\\{ s_i - s_j \\\\mid s_i, s_j \\\\in S, s_i > s_j \\\\}$. Define the contiguous range covered by these differences as $n(S) := \\\\sup \\\\{ n \\\\in \\\\mathbb{N} \\\\cup \\\\{0\\\\} \\\\mid \\\\{1, 2, \\\\dots, n\\\\} \\\\subseteq D(S) \\\\}$. A set $S$ is called an optimal difference basis if for any set $S'$ with $|S'| < |S|$, we have $n(S') < n(S)$, and for any $S''$ with $|S''| = |S|$, we have $n(S'') \\\\le n(S)$. The conject",
+  "lean4_sketch": "import Mathlib.Data.Finset.Pointwise\nimport Mathlib.Data.Finset.Card\nimport Mathlib.Tactic\n\n-- Let S be a finite set of integers\nvariable (S : Finset \u2124)\n\n-- The set of positive differences of S\ndef positive_differences (S : Finset \u2124) : Finset \u2124 := \n  Finset.image (fun p : \u2124 \u00d7 \u2124 \u21a6 p.2 - p.1) (S.offDiag.filter (fun p \u21a6 p.1 < p.2))\n\n-- The length of the initial segment of integers covered by the differences of S\n-- We search up to a loose bound Nat.choose S.card 2, the max possible number of positive diffs\ndef n (S : Finset \u2124) : \u2115 :=\n  if h : S.card < 2 then 0\n  else Nat.findGreatest \n    (fun m \u21a6 Finset.Icc 1 m \u2286 positive_differences S) \n    (Nat.choose S.card 2)\n\n-- A set S is an optimal difference basis\ndef IsOptimalDifferenceBasis (S : Finset \u2124) : Prop :=\n  (\u2200 (S' : Finset \u2124), S'.card = S",
+  "gap_probability_map": {}
+}

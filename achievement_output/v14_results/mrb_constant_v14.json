@@ -1,0 +1,15 @@
+{
+  "pid": "mrb_constant",
+  "domain": "number_theory",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "REFUTED",
+  "v14_confidence": 0.57,
+  "sorry_count": 3,
+  "sorry_guillotine_applied": false,
+  "domain_prior": 0.05,
+  "cost_usd": 0.46,
+  "elapsed_s": 84.24353020900162,
+  "conjecture_statement": "Let $\\\\mathcal{P}$ be the ring of periods, defined as the set of all real numbers that can be expressed as the value of an absolutely convergent integral of a rational function with rational coefficients over a semi-algebraic set in $\\\\mathbb{R}^n$ defined by polynomial inequalities with rational coefficients. The MRB constant, $C_{MRB} = \\\\int_0^1 x^{-x} dx = \\\\sum_{n=1}^\\\\infty n^{-n}$, is not a period. Formally, $C_{MRB} \\\\notin \\\\mathcal{P}$.",
+  "lean4_sketch": "import Mathlib.Analysis.SpecialFunctions.Pow.Real\nimport Mathlib.Analysis.SpecialFunctions.Integrals\nimport Mathlib.NumberTheory.Liouville.Basic\n\nopen Real Set MeasureTheory Filter\n\n-- We define the MRB constant via its integral representation.\n-- The integrand x \u21a6 x\u207b\u02e3 is continuous on (0, 1], and its limit at 0 is 1.\n-- We define a function equal to x\u207b\u02e3 on (0, 1] and 1 at 0, which is continuous on [0, 1].\nnoncomputable def mrbIntegrand' (x : \u211d) : \u211d := if x > 0 then x ^ (-x) else 1\n\n-- A proof of continuity on the closed interval [0,1].\nlemma mrbIntegrand'_continuous_on : ContinuousOn mrbIntegrand' (Icc 0 1) := by\n  refine continuousOn_if ?_ ?_ ?_\n  \u00b7 exact isOpen_Ioi\n  \u00b7 -- Continuity for x > 0\n    apply Continuous.continuousOn\n    apply Continuous.rpow (continuous_id') (continuous_neg co",
+  "gap_probability_map": {}
+}

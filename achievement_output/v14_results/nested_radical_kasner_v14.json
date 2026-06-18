@@ -1,0 +1,15 @@
+{
+  "pid": "nested_radical_kasner",
+  "domain": "number_theory",
+  "v13_status": "INCOMPLETE",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 5,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.05,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 114.17045374998997,
+  "conjecture_statement": "Let $(a_n)_{n \\\\ge 1}$ be a sequence of positive integers defined by a polynomial $Q(n) \\\\in \\\\mathbb{Z}[n]$ of degree $2d$, i.e., $a_n = Q(n)$ for all $n \\\\ge 1$. The nested radical $X = \\\\sqrt{a_1 + \\\\sqrt{a_2 + \\\\sqrt{a_3 + \\\\dots}}}$ converges to an integer $N$ if and only if there exists a polynomial $P(n) \\\\in \\\\mathbb{Q}[n]$ of degree $d$ such that:\\n\\n1.  $Q(n) = P(n)^2 - P(n+1)$ for all $n$.\\n2.  $P(1) = N$.\\n3.  $P(n) > 0$ for all integers $n \\\\ge 1$.",
+  "lean4_sketch": "import Mathlib.Data.Polynomial.Basic\nimport Mathlib.Analysis.SpecificLimits.Basic\nimport Mathlib.Data.Rat.Defs\n\nopen Polynomial Filter\n\n-- We assume the existence of a formal definition for the value of a nested radical,\n-- which involves proving the convergence of the sequence of finite approximations.\n-- `h_conv` would be a proof that the sequence converges.\ndef NestedRadical (a : \u2115 \u2192 \u211d) (h_conv : \u2203 l, Tendsto (fun n \u21a6 sorry) atTop (\ud835\udcdd l)) : \u211d := sorry\n\n-- The conjecture statement\ntheorem nested_radical_kasner_conjecture\n  (Q : Polynomial \u2124) (h_pos : \u2200 n : \u2115, n > 0 \u2192 0 < (Q.eval (n : \u2124))) :\n  (\u2203 (N : \u2124) (h_conv : \u2203 l, Tendsto (fun n \u21a6 sorry) atTop (\ud835\udcdd l)),\n    NestedRadical (fun n \u21a6 (Q.eval (n : \u2124)) : \u2115 \u2192 \u211d) h_conv = (N : \u211d))\n  \u2194\n  (\u2203 (P : Polynomial \u211a),\n    Q.map (algebraMap \u2124 \u211a) = P^2 - ",
+  "gap_probability_map": {}
+}

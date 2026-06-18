@@ -1,0 +1,111 @@
+{
+  "sequence_name": "Callens-Agora Sequence",
+  "symbol": "S_14",
+  "formula": "S_{14}(n) = \\sum_{k=0}^n \\binom{n}{k} \\binom{n+k}{k}^4",
+  "logarithmic_formula": "B_{14}(n) = \\sum_{k=0}^n \\binom{n}{k} \\binom{n+k}{k}^4 (4 H_{n+k} - H_{n-k})",
+  "mirror_map_integrality": true,
+  "mirror_map_coefficients": [
+    {
+      "m": 2,
+      "coefficient": "99",
+      "is_integer": true,
+      "value": 99
+    },
+    {
+      "m": 3,
+      "coefficient": "15048",
+      "is_integer": true,
+      "value": 15048
+    },
+    {
+      "m": 4,
+      "coefficient": "2666624",
+      "is_integer": true,
+      "value": 2666624
+    },
+    {
+      "m": 5,
+      "coefficient": "514364243",
+      "is_integer": true,
+      "value": 514364243
+    },
+    {
+      "m": 6,
+      "coefficient": "104824306098",
+      "is_integer": true,
+      "value": 104824306098
+    },
+    {
+      "m": 7,
+      "coefficient": "22211256938047",
+      "is_integer": true,
+      "value": 22211256938047
+    },
+    {
+      "m": 8,
+      "coefficient": "4845894759170778",
+      "is_integer": true,
+      "value": 4845894759170778
+    },
+    {
+      "m": 9,
+      "coefficient": "1081634862365994341",
+      "is_integer": true,
+      "value": 1081634862365994341
+    },
+    {
+      "m": 10,
+      "coefficient": "245897544266925044835",
+      "is_integer": true,
+      "value": 245897544266925044835
+    },
+    {
+      "m": 11,
+      "coefficient": "56752513089785626982468",
+      "is_integer": true,
+      "value": 56752513089785626982468
+    },
+    {
+      "m": 12,
+      "coefficient": "13265214094728205030658579",
+      "is_integer": true,
+      "value": 13265214094728205030658579
+    },
+    {
+      "m": 13,
+      "coefficient": "3134181998845763043801226867",
+      "is_integer": true,
+      "value": 3134181998845763043801226867
+    },
+    {
+      "m": 14,
+      "coefficient": "747428991623346907847825679782",
+      "is_integer": true,
+      "value": 747428991623346907847825679782
+    },
+    {
+      "m": 15,
+      "coefficient": "179693783941880851740956022956059",
+      "is_integer": true,
+      "value": 179693783941880851740956022956059
+    },
+    {
+      "m": 16,
+      "coefficient": "43510124733285505169666244193901052",
+      "is_integer": true,
+      "value": 43510124733285505169666244193901052
+    }
+  ],
+  "first_few_terms": [
+    1,
+    17,
+    1459,
+    190769,
+    30318751,
+    5393291147,
+    1032460631959,
+    208118003931953,
+    43588343071931023,
+    9402690658295559767
+  ]
+}

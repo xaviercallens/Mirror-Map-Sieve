@@ -1,0 +1,36 @@
+{
+  "room": "airlines_or_private",
+  "created": "2026-06-14T10:30:45.475435",
+  "monograph": {
+    "title": "Operations Research for Airlines: From Classical Methods to Computational Frontiers",
+    "authors": "Xavier Callens, Socrate AI Lab",
+    "date": "June 2026",
+    "pdf_path": "alexandrie/airlines_or_monograph.pdf",
+    "tex_path": "alexandrie/airlines_or_monograph.tex",
+    "pages": 31,
+    "size_kb": 408,
+    "priority_areas": [
+      "IROPS (P1)",
+      "Revenue Management (P2)",
+      "Fleet Assignment (P3)"
+    ],
+    "galileo_results": {
+      "scenarios": 10000,
+      "goals_met": "7/8",
+      "A0": "85.0% (PASS)",
+      "A15": "92.9% (FAIL)",
+      "recovery_time": "39.1 min (PASS)",
+      "misconnection": "1.6% (PASS)",
+      "crew_util": "85.5% (PASS)"
+    },
+    "eiffel_patents": {
+      "count": 3,
+      "total_value_usd": 7300000,
+      "claims": [
+        "IROPS-CG-001",
+        "IROPS-BEND-002",
+        "RM-ROBUST-003"
+      ]
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "pid": "parametric_spherical_codes",
+  "domain": "coding_theory",
+  "v13_status": "CB_TRIPPED",
+  "v14_verdict": "INCOMPLETE",
+  "v14_confidence": 0.7,
+  "sorry_count": 1,
+  "sorry_guillotine_applied": true,
+  "domain_prior": 0.3,
+  "cost_usd": 0.36000000000000004,
+  "elapsed_s": 100.40359637499205,
+  "conjecture_statement": "Let $C \\\\subset S^{n-1} \\\\subset \\\\mathbb{R}^n$ be a finite set of points (a spherical code). If $C$ is DGS-tight, meaning it achieves the Delsarte-Goethals-Seidel linear programming bound for some auxiliary polynomial $f(t)$ derived from Gegenbauer polynomials, then the set of all inner products between distinct points of $C$, $A = \\\\{ \\\\langle x, y \\\\rangle \\\\mid x, y \\\\in C, x \\\\neq y \\\\}$, must be a subset of the rational numbers, i.e., $A \\\\subset \\\\mathbb{Q}$.",
+  "lean4_sketch": "import Mathlib.Analysis.InnerProductSpace.Basic\nimport Mathlib.Data.Real.Basic\nimport Mathlib.Data.Rat.Cast\nimport Mathlib.Topology.MetricSpace.Sphere\nimport Mathlib.Algebra.Polynomial.Roots\n\nopen InnerProductSpace Finset Real\n\n-- Let E be a finite-dimensional real inner product space.\nvariable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace \u211d E] [FiniteDimensional \u211d E]\n\n/-- A spherical code is a finite set of points on the unit sphere. -/\ndef SphericalCode := { C : Finset E // \u2200 x \u2208 C, \u2016x\u2016 = 1 }\n\n/-- The set of inner products between distinct points of a code. -/\ndef innerProducts (C : SphericalCode) : Set \u211d :=\n  { t : \u211d | \u2203 (x y : E), x \u2208 C.val \u2227 y \u2208 C.val \u2227 x \u2260 y \u2227 t = \u27eax, y\u27eb }\n\n/-- \nAn abstract predicate for a code being DGS-tight. This means it saturates the\nDelsarte-Goethals-Se",
+  "gap_probability_map": {}
+}

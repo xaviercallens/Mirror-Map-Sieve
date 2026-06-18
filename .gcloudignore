@@ -1,0 +1,68 @@
+# .gcloudignore — Exclude unnecessary files from Cloud Build uploads
+# Falls back to .gitignore patterns, then adds build-specific exclusions
+
+# Explicit exclusions to keep build archive small
+node_modules/
+**/node_modules/
+**/target/
+**/.git/
+**/.lake/
+.lake/
+target/
+.venv/
+venv/
+
+#!include:.gitignore
+
+# Lean 4 build artifacts (hundreds of MBs)
+verifiers/lean4/.lake/
+*.olean
+*.ilean
+
+# Large documentation & outputs
+docs/
+output/
+*.pdf
+*.epub
+*.html
+*.tex
+achievement_output/
+lmms-lab-writer/
+mathdemonstration/
+
+# Exceptions: include S20-Discovery build files
+!S20-Discovery/paper/*.tex
+!S20-Discovery/lean4-build/**/*.lean
+!S20-Discovery/lean4-build/lakefile.lean
+
+# Development-only directories
+.venv/
+.git/
+.github/
+.pytest_cache/
+.benchmarks/
+/scratch/
+/benchmarks/
+/nvidia/
+
+# Terraform state (do NOT upload to build)
+deploy/terraform/.terraform/
+deploy/terraform/tfplan
+deploy/terraform/.terraform.lock.hcl
+
+# IDE
+.vscode/
+.idea/
+
+# Binary ML models
+*.gguf
+*.safetensors
+*.bin
+*.pt
+*.onnx
+
+# Egg-info
+*.egg-info/
+
+# Rust build artifacts
+target/
