@@ -1,42 +1,72 @@
 {
-  "hardware": "CPU",
-  "device": "cpu",
-  "config": {
-    "seq_len": 128,
-    "head_dim": 64,
-    "batch": 1,
-    "heads": 8
-  },
-  "s20_verified": true,
-  "decay_tables_validated": true,
-  "kernels": [
+  "benchmark": [
     {
-      "kernel": "FP16 Baseline",
-      "latency_ms": 0.795,
-      "throughput_tokens_per_sec": 161018.0,
-      "max_row_sum_deviation": 2.4e-07,
-      "status": "\u2705"
+      "seq_len": 64,
+      "hardware": "CPU",
+      "device": "cpu",
+      "batch": 1,
+      "heads": 8,
+      "head_dim": 64,
+      "fp16_sdpa_ms": 0.343,
+      "alix_v1_legacy_ms": 3.816,
+      "alix_v2_vectorized_ms": 0.23,
+      "lia_v2_vectorized_ms": 0.218,
+      "speedup_v1_to_v2": 16.6,
+      "fp16_vs_s20_ratio": 0.671,
+      "alix_v2_correct": true,
+      "lia_v2_correct": true,
+      "alix_v1_correct": true
     },
     {
-      "kernel": "Callens-ALIX (INT64)",
-      "latency_ms": 8.218,
-      "throughput_tokens_per_sec": 15575.0,
-      "max_row_sum_deviation": 4.8e-07,
-      "status": "\u2705"
+      "seq_len": 128,
+      "hardware": "CPU",
+      "device": "cpu",
+      "batch": 1,
+      "heads": 8,
+      "head_dim": 64,
+      "fp16_sdpa_ms": 1.173,
+      "alix_v1_legacy_ms": 8.181,
+      "alix_v2_vectorized_ms": 0.376,
+      "lia_v2_vectorized_ms": 0.355,
+      "speedup_v1_to_v2": 21.76,
+      "fp16_vs_s20_ratio": 0.321,
+      "alix_v2_correct": true,
+      "lia_v2_correct": true,
+      "alix_v1_correct": true
     },
     {
-      "kernel": "Callens-LIA (INT64 long-range)",
-      "latency_ms": 29.187,
-      "throughput_tokens_per_sec": 4385.0,
-      "max_row_sum_deviation": 4.8e-07,
-      "status": "\u2705"
+      "seq_len": 256,
+      "hardware": "CPU",
+      "device": "cpu",
+      "batch": 1,
+      "heads": 8,
+      "head_dim": 64,
+      "fp16_sdpa_ms": 3.508,
+      "alix_v1_legacy_ms": 18.413,
+      "alix_v2_vectorized_ms": 0.746,
+      "lia_v2_vectorized_ms": 0.74,
+      "speedup_v1_to_v2": 24.68,
+      "fp16_vs_s20_ratio": 0.213,
+      "alix_v2_correct": true,
+      "lia_v2_correct": true,
+      "alix_v1_correct": true
     },
     {
-      "kernel": "Callens-AL (INT64 sparse)",
-      "latency_ms": 0.627,
-      "throughput_tokens_per_sec": 204230.0,
-      "max_row_sum_deviation": 2.4e-07,
-      "status": "\u2705"
+      "seq_len": 512,
+      "hardware": "CPU",
+      "device": "cpu",
+      "batch": 1,
+      "heads": 8,
+      "head_dim": 64,
+      "fp16_sdpa_ms": 12.749,
+      "alix_v1_legacy_ms": 44.999,
+      "alix_v2_vectorized_ms": 2.137,
+      "lia_v2_vectorized_ms": 2.301,
+      "speedup_v1_to_v2": 21.05,
+      "fp16_vs_s20_ratio": 0.168,
+      "alix_v2_correct": true,
+      "lia_v2_correct": true,
+      "alix_v1_correct": true
     }
   ]
 }
