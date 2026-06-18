@@ -1,0 +1,61 @@
+S₂₀ CALLENS-SCHMIDT VERIFICATION SUITE
+SocrateAI Scientific Agora — GCP Cloud Run
+Timestamp: 2026-06-18 06:29:10 UTC
+Python: 3.12.13 (GCC 14.2.0)
+Region: us-central1
+Job: s20-verify
+Execution: s20-verify-2htxg
+======================================================================
+
+TEST 1: Sequence Values (compute_s20.py)
+  S₂₀(0) = 1 ✅ matches paper
+  S₂₀(1) = 3 ✅ matches paper
+  S₂₀(2) = 55 ✅ matches paper
+  S₂₀(3) = 1155 ✅ matches paper
+  S₂₀(4) = 29751 ✅ matches paper
+  S₂₀(5) = 852753 ✅ matches paper
+  S₂₀(6) = 26097499 ✅ matches paper
+  S₂₀(7) = 840454275 ✅ matches paper
+  S₂₀(8) = 28064517175 ✅ matches paper
+  S₂₀(9) = 964417304253 ✅ matches paper
+  S₂₀(10..19) = computed and verified
+✅ ALL VALUES MATCH PUBLISHED TABLE
+
+TEST 2: Order-5 Recurrence (verify_recurrence.py)
+  n = 0..19: ✅ Σ P_j(n)·S₂₀(n+j) = 0
+✅ RECURRENCE VERIFIED FOR ALL n = 0, ..., 19
+   (Exact integer arithmetic, no floating point)
+
+TEST 3: ₅F₄ Identity (verify_hypergeometric.py)
+  n = 0..20: S₂₀(n) = ₅F₄(-n,-n,-n,-n,n+1; 1,1,1,1; 1) ✅
+  ¾-well-poised: 3 of 4 conditions hold ✅
+✅ HYPERGEOMETRIC IDENTITY VERIFIED FOR ALL n = 0, ..., 20
+
+TEST 4: Mirror Map Integrality (verify_mirror_map.py)
+  q_2 = 9 ✅ ∈ ℤ (matches paper)
+  q_3 = 165 ✅ ∈ ℤ (matches paper)
+  q_4 = 4110 ✅ ∈ ℤ (matches paper)
+  q_5 = 111075 ✅ ∈ ℤ (matches paper)
+  q_6 = 3316785 ✅ ∈ ℤ (matches paper)
+  q_7 = 104271733 ✅ ∈ ℤ (matches paper)
+  q_8 = 3421974692 ✅ ∈ ℤ (matches paper)
+  q_9 = 115918914756 ✅ ∈ ℤ (matches paper)
+  q_10 = 4027088171898 ✅ ∈ ℤ (matches paper)
+  q_11 = 142793489195634 ✅ ∈ ℤ (matches paper)
+  q_12 = 5149415166799466 ✅ ∈ ℤ (matches paper)
+  q_13 = 188353171046524999 ✅ ∈ ℤ (matches paper)
+  q_14 = 6973330284143733181 ✅ ∈ ℤ (matches paper)
+  q_15 = 260877511906858891334 ✅ ∈ ℤ (matches paper)
+  q_16 = 9848682801654949278015 ✅ ∈ ℤ (matches paper)
+✅ ALL q_d ∈ ℤ FOR d = 1, ..., 16
+✅ ALL VALUES MATCH PAPER TABLE
+
+======================================================================
+  FINAL SUMMARY
+======================================================================
+  ✅ PASS  Sequence Values                 (0.0s)
+  ✅ PASS  Order-5 Recurrence              (0.0s)
+  ✅ PASS  ₅F₄ Identity                    (0.0s)
+  ✅ PASS  Mirror Map Integrality          (0.1s)
+
+  ✅✅✅ ALL TESTS PASSED ✅✅✅
