@@ -1,6 +1,6 @@
 # Mirror Map Sieve — Weight-5 Apéry-like Binomial Sum
 
-[![Zenodo](https://zenodo.org/badge/doi/10.5281/zenodo.20747943.svg)](https://doi.org/10.5281/zenodo.20747943)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20747943.svg)](https://doi.org/10.5281/zenodo.20747943)
 [![arXiv](https://img.shields.io/badge/arXiv-Pending-b31b1b.svg)](https://arxiv.org/)
 [![Lean 4](https://img.shields.io/badge/Lean_4-Verified_0_Axioms-009B5C.svg)](https://leanprover.github.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
