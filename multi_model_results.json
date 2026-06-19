@@ -1,0 +1,304 @@
+{
+  "gpu_info": {
+    "gpu_name": "Tesla T4",
+    "memory_total_MiB": 15360,
+    "power_draw_W": 29.58,
+    "power_limit_W": 70.0,
+    "temperature_C": 68
+  },
+  "pytorch_version": "2.9.1+cu129",
+  "timestamp": "2026-06-18T22:16:54Z",
+  "kernel_benchmark": [
+    {
+      "seq_len": 64,
+      "sdpa_baseline_ms": 0.02,
+      "sdpa_s20_ms": 0.022,
+      "overhead": 1.092,
+      "max_logit_delta": 3.533203,
+      "correct": true
+    },
+    {
+      "seq_len": 128,
+      "sdpa_baseline_ms": 0.029,
+      "sdpa_s20_ms": 0.036,
+      "overhead": 1.226,
+      "max_logit_delta": 3.566406,
+      "correct": true
+    },
+    {
+      "seq_len": 256,
+      "sdpa_baseline_ms": 0.051,
+      "sdpa_s20_ms": 0.066,
+      "overhead": 1.309,
+      "max_logit_delta": 3.746094,
+      "correct": true
+    },
+    {
+      "seq_len": 512,
+      "sdpa_baseline_ms": 0.117,
+      "sdpa_s20_ms": 0.182,
+      "overhead": 1.559,
+      "max_logit_delta": 4.0625,
+      "correct": true
+    },
+    {
+      "seq_len": 1024,
+      "sdpa_baseline_ms": 0.251,
+      "sdpa_s20_ms": 0.669,
+      "overhead": 2.667,
+      "max_logit_delta": 4.414062,
+      "correct": true
+    }
+  ],
+  "h2_construction": [
+    {
+      "seq_len": 64,
+      "construction_ms": 0.3114
+    },
+    {
+      "seq_len": 128,
+      "construction_ms": 0.3226
+    },
+    {
+      "seq_len": 256,
+      "construction_ms": 0.3151
+    },
+    {
+      "seq_len": 512,
+      "construction_ms": 0.3219
+    },
+    {
+      "seq_len": 1024,
+      "construction_ms": 0.6913
+    }
+  ],
+  "model_benchmarks": {
+    "phi3": {
+      "model_id": "microsoft/Phi-3-mini-4k-instruct",
+      "n_params_M": 3821.1,
+      "device": "cuda",
+      "results": [
+        {
+          "seq_len": 64,
+          "baseline_ms": 50.589,
+          "s20_sdpa_ms": 50.504,
+          "overhead": 0.9983,
+          "throughput_base_tok_s": 1265,
+          "throughput_s20_tok_s": 1267,
+          "max_logit_delta": 0.0,
+          "energy_J": 69.387,
+          "avg_power_W": 68.7,
+          "correct": true
+        },
+        {
+          "seq_len": 128,
+          "baseline_ms": 62.349,
+          "s20_sdpa_ms": 62.247,
+          "overhead": 0.9984,
+          "throughput_base_tok_s": 2053,
+          "throughput_s20_tok_s": 2056,
+          "max_logit_delta": 0.0,
+          "energy_J": 71.553,
+          "avg_power_W": 57.5,
+          "correct": true
+        },
+        {
+          "seq_len": 256,
+          "baseline_ms": 115.973,
+          "s20_sdpa_ms": 116.365,
+          "overhead": 1.0034,
+          "throughput_base_tok_s": 2207,
+          "throughput_s20_tok_s": 2200,
+          "max_logit_delta": 0.0,
+          "energy_J": 160.583,
+          "avg_power_W": 69.0,
+          "correct": true
+        },
+        {
+          "seq_len": 512,
+          "baseline_ms": 232.822,
+          "s20_sdpa_ms": 238.166,
+          "overhead": 1.023,
+          "throughput_base_tok_s": 2199,
+          "throughput_s20_tok_s": 2150,
+          "max_logit_delta": 0.0,
+          "energy_J": 329.55,
+          "avg_power_W": 69.2,
+          "correct": true
+        },
+        {
+          "seq_len": 1024,
+          "baseline_ms": 531.661,
+          "s20_sdpa_ms": 555.618,
+          "overhead": 1.0451,
+          "throughput_base_tok_s": 1926,
+          "throughput_s20_tok_s": 1843,
+          "max_logit_delta": 0.0,
+          "energy_J": 615.625,
+          "avg_power_W": 55.4,
+          "correct": true
+        }
+      ]
+    },
+    "gemma2": {
+      "error": "You are trying to access a gated repo.\nMake sure to have access to it at https://huggingface.co/google/gemma-2-2b-it.\n403 Client Error. (Request ID: Root=1-6a34709d-5b7b9b7e17ef8cea31aaa859;7d355ecb-2e46-418e-bdf6-6ab28a27447d)\n\nCannot access gated repo for url https://huggingface.co/google/gemma-2-2b-it/resolve/main/config.json.\nAccess to model google/gemma-2-2b-it is restricted and you are not in the authorized list. Visit https://huggingface.co/google/gemma-2-2b-it to ask for access."
+    },
+    "qwen25": {
+      "model_id": "Qwen/Qwen2.5-3B-Instruct",
+      "n_params_M": 3085.9,
+      "device": "cuda",
+      "results": [
+        {
+          "seq_len": 64,
+          "baseline_ms": 46.312,
+          "s20_sdpa_ms": 46.265,
+          "overhead": 0.999,
+          "throughput_base_tok_s": 1382,
+          "throughput_s20_tok_s": 1383,
+          "max_logit_delta": 23.96875,
+          "energy_J": 53.932,
+          "avg_power_W": 58.3,
+          "correct": true
+        },
+        {
+          "seq_len": 128,
+          "baseline_ms": 59.39,
+          "s20_sdpa_ms": 59.688,
+          "overhead": 1.005,
+          "throughput_base_tok_s": 2155,
+          "throughput_s20_tok_s": 2144,
+          "max_logit_delta": 19.484375,
+          "energy_J": 80.25,
+          "avg_power_W": 67.2,
+          "correct": true
+        },
+        {
+          "seq_len": 256,
+          "baseline_ms": 107.301,
+          "s20_sdpa_ms": 109.223,
+          "overhead": 1.0179,
+          "throughput_base_tok_s": 2386,
+          "throughput_s20_tok_s": 2344,
+          "max_logit_delta": 22.328125,
+          "energy_J": 85.969,
+          "avg_power_W": 39.4,
+          "correct": true
+        },
+        {
+          "seq_len": 512,
+          "baseline_ms": 199.907,
+          "s20_sdpa_ms": 207.617,
+          "overhead": 1.0386,
+          "throughput_base_tok_s": 2561,
+          "throughput_s20_tok_s": 2466,
+          "max_logit_delta": 25.484375,
+          "energy_J": 288.837,
+          "avg_power_W": 69.6,
+          "correct": true
+        },
+        {
+          "seq_len": 1024,
+          "baseline_ms": 392.335,
+          "s20_sdpa_ms": 392.977,
+          "overhead": 1.0016,
+          "throughput_base_tok_s": 2610,
+          "throughput_s20_tok_s": 2606,
+          "max_logit_delta": 30.5,
+          "energy_J": 485.13,
+          "avg_power_W": 61.7,
+          "correct": true
+        }
+      ]
+    },
+    "mistral": {
+      "model_id": "mistralai/Mistral-7B-Instruct-v0.3",
+      "n_params_M": 7248.0,
+      "device": "cuda",
+      "results": [
+        {
+          "seq_len": 64,
+          "baseline_ms": 88.107,
+          "s20_sdpa_ms": 88.227,
+          "overhead": 1.0014,
+          "throughput_base_tok_s": 726,
+          "throughput_s20_tok_s": 725,
+          "max_logit_delta": 11.054688,
+          "energy_J": 90.601,
+          "avg_power_W": 51.3,
+          "correct": true
+        },
+        {
+          "seq_len": 128,
+          "baseline_ms": 121.063,
+          "s20_sdpa_ms": 121.63,
+          "overhead": 1.0047,
+          "throughput_base_tok_s": 1057,
+          "throughput_s20_tok_s": 1052,
+          "max_logit_delta": 17.375,
+          "energy_J": 168.628,
+          "avg_power_W": 69.3,
+          "correct": true
+        },
+        {
+          "seq_len": 256,
+          "baseline_ms": 222.201,
+          "s20_sdpa_ms": 227.494,
+          "overhead": 1.0238,
+          "throughput_base_tok_s": 1152,
+          "throughput_s20_tok_s": 1125,
+          "max_logit_delta": 12.625,
+          "energy_J": 239.847,
+          "avg_power_W": 52.7,
+          "correct": true
+        }
+      ]
+    }
+  },
+  "perplexity": {
+    "phi3": {
+      "model_id": "microsoft/Phi-3-mini-4k-instruct",
+      "dataset": "wikitext-2-raw-v1",
+      "max_length": 512,
+      "stride": 256,
+      "n_tokens": 20224,
+      "ppl_baseline": 5.7609,
+      "ppl_s20": 5.7609,
+      "ppl_delta": 0.0,
+      "ppl_delta_pct": 0.0
+    },
+    "gemma2": {
+      "error": "You are trying to access a gated repo.\nMake sure to have access to it at https://huggingface.co/google/gemma-2-2b-it.\n403 Client Error. (Request ID: Root=1-6a3474ce-07360dd3406bcbdd6bd013fb;937a150f-501a-4049-b2ab-7d663a4f281d)\n\nCannot access gated repo for url https://huggingface.co/google/gemma-2-2b-it/resolve/main/config.json.\nAccess to model google/gemma-2-2b-it is restricted and you are not in the authorized list. Visit https://huggingface.co/google/gemma-2-2b-it to ask for access."
+    },
+    "qwen25": {
+      "model_id": "Qwen/Qwen2.5-3B-Instruct",
+      "dataset": "wikitext-2-raw-v1",
+      "max_length": 512,
+      "stride": 256,
+      "n_tokens": 20224,
+      "ppl_baseline": 8.4471,
+      "ppl_s20": 3322.0759,
+      "ppl_delta": 3313.6288,
+      "ppl_delta_pct": 39227.9663
+    },
+    "mistral": {
+      "model_id": "mistralai/Mistral-7B-Instruct-v0.3",
+      "dataset": "wikitext-2-raw-v1",
+      "max_length": 512,
+      "stride": 256,
+      "n_tokens": 20224,
+      "ppl_baseline": 5.5273,
+      "ppl_s20": 1211.0293,
+      "ppl_delta": 1205.5019,
+      "ppl_delta_pct": 21809.7894
+    }
+  },
+  "hypothesis_summary": {
+    "h2_pass": true,
+    "h3_pass": true,
+    "h3_overhead_range": [
+      0.9983,
+      1.0451
+    ],
+    "h3_overhead_mean": 1.0123
+  }
+}

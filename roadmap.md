@@ -9,20 +9,20 @@
 - [x] Zenodo DOI 10.5281/zenodo.20747943
 - [x] GitHub release v1.0.0
 
-## Phase 2: Repository Hardening (Next 1-2 Weeks)
-**Goal: Make the repository withstand expert scrutiny.**
+## Phase 2: Computer Science & AI Hardware (The Deep Tech Pivot)
+**Goal: Revolutionize LLM context efficiency with Holonomic INT64 Attention.**
 
-### Week 1: Critical Fixes
-- [ ] Strip all "Callens-ALIX" self-eponymy from README, data files, and scripts
-- [ ] Rewrite Lean 4 claims to accurately reflect scope (base cases only)
-- [ ] Create full pytest test suite (recurrence at 70 points, mirror map, data integrity)
-- [ ] Fix broken references (proof_artifacts path, version mismatch)
-- [ ] Make solver script write JSON output directly
+### Week 1: Custom Triton Kernel
+- [ ] Write a custom OpenAI Triton kernel (`s20_attention.py`)
+- [ ] Implement exact S20 positional decay $Mask(d) \propto 1 / S_{20}(d)$
+- [ ] Move sequence generation into GPU SRAM using INT64 linear recurrence (bypassing HBM floats)
+- [ ] Implement extreme super-exponential sparsity cutoff for $d \ge 3$ (bypassing SoftMax denominator)
 
-### Week 2: OEIS + arXiv
-- [ ] Submit sequence to OEIS (first 30+ terms, recurrence, links)
-- [ ] Package paper for arXiv (tex + bbl, cross-listed math.AG/math.NT/cs.SC)
-- [ ] Decide fate of AI hardware section (remove or rephrase as "illustrative demo")
+### Week 2: Benchmarking & NeurIPS Paper
+- [ ] Benchmark memory throughput against standard FlashAttention
+- [ ] Demonstrate zero floating-point drift over long contexts
+- [ ] Draft paper: "Holonomic INT64 Attention: Bypassing SoftMax with Exact Calabi-Yau Geometries"
+- [ ] Target submission: NeurIPS 2026
 
 ## Phase 3: Supercongruences (Next 1-3 Months)
 **Goal: Resolve the three open conjectures. This is the highest-impact work.**
