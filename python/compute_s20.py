@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-compute_s20.py — Compute and verify the first N values of the Callens-Schmidt sequence.
+compute_s20.py — Compute and verify the first N values of the Callens-Alix sequence.
 
 S₂₀(n) = Σ_{k=0}^{n} C(n,k)⁴ · C(n+k,k)
 

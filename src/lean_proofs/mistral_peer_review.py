@@ -37,7 +37,7 @@ Your review should address:
 Be rigorous, honest, and specific. Cite Lean 4 syntax where relevant."""
 
 USER_PROMPT = f"""Please review the following Lean 4 formal proof of the Callens-ALIX sequence
-(formerly Callens-Schmidt) recurrence:
+(formerly Callens-Alix) recurrence:
 
 ```lean
 {lean_content}

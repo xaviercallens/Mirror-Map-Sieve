@@ -1,9 +1,9 @@
-# S₂₀ Discovery: The Callens–Schmidt Sequence
+# S₂₀ Discovery: The Callens–Alix Sequence
 
 ## A ¾-Well-Poised ₅F₄ Beyond Apéry
 
 This directory contains the complete, reproducible mathematical verification
-of the Callens–Schmidt sequence $S_{20}(n) = \sum_{k=0}^{n} \binom{n}{k}^4 \binom{n+k}{k}$.
+of the Callens–Alix sequence $S_{20}(n) = \sum_{k=0}^{n} \binom{n}{k}^4 \binom{n+k}{k}$.
 
 ### What Was Discovered
 

@@ -16,7 +16,7 @@ A rigorous, reproducible computational mathematics laboratory that:
 The AI industry is currently hitting a "precision wall" where Softmax and relative positional encodings (RoPE, ALiBi) rely heavily on floating-point arithmetic and transcendental exponentials, causing drift and memory bottlenecks.
 
 We propose a new paradigm: **Holonomic INT64 Attention**.
-1. **The Callens-Schmidt Positional Decay Kernel**: Replace continuous float decay with exact inverse Calabi-Yau 3-fold period: $Mask(d) \propto 1 / S_{20}(d)$.
+1. **The Callens-Alix Positional Decay Kernel**: Replace continuous float decay with exact inverse Calabi-Yau 3-fold period: $Mask(d) \propto 1 / S_{20}(d)$.
 2. **The Hardware GPU Hack**: Compute decay weights dynamically in ultra-fast SRAM using pure INT64 arithmetic (via the exact order-4 linear integer recurrence).
 3. **Super-Exponential Sparsity**: Enforce extreme local sparsity (growth $G \approx 43.04$) to create a "Markovian" routing layer, bypassing the need for SoftMax denominator normalization and saving massive VRAM and FLOPs.
 
