@@ -120,6 +120,32 @@ positional decays (ALiBi/RoPE-style). This is a curiosity-driven prototype, not 
 validated method. Please read the in-file caveats and reproduce before drawing
 conclusions.
 
+### Block-sparse long-context timings (please interpret carefully)
+
+Using the rapid decay of $S_{20}$ to justify a fixed attention window $W$ turns
+the kernel into ordinary **block-sparse attention**, which lowers prefill cost
+from $\mathcal{O}(N^2)$ to $\mathcal{O}(N\cdot W)$. The following prefill
+latencies were reported on a single NVIDIA L4 GPU:
+
+| Sequence length | Dense SDPA | $S_{20}$ block-sparse ($W$ fixed) | Ratio |
+| :--- | :--- | :--- | :--- |
+| 8,192 (8k) | 3.81 ms | 1.20 ms | 3.2× |
+| 16,384 (16k) | 19.16 ms | 3.23 ms | 5.9× |
+| 32,768 (32k) | 75.62 ms | 6.38 ms | 11.9× |
+| 65,536 (64k) | 311.88 ms | 12.89 ms | 24.2× |
+| 131,072 (128k) | 1,602.37 ms | 26.01 ms | 61.6× |
+
+**Honest reading of this table.** The speedup is the *generic* consequence of
+replacing dense $\mathcal{O}(N^2)$ attention with a fixed-window
+$\mathcal{O}(N\cdot W)$ kernel — **any** windowing scheme (sliding-window, local
+attention, etc.) gives the same asymptotics; $S_{20}$ only supplies one
+particular justification for the window size. It is **not** evidence that
+$S_{20}$ outperforms other sparse-attention methods, and it says nothing about
+model *quality* (perplexity/accuracy), which a windowed kernel can degrade.
+These are single-run numbers on one GPU, not a controlled benchmark; we publish
+them only as a reproducibility target and would welcome a rigorous comparison
+against established sparse-attention baselines.
+
 ---
 
 ## How to contribute / review
