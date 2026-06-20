@@ -45,7 +45,8 @@ We claim no discovery; the goal is rigorous, expert-reviewable progress.
 - [ ] **Conjecture** Lucas: S(mp+r) ≡ S(m)S(r) (mod p) (numeric; open).
 
 ## Community & publication
-- [ ] Fold Stage 1/2 into the v6 paper (proofs + honest caveats); keep arXiv-ready.
+- [x] Fold Stage 1/2 into the v6 paper (new Picard–Fuchs section, proofs +
+      honest caveats). TODO: refresh the v3.0.0 release PDF asset to the 9-page build.
 - [ ] Submit OEIS draft once reviewed; update repo when an A-number is assigned.
 - [ ] Engage specialists in Apéry-like sequences / CY operators (Zudilin, Osburn,
       van Straten, …) via issue #2 — especially for the L₄ factorization, the

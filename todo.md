@@ -45,7 +45,8 @@ research program (see `docs/RESEARCH_PLAN.md`) is the primary focus.
 - [open] **Conjecture:** Lucas property $S(mp+r)\equiv S(m)S(r)\pmod p$ (numeric).
 
 ## Publication & housekeeping
-- [open] Fold Phase 1/2 results into the v6 paper (proofs + honest caveats).
+- [done] Fold Phase 1/2 results into the v6 paper (Section "The Picard–Fuchs
+  operator…", with proofs + honest caveats). Refresh the release PDF asset next.
 - [open] Submit the OEIS draft (A397213 is a **pending** proposed id, not yet
   accepted) once an editor reviews it.
 - [parked] **AI-hardware INT64 attention** (`4_ai_hardware_attention/`):

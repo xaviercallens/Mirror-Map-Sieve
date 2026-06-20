@@ -90,3 +90,22 @@ Settling the certificate took several GCP Cloud Build iterations chasing version
 incompatibilities. Once the decisive result was triply confirmed, the right call
 was to stop iterating on a green `.factor()` and document the blockers, rather
 than keep spending on diminishing returns.
+
+## Open work carried forward (snapshot — authoritative list in roadmap.md / todo.md / memory.md)
+
+The lesson behind keeping this list is #7 ("claims drift when building fast"):
+record *exactly* what is unfinished so a later session does not re-claim it as
+done. As of 2026-06-20 the remaining tasks are:
+1. **Lean 4 re-check** of the Zeilberger certificate identity (the only formal
+   gap left in the recurrence proof).
+2. **Isolate $L_4$** (exhibit $L_6=L_4\cdot L_2$, $L_4$ irreducible) — blocked on
+   a version-matched Sage + `ore_algebra`.
+3. **Correct CY-3 Yukawa coupling** from $L_4$ → genuine instanton-integrality
+   test (the placeholder result is unresolved, not a refutation).
+4. **AESZ/van Straten operator-level match** of $L_4$ (novelty + 3-fold ID).
+5. **Phase 3 modularity** (gated on $L_4$): rigid fibers → $a_p$ → weight-4
+   newform → Beukers/ASD-type supercongruence.
+6. **Open conjectures:** $S(p-1)\equiv1\,(p^3)$ and the Lucas property (numeric
+   only; the mod-$p$ Apéry-style congruence IS proved + Lean-checked).
+7. **Housekeeping:** submit the OEIS draft when reviewed; refresh the v3.0.0
+   release PDF to the 9-page v6; AI-hardware kernels remain parked.

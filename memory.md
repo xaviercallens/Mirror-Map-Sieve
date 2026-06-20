@@ -35,18 +35,57 @@
      core `Σ k⁻² = Σ_{x:ZMod p} x² = 0` via `FiniteField.sum_pow_lt_card_sub_one`.
 - Also: `supercongruence_mod_sq` (unconditional mod p², all primes, via Babbage).
 
-## What Is NOT Verified
-1. ❌ General recurrence for all n (Lean only checks n=0,1; rest relies on WZ certificate)
-2. ❌ WZ certificate from SageMath (zeilberger_s20.sage code exists but no evidence it ran)
-3. ❌ GCP execution logs (proof_artifacts/sage_zeilberger_gcp.log referenced but missing)
-4. ❌ GPU benchmarks (results say "CPU", README says L4/T4/A100)
-5. ❌ Test suite (none exists)
+## Picard–Fuchs Research Program — Phase 1 & 2 (June 20, 2026)
+See docs/RESEARCH_PLAN.md, docs/PHASE1_FINDINGS.md, docs/PHASE2_FINDINGS.md.
+- ✅ **Minimal recurrence order = 4, degree 13** — PROVED for all n. Four independent
+  derivations (pure-Python GF(p) nullspace, exact ℚ reconstruction verified on 101 terms,
+  ore_algebra `guess` on GCP/SageMath, Maxima `Zeilberger`); orders 2,3 impossible.
+- ✅ **Creative-telescoping certificate** obtained (Maxima Zeilberger, GCP Cloud Build
+  project agora-autoresearch-001) → recurrence proved for ALL n. This CLOSES the old
+  "WZ certificate never ran" gap. Archived: src/picard_fuchs/maxima_telescoper_certificate.txt,
+  phase1_gcp_result.json.
+- ✅ **Minimal ODE for f(z): order 6, degree 15** (exact). Indicial eq. at z=0 = −715·s⁴(s−1)²
+  ⇒ order-4 MUM block (CY 3-fold hallmark) + order-2 apparent singularity. RESOLVES the
+  recurrence-4-vs-ODE-6 puzzle and the old "CY 4-fold" inconsistency → it's a **3-fold**.
+- ✅ Mirror map q_d ∈ ℤ for d ≤ 16 (exact) — independent CY-3fold corroboration.
+- ⚠️ **Instanton numbers UNRESOLVED**: placeholder Yukawa gave non-integers (denominators ∼d³,
+  a normalization artifact, NOT a refutation). Correct coupling needs the isolated L₄.
+- GCP/Sage tooling: ore_algebra NOT pip-installable; :latest builds it but its .factor()
+  hits sage.rings.abc.SymbolicRing; 10.4 won't compile its Cython (FLINT slong). Maxima route
+  is version-robust. Sage script: src/picard_fuchs/gcp_phase1_sage.py + Dockerfile.sage_ore.
+
+## REMAINING TASKS (canonical — also in roadmap.md / todo.md)
+1. ⏳ **Lean 4 re-check** of the Zeilberger certificate's finite rational identity
+   (clear denominators → ring/linear_combination). Gold-standard closure of the recurrence.
+2. ⛔ **Exhibit L₆ = L₄·L₂** with L₄ irreducible (the CY operator). BLOCKED on a
+   version-matched Sage + ore_algebra pair; pin a maintainer-blessed combo.
+3. ⏳ **Correct CY-3 Yukawa coupling** K_zzz from L₄ → genuine instanton-integrality test.
+4. ⏳ **AESZ/van Straten operator-level match** of L₄ (novelty + 3-fold ID); textual prescreen
+   of asz_sequences.json found no exact Σ C(n,k)⁴C(n+k,k) — operator match is decisive.
+5. ⛔ **Phase 3 modularity** (gated on L₄): rigid/conifold fibers → Frobenius traces a_p →
+   LMFDB weight-4 newform → Beukers/ASD-type supercongruence.
+6. ⏳ **Conjecture** S(p−1) ≡ 1 (mod p³), p≥5 (numeric to p=200; mod p IS proved+Lean).
+7. ⏳ **Conjecture** Lucas: S(mp+r) ≡ S(m)S(r) (mod p) (numeric).
+8. ⏳ Submit OEIS draft once an editor reviews (A397213 still pending).
+9. 🅿️ AI-hardware INT64 attention — PARKED (exploratory; benchmarks need real GPU run).
+
+## Stale items now FIXED (for the record)
+- GPU benchmarks were CPU-labelled, AI kernels overstated → now relabelled exploratory.
+- Test suite: python/verify_all.py (stdlib, exits 0) + CI ci.yml green.
 
 ## Critical Knowledge for Next Session
 - **Self-eponymy**: DONE — eponymous names removed repo-wide (June 20, 2026); author byline kept.
-- **Lean scope**: Only base cases verified for the recurrence. Do NOT claim full formal
-  verification of the general recurrence. (The cubic supercongruence, however, IS fully proven.)
-- **AI kernels**: Scientifically weak / exploratory. Now clearly labelled as such in README + headers.
+- **Recurrence scope (UPDATED)**: the order-4 recurrence is now PROVED for all n via the
+  Maxima Zeilberger certificate. The remaining formal gap is only the *Lean re-check* of that
+  certificate (Lean still only kernel-checks base cases directly). The cubic & Apéry-mod-p
+  supercongruences ARE fully Lean-proven.
+- **Geometry**: it is a CY **3-fold** (order-4 MUM block), NOT a 4-fold. "weight-5" was just a
+  binomial-factor count, never a Hodge invariant.
+- **Instantons**: do NOT claim integrality — placeholder normalization; unresolved.
+- **AI kernels**: exploratory/parked; clearly labelled.
 - **OEIS**: A397213 is a DRAFT pending editor approval — never describe it as accepted.
-- **Highest-impact work**: a self-contained verified recurrence certificate (WZ/creative telescoping).
+- **Highest-impact next steps**: (1) isolate L₄ via a version-matched Sage/ore_algebra,
+  (2) correct Yukawa → instanton test, (3) Lean certificate re-check. See REMAINING TASKS above.
 - **Naming convention**: "weight-5 Apéry-like sequence S₂₀(n)" everywhere; symbol S₂₀(n) or S(n).
+- **GCP**: account callensxavier@gmail.com, project agora-autoresearch-001; Sage runs via
+  `gcloud builds submit --config=src/picard_fuchs/cloudbuild_phase1_sage.yaml`.
