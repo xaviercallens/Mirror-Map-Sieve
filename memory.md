@@ -3,7 +3,13 @@
 ## Project Identity
 - **Sequence**: $S(n) = \sum_{k=0}^{n} \binom{n}{k}^4 \binom{n+k}{k}$ (Weight-5 Apéry-like, catalog index S₂₀)
 - **Zenodo DOI**: 10.5281/zenodo.20747943
-- **GitHub**: https://github.com/xaviercallens/Mirror-Map-Sieve (v1.0.0)
+- **GitHub**: https://github.com/xaviercallens/Mirror-Map-Sieve (latest release **v3.0.0**, 2026-06-20)
+- **v3.0.0 contents**: de-eponymized; OEIS-pending honesty; 3 Lean theorems (cubic supercongruence,
+  Wolstenholme, NEW Apéry-style S(p-1)≡1 mod p — all axiom-clean); v6 paper with full human proofs
+  (paper/mirror_map_sieve_arxiv_v6.tex+pdf); python/verify_all.py (stdlib, exits 0);
+  VERIFICATION_REPORT.md; CI consolidated to ci.yml (python-tests + lean-build both green).
+- **GitHub push note**: repo owner account is `xaviercallens` (gh); the other logged-in account
+  `pxcallen_amadeus` has read-only access. Switch with `gh auth switch --user xaviercallens` to push.
 - **OEIS Status**: DRAFT A397213 submitted but NOT YET APPROVED by editors. A397213 is a
   pending placeholder, not an accepted OEIS entry. Do not cite it as accepted.
 - **Naming**: All eponymous names ("S_20"/-Alix/-Al/-Lia) removed. Use the descriptive
