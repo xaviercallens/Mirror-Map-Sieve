@@ -127,6 +127,14 @@ Picard–Fuchs operator, a Calabi–Yau period identification, and modularity,
 together with a proposed resolution of the "weight-5 / 4-fold" inconsistency —
 is in [`docs/RESEARCH_PLAN.md`](docs/RESEARCH_PLAN.md).
 
+**Phase 1 update.** A first computation (exact linear algebra, cross-checked over
+two primes and over $\mathbb{Q}$, verified on 101 terms) finds that the **minimal
+recurrence order is 4**, not 5 — which points to a Calabi–Yau **3-fold**, not a
+4-fold, and resolves the inconsistency in favour of the 3-fold narrative. This is
+a rigorous computation, not yet a proof; details and the exact operator are in
+[`docs/PHASE1_FINDINGS.md`](docs/PHASE1_FINDINGS.md), reproducible via
+[`src/picard_fuchs/`](src/picard_fuchs/).
+
 ---
 
 ## Honest scope & limitations

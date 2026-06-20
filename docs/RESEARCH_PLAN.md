@@ -75,6 +75,14 @@ vs. transcendental motive*.
 
 ## Phase 1 — A certified minimal-order Picard–Fuchs operator
 
+> **Partial result (computed, see [`PHASE1_FINDINGS.md`](PHASE1_FINDINGS.md)).**
+> The minimal recurrence order is **4** (degree-13 coefficients), determined by
+> exact linear algebra over two primes and over $\mathbb{Q}$, with the exact
+> operator verified on 101 terms; orders 2 and 3 are impossible. This **confirms
+> the CY 3-fold narrative and refutes "CY 4-fold."** Still open: the
+> creative-telescoping *certificate* (the proof for all $n$), scaffolded in
+> `certify_telescoper.sage`, pending a SageMath run.
+
 **Goal.** A machine-checkable proof that $f(z)$ satisfies an explicit operator
 $L$, plus a determination of the **minimal** order $m$ (is $L$ irreducible?).
 
