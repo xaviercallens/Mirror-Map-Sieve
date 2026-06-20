@@ -119,76 +119,129 @@ if _HAVE_ORE:
 
 cert_ok = False
 if not _HAVE_ORE:
-    log("    ore_algebra unavailable in this image; SKIPPING the certificate step.")
-    log("    (The order-4/degree-13 minimal recurrence is nonetheless independently")
-    log("     re-confirmed above over exact QQ. Certificate to be produced in an")
-    log("     image that ships ore_algebra, or by Koutschan's HolonomicFunctions.)")
+    log("    ore_algebra unavailable in this image; SKIPPING ore_algebra steps.")
     result["certificate_status"] = "SKIPPED: ore_algebra not installable in image"
-try:
-    if not _HAVE_ORE:
-        raise RuntimeError("ore_algebra unavailable")
-    # Bivariate Ore algebra: shifts Sn (n->n+1), Sk (k->k+1) over QQ(n,k).
-    Rnk = PolynomialRing(QQ, ['n', 'k']); (n_, k_) = Rnk.gens()
-    F = Rnk.fraction_field()
-    A = OreAlgebra(F, 'Sn', 'Sk'); Sn, Sk = A.gens()
 
-    # Summand shift-quotients for t(n,k)=C(n,k)^4 C(n+k,k):
-    #   t(n,k+1)/t(n,k) = ((n-k)/(k+1))^4 * (n+k+1)/(k+1)
-    #   t(n+1,k)/t(n,k) = ((n+1)/(n+1-k))^4 * (n+k+1)/(n+1)
-    rk = ((n_ - k_) / (k_ + 1))**4 * (n_ + k_ + 1) / (k_ + 1)
-    rn = ((n_ + 1) / (n_ + 1 - k_))**4 * (n_ + k_ + 1) / (n_ + 1)
-    annk = Sk - rk
-    annn = Sn - rn
-    log("    summand annihilators built; computing telescoper+certificate ...")
-
-    # The proof-producing call. API name can vary across versions; try a few.
-    telescoper = certificate = None
-    ideal = A.ideal([annn, annk])
-    for meth in ("creative_telescoping", "ct"):
-        if hasattr(ideal, meth):
-            telescoper, certificate = getattr(ideal, meth)(Sn, Sk)
-            break
-    if telescoper is None:
-        # fall back to the dfinite_creative_telescoping helper if present
-        from ore_algebra import creative_telescoping as ct_fn
-        telescoper, certificate = ct_fn([annn, annk], Sn, Sk)
-
-    log("    TELESCOPER L(n,Sn) =")
-    log("      ", telescoper)
-    log("    order(L) =", telescoper.order())
-    result["telescoper_order"] = int(telescoper.order())
-    result["telescoper"] = str(telescoper)
-    result["certificate"] = str(certificate)
-    cert_ok = True
-
-    # -----------------------------------------------------------------
-    # 3. recurrence -> differential operator and factor
-    # -----------------------------------------------------------------
-    log("\n[3] Converting to differential operator and factoring over Q(z) ...")
+# ---------------------------------------------------------------------------
+# [2] Recover the recurrence operator with ore_algebra's `guess` (robust), then
+#     convert to the differential operator for f(z) and FACTOR it. This settles
+#     irreducibility / the CY-operator structure. The `guess` route is the most
+#     version-stable ore_algebra entry point.
+# ---------------------------------------------------------------------------
+Lrec = None
+if _HAVE_ORE:
     try:
-        Pz = PolynomialRing(QQ, 'z');
-        Dz = OreAlgebra(Pz.fraction_field(), 'Dz')
-        Lode = telescoper.to_D(Dz)
-        log("    L_ode =", Lode)
-        log("    order(L_ode) =", Lode.order())
-        result["ode_order"] = int(Lode.order())
-        facs = Lode.factor()
-        result["ode_factors"] = [str(f) for f in facs]
-        log("    factorization:", facs)
-        irred = (len(facs) == 1)
-        result["ode_irreducible"] = bool(irred)
-        log("    minimal operator irreducible?", irred,
-            "(irreducible order-4 => genuine CY 3-fold period)")
+        from ore_algebra import guess
+        Rn2 = PolynomialRing(QQ, 'n')
+        ShiftA = OreAlgebra(Rn2, 'Sn')
+        log("\n[2] Guessing the minimal recurrence operator from terms (ore_algebra) ...")
+        Lrec = guess([int(x) for x in S_vals], ShiftA)
+        log("    L_rec =", Lrec)
+        log("    order(L_rec) =", Lrec.order())
+        result["recop_order"] = int(Lrec.order())
+        result["recop"] = str(Lrec)
     except Exception as e:
-        log("    rec->diff/factor step failed:", repr(e))
-        result["ode_note"] = repr(e)
+        log("    guess() failed:", repr(e))
+        result["recop_note"] = repr(e)
 
-except Exception as e:
-    log("    creative_telescoping failed in this environment:", repr(e))
-    result["certificate_status"] = f"FAILED: {e!r}"
+# Irreducibility of the order-4 recurrence operator (the decisive structural
+# fact). An order-4 operator that does NOT factor into lower-order pieces over
+# QQ(n) is genuinely order 4 -- i.e. S_20 is not secretly a sum/product of
+# lower-weight (elliptic/K3) pieces. This is done directly on L_rec, which is
+# the robust ore_algebra path (no fragile recurrence->ODE conversion).
+if Lrec is not None:
+    # Recurrence operators don't expose .factor() in this ore_algebra version;
+    # factorization is a differential-operator feature. So we (a) convert the
+    # recurrence for S_20(n) into the differential operator L_ode annihilating
+    # f(z)=sum S_20(n) z^n, (b) take its MINIMAL-order right factor / minimal
+    # annihilator (the raw conversion can be non-minimal), and (c) factor that
+    # over Q(z). An irreducible order-4 minimal operator is the decisive
+    # CY-3-fold structural fact.
+    log("\n[3] Differential operator for f(z), then factor over Q(z) ...")
+    # Most robust route: guess the differential operator DIRECTLY from the power
+    # series coefficients S_20(n). This avoids the order-inflation seen when
+    # converting a recurrence operator via to_D.
+    try:
+        from ore_algebra import guess as _guess
+        Pz = PolynomialRing(QQ, 'z')
+        DiffA = OreAlgebra(Pz, 'Dz')
+        Lode_guess = None
+        try:
+            Lode_guess = _guess([int(x) for x in S_vals], DiffA)
+            log("    guessed L_ode (from series) order =", Lode_guess.order())
+            result["gf_ode_order_guess"] = int(Lode_guess.order())
+            result["gf_ode_guess"] = str(Lode_guess)
+            facs = Lode_guess.factor()
+            result["gf_ode_factors"] = [str(f) for f in facs]
+            irred = (len(facs) == 1)
+            result["gf_ode_irreducible"] = bool(irred)
+            log("    factors:", facs)
+            log("    irreducible?", irred,
+                "(irreducible order-4 => genuine CY 3-fold period operator)")
+        except Exception as eg:
+            log("    guess(series, Dz) route failed:", repr(eg))
+            result["gf_ode_guess_note"] = repr(eg)
 
-result["certificate_status"] = "PROVED (certificate computed)" if cert_ok else \
-    result.get("certificate_status", "NOT PRODUCED")
+        # Secondary informational: the to_D conversion (often non-minimal).
+        try:
+            Lgf = Lrec.to_D(DiffA)
+            log("    (info) raw to_D(L_rec) order =", Lgf.order(), "(non-minimal)")
+            result["gf_ode_order_raw"] = int(Lgf.order())
+        except Exception:
+            pass
+    except Exception as e:
+        log("    differential-operator step failed:", repr(e))
+        result["gf_ode_note"] = repr(e)
+
+# ---------------------------------------------------------------------------
+# [4] Creative-telescoping CERTIFICATE (the proof for all n). Canonical
+#     ore_algebra idiom: polynomial base ring QQ['n','k'], generators inferred
+#     from the S-prefixed names, build the term's annihilators, run .ct().
+# ---------------------------------------------------------------------------
+if _HAVE_ORE:
+    log("\n[4] Creative-telescoping certificate via ore_algebra .ct() ...")
+    try:
+        # Canonical ore_algebra bivariate shift algebra: the base ring carries
+        # n and k as commuting variables, and we pass explicit (name, shift)
+        # specifications so generator count matches name count.
+        from ore_algebra import OreAlgebra as _OA
+        Rnk = PolynomialRing(QQ, 'n', 'k')
+        n_, k_ = Rnk.gens()
+        Frac = Rnk.fraction_field()
+        nn, kk = Frac(n_), Frac(k_)
+        # Bivariate shift algebra: pass the shift operators by NAME only; the
+        # variable they shift is inferred from the leading letter after 'S'
+        # (Sn shifts n, Sk shifts k). (Avoids the "names specified twice" error.)
+        A = _OA(Frac, 'Sn', 'Sk')
+        Sn, Sk = A.gens()
+        rk = ((nn - kk) / (kk + 1))**4 * (nn + kk + 1) / (kk + 1)
+        rn = ((nn + 1) / (nn + 1 - kk))**4 * (nn + kk + 1) / (nn + 1)
+        term_ann = A.ideal([Sk - rk, Sn - rn])
+        telescoper = certificate = None
+        for meth in ("ct", "creative_telescoping"):
+            if hasattr(term_ann, meth):
+                out = getattr(term_ann, meth)(Sk - 1)  # telescope in k via (Sk-1)
+                telescoper = out[0]
+                certificate = out[1] if len(out) > 1 else None
+                break
+        if telescoper is not None:
+            log("    TELESCOPER =", telescoper)
+            log("    order =", telescoper.order())
+            result["telescoper_order"] = int(telescoper.order())
+            result["telescoper"] = str(telescoper)
+            result["certificate"] = str(certificate)
+            cert_ok = True
+        else:
+            log("    no .ct()/creative_telescoping method on the ideal")
+            result.setdefault("certificate_status", "ct method not found on ideal")
+    except Exception as e:
+        log("    creative-telescoping certificate failed:", repr(e))
+        result.setdefault("certificate_status", f"FAILED: {e!r}")
+
+if cert_ok:
+    result["certificate_status"] = "PROVED (certificate computed)"
+else:
+    result.setdefault("certificate_status", "NOT PRODUCED (operator still obtained via guess)")
 
 # ---------------------------------------------------------------------------
 # 4. persist
@@ -205,8 +258,9 @@ except Exception as _e:
     log(json.dumps(result, indent=2, default=str))
 log("\nSUMMARY:")
 log("  minimal recurrence order :", result.get("minimal_order"))
+log("  guessed recop order      :", result.get("recop_order"))
+log("  ODE order (guessed)      :", result.get("gf_ode_order_guess"))
+log("  ODE irreducible          :", result.get("gf_ode_irreducible"))
 log("  telescoper order         :", result.get("telescoper_order"))
-log("  ODE order / irreducible  :", result.get("ode_order"), "/",
-    result.get("ode_irreducible"))
 log("  certificate status       :", result.get("certificate_status"))
 log("\nDone.")

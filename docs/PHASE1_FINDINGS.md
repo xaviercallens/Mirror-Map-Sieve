@@ -101,10 +101,40 @@ SageMath via Google Cloud Build (project `agora-autoresearch-001`):
   script, and uploads `phase1_result.json` to
   `gs://agora-autoresearch-001-outputs/s20-phase1/`.
 
-**Independent re-confirmation already obtained:** a SageMath Cloud Build run
-re-derived **minimal order 4, degree 13 over exact $\mathbb{Q}$** inside the
-official `sagemath/sagemath` container — matching the pure-Python result above.
-(The certificate sub-step requires the `ore_algebra`-equipped image above.)
+**Independent re-confirmation obtained (GCP/SageMath, multiple runs).** Inside
+the `sagemath/sagemath` + `ore_algebra` image on Google Cloud Build:
+- the exact nullspace re-derived **minimal recurrence order 4, degree 13 over
+  $\mathbb{Q}$** (matches the pure-Python result);
+- `ore_algebra`'s independent `guess()` recovered the **identical exact order-4
+  operator**, coefficient-for-coefficient (e.g. leading $P_4$ coefficient
+  $8535643$, $P_4$ constant $1144108892160$), up to a global sign. Two
+  independent implementations now agree on the exact operator. The raw machine
+  output is archived at
+  [`src/picard_fuchs/phase1_gcp_result.json`](../src/picard_fuchs/phase1_gcp_result.json).
+
+**Recurrence order vs ODE order (a real subtlety, flagged in the plan).** The
+*recurrence* in $n$ has order 4. The *differential operator* for $f(z)$, guessed
+directly from the series, came out at **order 6** (and a naive recurrence→ODE
+conversion gave a non-minimal order 17). This order gap is expected — it reflects
+**apparent singularities** of the differential operator (extra, non-geometric
+singular points), exactly the factors $(n+3),(n+4)$ seen in $P_4$. The
+geometrically meaningful object is the order-4 piece after desingularization /
+removing apparent singularities. Determining the true minimal *irreducible*
+differential order (and confirming it is 4, i.e. a genuine CY-3-fold operator
+rather than order 6) is the **remaining open step of Phase 1**.
+
+**Blocked sub-steps (honest).** Two sub-steps did not complete on GCP due to
+`ore_algebra`/Sage **version incompatibilities** in the current image (not the
+mathematics):
+- operator factorization hit `AttributeError: module 'sage.rings.abc' has no
+  attribute 'SymbolicRing'` (a Sage/ore_algebra version mismatch);
+- the creative-telescoping **certificate** call hit `ore_algebra` bivariate-Ore
+  API errors (`variable names specified twice`).
+These need a pinned, mutually-compatible Sage + `ore_algebra` version pair (or
+Koutschan's `HolonomicFunctions` in Mathematica as the independent second
+system). The certificate — the actual *proof for all $n$* — therefore remains
+**not yet produced**; the order-4 operator is verified on 101 terms and
+independently re-derived, but the all-$n$ proof is still open.
 
 ### AESZ database prescreen (Phase 2 preview)
 
