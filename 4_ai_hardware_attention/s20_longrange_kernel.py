@@ -1,23 +1,24 @@
 #!/usr/bin/env python3
 """
-callens_lia_kernel.py — Callens-LIA Long-Range Integrated Attention Kernel
+s20_longrange_kernel.py — S_20 Long-Range Attention Kernel
 
-Callens-LIA (named after L.I.A.) is a specialized variant of the Callens-ALIX
-INT64 attention kernel designed for long-range dependencies in language models.
+EXPLORATORY / EXPERIMENTAL (see s20_int64_kernel.py for the shared caveats).
+A variant of the S_20 INT64 attention kernel aimed at long-range dependencies
+in language models.
 
-Key differences from Callens-ALIX (standard):
+Key differences from the dense S_20 kernel:
   - Uses logarithmic distance binning to extend decay to sequences > 17 tokens
     while preserving exact INT64 arithmetic for each bin boundary
   - Applies a multi-resolution decay: fast decay (S_20) for local tokens,
-    slow decay (square-root of S_20 ratio) for distant tokens
-  - Optimized for transformer architectures with context lengths 1K–128K
+    slower decay (square-root of the S_20 ratio) for distant tokens
+  - Aimed at transformer context lengths 1K–128K
 
-The LIA variant captures the mathematical property that long-range dependencies
-in natural language share a geometric structure analogous to the holomorphic
-period of the mirror Calabi-Yau 4-fold.
+NOTE: any analogy between this binning heuristic and the Calabi-Yau period
+geometry is purely suggestive — it is a design intuition, not a proven
+correspondence, and should not be read as a mathematical claim.
 
 Usage:
-    python callens_lia_kernel.py --seq_len 2048 --head_dim 64
+    python s20_longrange_kernel.py --seq_len 2048 --head_dim 64
 
 Author: SocrateAI Scientific Agora, Xavier Callens
 License: MIT
@@ -35,12 +36,12 @@ except ImportError:
     HAS_TORCH = False
     print("⚠️  PyTorch not found. Running CPU-only reference implementation.")
 
-from callens_alix_kernel import callens_alix_s20, _S20_EXACT_VERIFIED, build_int64_decay_table
+from s20_int64_kernel import s20_exact, _S20_EXACT_VERIFIED, build_int64_decay_table
 
 
-def build_lia_decay_table(max_distance: int, local_cutoff: int = 17) -> list[int]:
+def build_longrange_decay_table(max_distance: int, local_cutoff: int = 17) -> list[int]:
     """
-    Build Callens-LIA multi-resolution decay table for long-range attention.
+    Build S_20 long-range multi-resolution decay table for long-range attention.
     
     For d <= local_cutoff: exact S_20 fixed-point decay (same as ALIX)
     For d > local_cutoff:  logarithmic extrapolation using S_20(local_cutoff)
@@ -60,15 +61,15 @@ def build_lia_decay_table(max_distance: int, local_cutoff: int = 17) -> list[int
     for d in range(local_cutoff + 1, max_distance + 1):
         # Long-range: anchor * sqrt(local_cutoff / d) — smooth, integral-like decay
         ratio = math.sqrt(local_cutoff / d)
-        lia_val = int(anchor_val * ratio)
-        full_table.append(min(max(lia_val, 0), INT64_MAX))
+        lr_val = int(anchor_val * ratio)
+        full_table.append(min(max(lr_val, 0), INT64_MAX))
     
     return full_table
 
 
-def callens_lia_attention(q, k, v, max_distance: int = 2048, causal: bool = True):
+def s20_longrange_attention(q, k, v, max_distance: int = 2048, causal: bool = True):
     """
-    Callens-LIA long-range INT64 attention with logarithmic tail decay.
+    S_20 long-range INT64 attention with logarithmic tail decay.
     
     Designed for sequences up to 128K tokens on A100 (80GB).
     For T4 (16GB): use seq_len <= 4096.
@@ -85,7 +86,7 @@ def callens_lia_attention(q, k, v, max_distance: int = 2048, causal: bool = True
     B, H, L, D = q.shape
     device = q.device
     
-    table = build_lia_decay_table(min(max_distance, L - 1))
+    table = build_longrange_decay_table(min(max_distance, L - 1))
     
     # Build decay matrix
     decay_float = torch.zeros(L, L, device=device, dtype=torch.float32)
@@ -110,19 +111,19 @@ def callens_lia_attention(q, k, v, max_distance: int = 2048, causal: bool = True
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Callens-LIA Long-Range Attention Kernel")
+        description="S_20 Long-Range Attention Kernel")
     parser.add_argument("--seq_len", type=int, default=512)
     parser.add_argument("--head_dim", type=int, default=64)
     parser.add_argument("--batch", type=int, default=1)
     parser.add_argument("--heads", type=int, default=8)
     args = parser.parse_args()
     
-    print(f"Callens-LIA Long-Range Attention Kernel")
+    print(f"S_20 Long-Range Attention Kernel")
     print(f"seq_len={args.seq_len}, head_dim={args.head_dim}")
     
     # Verify LIA decay table structure
-    table = build_lia_decay_table(20)
-    print(f"\nLIA Decay table (d=0..20):")
+    table = build_longrange_decay_table(20)
+    print(f"\nLong-range decay table (d=0..20):")
     for d in range(21):
         print(f"  decay[{d:2d}] = {table[d]} (INT64 fixed-point)")
     
@@ -139,7 +140,7 @@ def main():
     v = torch.randn(args.batch, args.heads, args.seq_len, args.head_dim, device=device)
     
     t0 = time.perf_counter()
-    out, attn = callens_lia_attention(q, k, v, max_distance=args.seq_len)
+    out, attn = s20_longrange_attention(q, k, v, max_distance=args.seq_len)
     if device == "cuda":
         torch.cuda.synchronize()
     elapsed = (time.perf_counter() - t0) * 1000
@@ -148,7 +149,7 @@ def main():
     print(f"Output shape: {list(out.shape)}")
     row_sum = attn[0, 0, 0].sum().item()
     print(f"Attention row sum (should be 1.0): {row_sum:.6f}")
-    print("✅ Callens-LIA kernel verified.")
+    print("✅ S_20 long-range kernel verified.")
 
 
 if __name__ == "__main__":

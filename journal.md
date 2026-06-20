@@ -23,7 +23,7 @@
 | **Test suite** | Does not exist | **F** | No tests/ directory |
 | **CI/CD** | Runs scripts, not tests | **C** | No assertions |
 | **Data integrity** | 80 terms correct | **A** | Old name in s20_terms.json |
-| **README accuracy** | Contains overstatements | **C+** | Still says "Callens-ALIX" |
+| **README accuracy** | Contains overstatements | **C+** | Still says "S_20" |
 | **Paper (v3)** | Camera-ready quality | **A-** | Well-structured |
 
 ---
@@ -39,7 +39,7 @@ README badge says "Verified 0 Axioms" and prose says the recurrence was "formall
 No tests/ directory, no pytest, no unit tests. CI runs scripts but can't detect silent failures.
 
 ### 3. Self-Eponymy Remnants
-README still says "Callens-ALIX" in glossary, breakthroughs, benchmarks. s20_terms.json too.
+README still says "S_20" in glossary, breakthroughs, benchmarks. s20_terms.json too.
 
 ### 4. Missing Proof Artifacts
 extracted_polynomials.json references proof_artifacts/sage_zeilberger_gcp.log — file doesn't exist.

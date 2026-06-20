@@ -2,7 +2,7 @@ import Lake
 open Lake DSL
 
 package «mirror-map-sieve» {
-  -- Mirror Map Sieve: Callens-ALIX Sequence Formal Verification
+  -- Mirror Map Sieve: S_20 Sequence Formal Verification
 }
 
 lean_lib MirrorMapSieve {

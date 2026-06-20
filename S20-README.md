@@ -1,17 +1,29 @@
-# S₂₀ Discovery: The Callens–Alix Sequence
+# S₂₀: A Weight-5 Apéry-like Sequence
 
 ## A ¾-Well-Poised ₅F₄ Beyond Apéry
 
-This directory contains the complete, reproducible mathematical verification
-of the Callens–Alix sequence $S_{20}(n) = \sum_{k=0}^{n} \binom{n}{k}^4 \binom{n+k}{k}$.
+This directory contains reproducible code and Lean 4 formalizations for the
+weight-5 Apéry-like sequence $S_{20}(n) = \sum_{k=0}^{n} \binom{n}{k}^4 \binom{n+k}{k}$.
 
-### What Was Discovered
+> **Status & honesty note.** This is an exploratory research preprint, not a
+> peer-reviewed result. The items below range from firmly established (term
+> values, the formally verified cubic supercongruence) to computational
+> evidence (mirror-map integrality) to conjectural (the Calabi-Yau period
+> interpretation). The proposed OEIS id **A397213 is a draft pending editorial
+> review — not yet an accepted OEIS sequence.** Independent verification,
+> corrections, and critique are warmly welcomed via GitHub issues/PRs.
 
-The sequence $S_{20}(n)$ is a new Apéry-like sequence that:
-- Admits a **₅F₄ hypergeometric representation** as a ¾-well-poised series at unit argument
-- Satisfies a **minimal order-4, degree-13 Picard-Fuchs linear recurrence** (with a desingularized order-5, degree-9 left-multiple)
-- Exhibits **mirror map integrality** ($q_d \in \mathbb{Z}$ for $d \leq 16$)
-- Has an explicit **diagonal representation** as the diagonal of the asymmetric 5-variable rational function $1 / ((1-x_1)(1-x_2)(1-x_3)(1-x_4)(1-x_5) - x_1 x_2 x_3 x_4)$, proved algebraically
+### What this work explores
+
+The sequence $S_{20}(n)$ appears to be a new Apéry-like sequence. We present:
+- a **₅F₄ hypergeometric representation** as a ¾-well-poised series at unit argument;
+- a **computed** minimal order-4, degree-13 Picard-Fuchs linear recurrence (with a
+  desingularized order-5, degree-9 left-multiple) — the general proof relies on a
+  creative-telescoping certificate not yet independently re-derived here;
+- **computational evidence** of mirror-map integrality ($q_d \in \mathbb{Z}$ for $d \leq 16$);
+- a **diagonal representation** as the diagonal of the asymmetric 5-variable rational
+  function $1 / ((1-x_1)(1-x_2)(1-x_3)(1-x_4)(1-x_5) - x_1 x_2 x_3 x_4)$;
+- a **formally verified** cubic supercongruence $S_{20}(p)\equiv 3\pmod{p^3}$ for $p\ge 5$.
 
 ### Repository Structure
 

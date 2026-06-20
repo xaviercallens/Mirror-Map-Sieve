@@ -35,7 +35,7 @@ def generate_lean(polys: dict, out_file: str):
         f.write("import Mathlib.Data.Finset.Basic\n")
         f.write("import Mathlib.Tactic\n\n")
         f.write("namespace MirrorMapSieve.CallabiYau.S20\n\n")
-        f.write("/-- The Callens-ALIX sequence: S₂₀(n) = Σ_{k=0}^{n} C(n,k)⁴ · C(n+k,k) -/\n")
+        f.write("/-- The weight-5 Apéry-like sequence S_20: S₂₀(n) = Σ_{k=0}^{n} C(n,k)⁴ · C(n+k,k) -/\n")
         f.write("def S20 (n : ℕ) : ℤ :=\n")
         f.write("  ↑((Finset.range (n + 1)).sum (fun k => (Nat.choose n k)^4 * (Nat.choose (n + k) k)))\n\n")
 

@@ -36,8 +36,8 @@ Your review should address:
 
 Be rigorous, honest, and specific. Cite Lean 4 syntax where relevant."""
 
-USER_PROMPT = f"""Please review the following Lean 4 formal proof of the Callens-ALIX sequence
-(formerly Callens-Alix) recurrence:
+USER_PROMPT = f"""Please review the following Lean 4 formal proof of the weight-5 Apéry-like sequence S_20
+(formerly S_20) recurrence:
 
 ```lean
 {lean_content}

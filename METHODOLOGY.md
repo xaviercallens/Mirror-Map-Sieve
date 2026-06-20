@@ -28,7 +28,7 @@ The Inner Loop is responsible for exploring the vast combinatorial landscape of 
 
 ## 2. The Formal Verification Loop (Outer Loop)
 
-Once the Inner Loop flags a sequence as a high-probability candidate (such as the $S_{20}$ Callens-ALIX sequence), it is passed to the rigorous Outer Loop for formal extraction and verification.
+Once the Inner Loop flags a sequence as a high-probability candidate (such as the $S_{20}$ weight-5 Apéry-like sequence S_20), it is passed to the rigorous Outer Loop for formal extraction and verification.
 
 ### Mechanism
 - **Exact Algebraic Shielding (SageMath & SymPy):** We construct massive symbolic matrices to find exact $\mathbb{Q}$-nullspaces. This extracts the true, minimal holonomic recurrence underlying the sequence. For $S_{20}$, this involved an order-5, degree-9 operator with 45-digit exact integer coefficients.

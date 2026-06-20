@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-compute_s20.py — Compute and verify the first N values of the Callens-Alix sequence.
+compute_s20.py — Compute and verify the first N values of the weight-5 Apéry-like sequence S_20.
 
 S₂₀(n) = Σ_{k=0}^{n} C(n,k)⁴ · C(n+k,k)
 
@@ -31,7 +31,7 @@ EXPECTED = {
 def main():
     N = int(sys.argv[1]) if len(sys.argv) > 1 else 20
     print("=" * 70)
-    print("  CALLENS-SCHMIDT SEQUENCE S₂₀(n) — VALUE COMPUTATION")
+    print("  WEIGHT-5 APÉRY-LIKE SEQUENCE S₂₀(n) — VALUE COMPUTATION")
     print("=" * 70)
     
     all_pass = True

@@ -2,7 +2,7 @@
   S₂₀ Sequence — Formal Lean 4 Verification (0-axiom, 0-sorry)
   ==============================================================
 
-  The Callens-ALIX sequence S₂₀(n) = Σ_{k=0}^{n} C(n,k)⁴ · C(n+k,k).
+  The weight-5 Apéry-like sequence S₂₀(n) = Σ_{k=0}^{n} C(n,k)⁴ · C(n+k,k).
 
   This module provides:
   • The definition of S₂₀ via Finset.sum
@@ -32,7 +32,7 @@ import Mathlib.Tactic
 
 namespace MirrorMapSieve.CallabiYau.S20
 
-/-- The Callens-ALIX sequence:
+/-- The weight-5 Apéry-like sequence S₂₀:
     S₂₀(n) = Σ_{k=0}^{n} C(n,k)⁴ · C(n+k,k)
     
     This is a 3/4-well-poised ₅F₄ hypergeometric sequence whose generating

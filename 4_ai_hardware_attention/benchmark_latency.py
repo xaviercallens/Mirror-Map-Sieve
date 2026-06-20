@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-benchmark_latency.py — Single-run Callens-ALIX latency benchmark
+benchmark_latency.py — Single-run S_20 dense latency benchmark
 
-Quick latency test for the Callens-ALIX, Callens-LIA, and Callens-AL kernels.
+Quick latency test for the S_20 dense, long-range, and sparse-block kernels.
 Targets L4/T4/A100 GPUs, falls back to CPU.
 
 Usage:
@@ -13,7 +13,7 @@ import argparse
 import time
 
 sys.path.insert(0, ".")
-from callens_alix_kernel import callens_alix_attention, build_int64_decay_table, callens_alix_s20
+from s20_int64_kernel import s20_int64_attention, build_int64_decay_table, s20_exact
 
 try:
     import torch
@@ -31,9 +31,9 @@ def main():
     args = parser.parse_args()
 
     # Always verify S_20 arithmetic first
-    print("Verifying Callens-ALIX S_20 arithmetic:")
+    print("Verifying S_20 arithmetic:")
     for n in range(10):
-        v = callens_alix_s20(n)
+        v = s20_exact(n)
         print(f"  S_20({n}) = {v}")
 
     table = build_int64_decay_table(17)
@@ -54,18 +54,18 @@ def main():
 
     # Warmup
     for _ in range(5):
-        out, _ = callens_alix_attention(q, k, v, args.seq_len, args.head_dim)
+        out, _ = s20_int64_attention(q, k, v, args.seq_len, args.head_dim)
     if device == "cuda":
         torch.cuda.synchronize()
 
     t0 = time.perf_counter()
     for _ in range(50):
-        out, attn = callens_alix_attention(q, k, v, args.seq_len, args.head_dim)
+        out, attn = s20_int64_attention(q, k, v, args.seq_len, args.head_dim)
         if device == "cuda":
             torch.cuda.synchronize()
     ms = (time.perf_counter() - t0) / 50 * 1000
 
-    print(f"\nCallens-ALIX latency: {ms:.3f} ms")
+    print(f"\nS_20 dense latency: {ms:.3f} ms")
     print(f"Output shape: {list(out.shape)}")
     print(f"Row-sum check: {attn[0,0,0].sum().item():.6f} (should be 1.0)")
     print("✅ Benchmark complete.")

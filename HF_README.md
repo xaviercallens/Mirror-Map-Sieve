@@ -11,22 +11,37 @@ tags:
 datasets: []
 ---
 
-# S20-Decay Attention Kernel
+# S20-Decay Attention Kernel (experimental)
 
-A high-performance, mathematically exact attention bias derived from the Weight-5 Apéry-like binomial sum:
+An **experimental, exploratory** attention bias derived from the weight-5
+Apéry-like binomial sum:
 
 $$S_{20}(n) = \sum_{k=0}^{n} \binom{n}{k}^4 \binom{n+k}{k}$$
 
-> **Paper**: [A Weight-5 Apéry-like Binomial Sum, its Calabi-Yau 4-fold Period, and Supercongruences](https://doi.org/10.5281/zenodo.20747943)  
+> **Paper (preprint, under review)**: [A Weight-5 Apéry-like Binomial Sum and its Conjectural Calabi-Yau Period](https://doi.org/10.5281/zenodo.20747943)  
 > **Code**: [GitHub — Mirror-Map-Sieve](https://github.com/xaviercallens/Mirror-Map-Sieve)
+
+> **Please read before using.** This kernel is a proof-of-concept, not a
+> validated method. Using $S_{20}$ as a decay profile is a *heuristic* — any
+> fast-growing integer sequence yields a similar reciprocal decay, so we make no
+> claim that $S_{20}$ is optimal or uniquely motivated. The benchmark numbers
+> below should be independently reproduced before being relied upon, and the
+> underlying sequence's proposed OEIS id A397213 is a **draft pending editorial
+> review**, not an accepted entry. Feedback and critique are very welcome.
 
 ---
 
-## 3 Core Hypotheses
+## 3 Working Hypotheses (to be tested, not established claims)
 
-1. **Exact Mathematical Rigidity**: Unlike ALiBi or learned positional embeddings, the S20 sequence provides a deterministic, integer-derived attention decay. Zero floating-point drift at any context length.
-2. **O(1) Vectorized Toeplitz Construction**: The decay matrix is built as a 1D broadcast over a distance tensor — no nested loops, no learned parameters.
-3. **Zero-Cost LLM Injection**: S20 decay can be injected into any SDPA-based model via global monkey-patching (`F.scaled_dot_product_attention`) with **zero measurable latency overhead** on GPU.
+1. **Exact integer decay**: the $S_{20}$ table gives a deterministic,
+   integer-derived attention decay with no floating-point drift in the table
+   itself (the surrounding softmax is still computed in float).
+2. **O(1) Vectorized Toeplitz Construction**: the decay matrix is built as a 1D
+   broadcast over a distance tensor — no nested loops, no learned parameters.
+3. **Low-overhead LLM injection**: $S_{20}$ decay can be injected into an
+   SDPA-based model via monkey-patching `F.scaled_dot_product_attention`. We
+   observed low overhead in our runs, but this should be re-measured on your own
+   hardware; we do not claim it is universally "zero-cost".
 
 ---
 

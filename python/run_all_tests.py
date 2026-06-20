@@ -19,7 +19,7 @@ TESTS = [
 
 def main():
     print("=" * 70)
-    print("  S₂₀ CALLENS-SCHMIDT VERIFICATION SUITE")
+    print("  S₂₀ WEIGHT-5 APÉRY-LIKE VERIFICATION SUITE")
     print("  SocrateAI Scientific Agora — GCP Cloud Run")
     print("=" * 70)
     print(f"\n  Timestamp: {time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())}")
