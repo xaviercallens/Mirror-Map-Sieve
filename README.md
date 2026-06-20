@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20747943.svg)](https://doi.org/10.5281/zenodo.20747943)
 [![OEIS A397213 (draft)](https://img.shields.io/badge/OEIS-A397213%20(pending%20review)-lightgrey)](https://oeis.org/draft/A397213)
-[![GitHub Actions](https://github.com/xaviercallens/Mirror-Map-Sieve/actions/workflows/python_ci.yml/badge.svg)](https://github.com/xaviercallens/Mirror-Map-Sieve/actions)
+[![GitHub Actions](https://github.com/xaviercallens/Mirror-Map-Sieve/actions/workflows/ci.yml/badge.svg)](https://github.com/xaviercallens/Mirror-Map-Sieve/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > **Status: research preprint, under community review.** This is an
