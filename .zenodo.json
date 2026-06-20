@@ -1,0 +1,33 @@
+{
+  "title": "A Weight-5 Apéry-like Sequence S_20(n): Formally Verified Supercongruences and a Conjectural Calabi-Yau Period (preprint)",
+  "upload_type": "publication",
+  "publication_type": "preprint",
+  "license": "MIT",
+  "creators": [
+    {
+      "name": "Callens, Xavier",
+      "affiliation": "SocrateAI Laboratory"
+    }
+  ],
+  "description": "<p><strong>Status: exploratory preprint seeking expert review. This is not a peer-reviewed result, and no discovery is claimed.</strong></p><p>We study the integer sequence S_20(n) = sum_{k=0}^{n} C(n,k)^4 * C(n+k,k) = 1, 3, 55, 1155, 29751, 852753, ..., the (A,B) = (4,1) member of the well-studied Apéry-like family sum_k C(n,k)^A C(n+k,k)^B (the Apéry numbers are the (2,2) case). We did not find this exact sum previously tabulated, but absence from existing tables reflects attention rather than depth; we therefore do not assert novelty and would be glad to be pointed to a prior appearance.</p><p><strong>What is proved (and formally verified in Lean 4, with no <code>sorry</code> and no axioms beyond Lean's standard foundations):</strong></p><ul><li>the cubic supercongruence S_20(p) &equiv; 3 (mod p^3) for primes p &ge; 5 &mdash; an elementary result, since C(p,k)^4 is divisible by p^4, so the sum collapses to 1 + C(2p,p) and Wolstenholme's theorem finishes it (the same argument works for any such sum with the binomial to a power &ge; 3);</li><li>Wolstenholme's theorem C(2p,p) &equiv; 2 (mod p^3), reproved from first principles;</li><li>the Apéry-style congruence S_20(p-1) &equiv; 1 (mod p) for every prime p.</li></ul><p><strong>What is conjectural or merely computed (NOT proved):</strong> an apparent order-4 minimal linear recurrence (computed, not certified for general n); the interpretation of S_20 as a Calabi-Yau period (the order-4 operator would point to a 3-fold, in tension with the weight-5 structure); Lian-Yau integrality of the mirror map for d &le; 16 (computational evidence); and the stronger congruence S_20(p-1) &equiv; 1 (mod p^3) (checked numerically to p = 200).</p><p><strong>Calibrated significance.</strong> At best this is a modest contribution &mdash; a possible new row in the Almkvist-van Straten-Zudilin Calabi-Yau tables &mdash; not a breakthrough. We are publishing it specifically to invite skeptical review from specialists in Apéry-like sequences and Calabi-Yau differential operators. The most useful responses would be: a prior appearance of the sequence or its operator; a verified recurrence certificate; a correct statement of the underlying geometry; or a proof or refutation of the open conjectures.</p><p><strong>The proposed OEIS identifier A397213 is a draft submission pending editorial review and is NOT an accepted OEIS entry; please do not cite it as one.</strong></p><p>The repository provides a self-contained numerical verification script, the Lean 4 development with an axiom audit, and a v6 preprint with complete human-readable proofs. Corrections and independent verification are warmly welcomed via GitHub issues and pull requests.</p>",
+  "keywords": [
+    "Apéry-like sequences",
+    "binomial sums",
+    "supercongruences",
+    "Wolstenholme theorem",
+    "Calabi-Yau periods",
+    "Picard-Fuchs equation",
+    "mirror map",
+    "Lean 4",
+    "formal verification",
+    "experimental mathematics"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/xaviercallens/Mirror-Map-Sieve",
+      "relation": "isSupplementedBy",
+      "scheme": "url"
+    }
+  ],
+  "notes": "Exploratory preprint, under community review. No discovery claimed. Proposed OEIS A397213 is a pending draft, not an accepted entry. All Lean 4 theorems build cleanly and depend only on propext, Classical.choice, and Quot.sound."
+}

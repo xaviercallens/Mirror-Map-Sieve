@@ -2,14 +2,15 @@
 %O 0, 2
 %S 1,3,55,1155,29751,852753,26097499,840454275,28064517175,964417304253,33903837716805,1214258225057265,44166395275424475,1627604857066000725,60654810749855283555,2282379931043443585155,86613897907152215198775,3311529972822006548243925
 %N a(n) = Sum_{k=0..n} binomial(n,k)^4 * binomial(n+k,k).
-%C A weight-5 Apéry-like sequence, denoted S_{20}(n) in the accompanying preprint.
-%C A weight-5 Apéry-like binomial sum. a(n) is the diagonal of the 5-variable rational function 1/((1-x_1)*(1-x_2)*(1-x_3)*(1-x_4)*(1-x_5) - x_1*x_2*x_3*x_4) (proved: expanding via the geometric series 1/(D-M) = Sum_{r>=0} M^r/D^{r+1} and extracting [x_1^n...x_5^n] yields exactly Sum_{k=0}^n C(n,k)^4*C(n+k,k)).
+%C A weight-5 Apéry-like sequence, denoted S_{20}(n) in the accompanying preprint. This is the (A,B) = (4,1) member of the family Sum_k C(n,k)^A * C(n+k,k)^B; the Apéry numbers A005259 are the (2,2) case. Reported as a sequence the author did not find previously tabulated; novelty is not asserted (see editor notes at end).
+%C a(n) is the diagonal of the 5-variable rational function 1/((1-x_1)*(1-x_2)*(1-x_3)*(1-x_4)*(1-x_5) - x_1*x_2*x_3*x_4) (proved: expanding via the geometric series 1/(D-M) = Sum_{r>=0} M^r/D^{r+1} and extracting [x_1^n...x_5^n] yields exactly Sum_{k=0}^n C(n,k)^4*C(n+k,k)).
 %C The naive symmetric candidate 1/((1 - x_1 - x_2 - x_3 - x_4)*(1 - x_5) - x_1*x_2*x_3*x_4*x_5) does NOT yield this sequence; its diagonal evaluates to exactly 2^n (Callens, 2026).
-%C Because the minimal Picard-Fuchs ODE has order 4 (proved), the underlying period geometry is that of a Calabi-Yau 3-fold, not a 4-fold as the weight-5 binomial structure might suggest.
-%C The associated mirror map q(z) = z * exp(g(z)/f(z)), where f(z) is the holomorphic period and g(z) is the logarithmic period utilizing the continuous-parameter Frobenius harmonic multiplier 3*H_n - 4*H_{n-k} + H_{n+k}, has integer coefficients q_d for d = 1, 2, ..., 16 (verified by exact rational arithmetic): q_1=1, q_2=9, q_3=165, q_4=4110, q_5=111075, q_6=3316785. This confirms the Lian-Yau integrality conjecture for this sequence for d <= 16.
-%C The cubic supercongruence a(p) == a(1) = 3 (mod p^3) holds for all primes p >= 5 (proved algebraically via Wolstenholme's Theorem and the safe denominator property of the sum).
-%C Computational evidence (verified for all primes p = 5, 7, 11, ..., 97) supports the following additional supercongruences (conjectured):
-%C (1) a(p-1) == 1 (mod p^3),
+%C The minimal Picard-Fuchs operator appears (from the computed recurrence) to have order 4, which would correspond to a Calabi-Yau 3-fold rather than a 4-fold despite the weight-5 binomial structure. This geometric interpretation is conjectural.
+%C The associated mirror map q(z) = z * exp(g(z)/f(z)), where f(z) is the holomorphic period and g(z) is the logarithmic period, has integer coefficients q_d for d = 1, 2, ..., 16 (verified by exact rational arithmetic): q_1=1, q_2=9, q_3=165, q_4=4110, q_5=111075, q_6=3316785. This is consistent with the Lian-Yau integrality conjecture for d <= 16 (computational evidence, not a proof).
+%C PROVED: the cubic supercongruence a(p) == 3 (mod p^3) for all primes p >= 5. The proof is elementary: C(p,k)^4 is divisible by p^4 for 1 <= k <= p-1, so the sum collapses mod p^3 to 1 + C(2p,p), and Wolstenholme's theorem C(2p,p) == 2 (mod p^3) gives the value 3. The same argument applies to any Sum_k C(n,k)^a * C(n+k,k) with a >= 3. Formally verified in Lean 4 (no sorry, no extra axioms).
+%C PROVED: a(p-1) == 1 (mod p) for all primes p (companion-binomial collapse; also formally verified in Lean 4).
+%C CONJECTURED (numerically checked for primes p <= 200, no proof known):
+%C (1) a(p-1) == 1 (mod p^3) for p >= 5,
 %C (2) a(m*p + r) == a(m)*a(r) (mod p) for all m, r >= 0 (Lucas property).
 %C a(n) is always odd. a(n) is strictly increasing for n >= 0.
 %C The sequence values a(0),...,a(5) and the desingularized recurrence base case at n=0 are formally verified by the Lean 4 proof assistant kernel via the "decide" tactic (0 sorry, 0 axioms beyond Lean's foundation).
@@ -18,17 +19,17 @@
 %H G. Almkvist et al., <a href="https://arxiv.org/abs/math/0507430">Tables of Calabi-Yau equations</a>, arXiv:math/0507430, 2010.
 %H A. Bostan, P. Lairez, and B. Salvy, <a href="https://arxiv.org/abs/1510.07487">Multiple binomial sums</a>, J. Symbolic Comput. 80 (2017), 351-386.
 %H Xavier Callens, <a href="https://github.com/xaviercallens/Mirror-Map-Sieve">Mirror-Map-Sieve: code, proofs, and data repository</a>
-%H Xavier Callens, <a href="https://doi.org/10.5281/zenodo.20747943">The S_20 Sequence S_{20}(n): A 3/4-Well-Poised _5F_4 Beyond Apéry</a>, Zenodo, 2026.
+%H Xavier Callens, <a href="https://doi.org/10.5281/zenodo.20747943">A Weight-5 Apéry-like Sequence S_{20}(n): Formally Verified Supercongruences and a Conjectural Calabi-Yau Period (preprint)</a>, Zenodo, 2026.
 %H R. H. Lian and S.-T. Yau, <a href="https://arxiv.org/abs/hep-th/9507151">Arithmetic properties of mirror map and quantum coupling</a>, Comm. Math. Phys. 176 (1996), 163-191.
 %F a(n) = Sum_{k=0..n} binomial(n,k)^4 * binomial(n+k,k) (definition).
 %F a(n) = _5F_4(-n, -n, -n, -n, n + 1; 1, 1, 1, 1; 1).
-%F a(n) satisfies a minimal P-recursive (holonomic) linear recurrence of order 4 with polynomial coefficients of degree 13 (proved by exact rational nullspace computation over 85 terms).
+%F a(n) appears to satisfy a minimal P-recursive (holonomic) linear recurrence of order 4 with polynomial coefficients of degree 13, found by an exact rational nullspace computation over 85 terms. This is empirically verified but a certified (creative-telescoping) proof for general n is not yet available.
 %F A computationally compact order-5 left-multiple recurrence with degree-9 coefficients is: Sum_{j=0}^{5} P_j(n) * a(n+j) = 0, where:
 %F P_0(n) = -91731022272781432292325544446355569881727993801*n^9 - ... - 5412650858431135013634958175726842170573378411840,
 %F P_5(n) = 235032580722074992350169813838697598943355973*n^9 + ... + 20478134952232355172884134183653971676016433020000.
 %F (Full exact coefficients available at the GitHub repository link above.)
-%F G.f.: f(z) = Sum_{n>=0} a(n)*z^n satisfies a 4th-order linear ODE (the true minimal Picard-Fuchs equation), characteristic of a Calabi-Yau 3-fold period.
-%F Asymptotic: a(n) ~ C * n^alpha * (43.044328...)^n as n -> infinity, where C and alpha are constants. The growth constant is G = (1+x0)^(1+x0) / (x0^(5*x0) * (1-x0)^(4*(1-x0))) where x0 = 0.56344246... is the unique root in (0,1) of 3*x^4 - 2*x^3 - 2*x^2 + 3*x - 1 = 0, giving G = 43.044328670928671...
+%F G.f.: f(z) = Sum_{n>=0} a(n)*z^n appears to satisfy a 4th-order linear ODE (a candidate minimal Picard-Fuchs equation), which would be characteristic of a Calabi-Yau 3-fold period (conjectural).
+%F Conjectured asymptotic: a(n) ~ C * n^alpha * (43.044328...)^n as n -> infinity, where C and alpha are constants. The growth constant is G = (1+x0)^(1+x0) / (x0^(5*x0) * (1-x0)^(4*(1-x0))) where x0 = 0.56344246... is the unique root in (0,1) of 3*x^4 - 2*x^3 - 2*x^2 + 3*x - 1 = 0, giving G = 43.044328670928671...
 %e a(0) = binomial(0,0)^4 * binomial(0,0) = 1.
 %e a(1) = binomial(1,0)^4 * binomial(1,0) + binomial(1,1)^4 * binomial(2,1) = 1 + 1*2 = 3.
 %e a(2) = binomial(2,0)^4 * binomial(2,0) + binomial(2,1)^4 * binomial(3,1) + binomial(2,2)^4 * binomial(4,2) = 1 + 16*3 + 1*6 = 1 + 48 + 6 = 55.
@@ -54,3 +55,25 @@
 %Y Cf. A005260 (Franel numbers of order 5: Sum_{k=0..n} C(n,k)^5).
 %Y Cf. A290575 (related Calabi-Yau period sequences).
 %K nonn
+
+================================================================================
+NOTES FOR THE EDITOR AND PROSPECTIVE REVIEWERS
+================================================================================
+This draft is offered in good faith and is correctable. Three honest points:
+
+1. Novelty is unverified, not asserted. The author searched the OEIS and the
+   literature without finding this exact sum, but "not found" is not "new." A
+   prior appearance -- e.g. in the Almkvist-van Straten-Zudilin Calabi-Yau
+   tables, possibly under a different normalization -- would be the most useful
+   feedback, and the author will amend or withdraw accordingly.
+
+2. Significance is modest by design. This is one member of a well-studied
+   family; the proved congruence a(p) == 3 (mod p^3) is elementary, included
+   because it is cleanly true and machine-checked, not because it is deep.
+
+3. The Calabi-Yau interpretation, the order-4 recurrence for general n, and the
+   mod-p^3 / Lucas congruences are conjectural or merely computed; only the
+   stated mod-p / mod-p^3 results marked PROVED are proved (and formalized in
+   Lean 4 with no sorry and no extra axioms). Expert review by specialists in
+   Apery-like sequences and Calabi-Yau differential operators is invited at the
+   GitHub repository.
