@@ -1,0 +1,25 @@
+# Dockerfile.sage_ore — SageMath + ore_algebra, for the Phase 1B certificate.
+#
+# The stock sagemath/sagemath image ships neither ore_algebra nor git, and its
+# /workspace is not writable by the `sage` user. This image fixes all three:
+# installs git, pip-installs ore_algebra from source against Sage's Python, and
+# runs as root with a writable workdir.
+FROM sagemath/sagemath:latest
+
+USER root
+
+# git is needed to pip-install ore_algebra from its source repository.
+RUN apt-get update && apt-get install -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install ore_algebra into Sage's own Python (sage -pip), so `from ore_algebra
+# import ...` works inside `sage` scripts.
+RUN sage -pip install --no-build-isolation \
+        git+https://github.com/mkauers/ore_algebra.git \
+    || sage -pip install git+https://github.com/mkauers/ore_algebra.git
+
+WORKDIR /work
+COPY gcp_phase1_sage.py /work/gcp_phase1_sage.py
+
+ENV OUT_DIR=/work
+CMD ["sage", "/work/gcp_phase1_sage.py"]

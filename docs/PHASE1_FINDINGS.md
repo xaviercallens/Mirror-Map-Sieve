@@ -81,11 +81,53 @@ ODE corresponds to the growth constant $\approx 43.044$ reported earlier.
   point, integral mirror map / instanton numbers) and matching it against the
   AESZ / van Straten databases (which would also settle novelty).
 
+## Tooling note — why the proof step needs GCP/Sage (Phase 1A/1B)
+
+**Phase 1A (local).** `ore_algebra` is **not pip-installable** into a plain
+Python: it is a SageMath library that imports `sage.all`, and it is not published
+on PyPI (`pip install ore_algebra` → "No matching distribution"). So the
+certificate cannot be produced in this repo's plain-Python environment. The
+minimal-order question, however, **does not need it** — it is settled by the
+exact linear algebra above.
+
+**Phase 1B (GCP/Sage).** The certificate is therefore run on
+SageMath via Google Cloud Build (project `agora-autoresearch-001`):
+- `src/picard_fuchs/gcp_phase1_sage.py` — self-contained Sage script: re-derives
+  the minimal recurrence (independent re-confirmation), then runs `ore_algebra`
+  creative telescoping for the certificate and factors the differential operator.
+- `src/picard_fuchs/Dockerfile.sage_ore` — `sagemath/sagemath` + `git` +
+  `ore_algebra` (the stock image ships none of these).
+- `src/picard_fuchs/cloudbuild_phase1_sage.yaml` — builds that image, runs the
+  script, and uploads `phase1_result.json` to
+  `gs://agora-autoresearch-001-outputs/s20-phase1/`.
+
+**Independent re-confirmation already obtained:** a SageMath Cloud Build run
+re-derived **minimal order 4, degree 13 over exact $\mathbb{Q}$** inside the
+official `sagemath/sagemath` container — matching the pure-Python result above.
+(The certificate sub-step requires the `ore_algebra`-equipped image above.)
+
+### AESZ database prescreen (Phase 2 preview)
+
+`src/picard_fuchs/match_asz_database.py` checks the operator/sequence against the
+548-entry Almkvist–Straten–Zudilin database (`asz_sequences.json`). A **textual
+prescreen finds no exact `Σ C(n,k)⁴ C(n+k,k)` signature** among the catalogued
+closed forms (the nearest neighbour, AESZ id 18 = $\binom{2n}{n}\sum\binom{n}{k}^4$,
+is genuinely different). This is *weak* evidence of novelty; the decisive check
+is an operator-level comparison once the certified ODE (theta-notation) is in
+hand from Phase 1B.
+
 ## Reproduce
 
 ```bash
+# Local (settles minimal order; no Sage needed):
 python3 src/picard_fuchs/find_recurrence.py     # ~3 s : minimal order = 4
 python3 src/picard_fuchs/extract_operator.py    # ~10 s: exact operator, verified
-# Proof step (needs SageMath + ore_algebra):
-sage  src/picard_fuchs/certify_telescoper.sage
+python3 src/picard_fuchs/match_asz_database.py  # AESZ prescreen
+
+# Proof step on GCP/SageMath (creative-telescoping certificate + factorization):
+cd src/picard_fuchs
+gcloud builds submit --config=cloudbuild_phase1_sage.yaml \
+    --project=agora-autoresearch-001 .
+# or locally if you have Sage + ore_algebra:
+sage src/picard_fuchs/certify_telescoper.sage
 ```

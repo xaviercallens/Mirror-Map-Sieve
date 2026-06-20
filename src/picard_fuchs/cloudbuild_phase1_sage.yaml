@@ -1,0 +1,67 @@
+# cloudbuild_phase1_sage.yaml — Phase 1B on Google Cloud Build (SageMath + ore_algebra).
+#
+# Builds a SageMath image with ore_algebra installed (Dockerfile.sage_ore), runs
+# the creative-telescoping certificate + operator factorization for S_20(n), and
+# uploads the result JSON to GCS.
+#
+# Prereqs (one-time):
+#   gcloud config set project agora-autoresearch-001
+#   gcloud auth login   # callensxavier@gmail.com
+#
+# Submit (from this directory, which becomes the build context):
+#   cd Mirror-Map-Sieve/src/picard_fuchs
+#   gcloud builds submit --config=cloudbuild_phase1_sage.yaml \
+#       --project=agora-autoresearch-001 .
+#
+# Notes:
+#   * Building Sage+ore_algebra is slow (image pull + source build); timeout is
+#     generous.  The result JSON lands in
+#     gs://agora-autoresearch-001-outputs/s20-phase1/.
+#   * The full telescoper/certificate/factorization also prints to the build log.
+
+steps:
+  # 1. Build the SageMath+ore_algebra image.
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-f'
+      - 'Dockerfile.sage_ore'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/sage-ore:latest'
+      - '.'
+    timeout: '2400s'
+
+  # 2. Run the certificate computation; copy the result out to /workspace.
+  - name: 'gcr.io/$PROJECT_ID/sage-ore:latest'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        cd /work && sage /work/gcp_phase1_sage.py
+        cp -f /work/phase1_result.json /workspace/phase1_result.json || true
+    env:
+      - 'OUT_DIR=/work'
+    timeout: '2400s'
+
+  # 3. Upload the machine-readable result to GCS (best-effort).
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        if [ -f /workspace/phase1_result.json ]; then
+          gsutil cp /workspace/phase1_result.json \
+            gs://agora-autoresearch-001-outputs/s20-phase1/phase1_result-$BUILD_ID.json
+          echo "Uploaded phase1_result.json to GCS."
+        else
+          echo "phase1_result.json not found; check the Sage step log above."
+        fi
+
+images:
+  - 'gcr.io/$PROJECT_ID/sage-ore:latest'
+
+timeout: '5400s'
+
+options:
+  machineType: 'E2_HIGHCPU_8'
+  logging: CLOUD_LOGGING_ONLY

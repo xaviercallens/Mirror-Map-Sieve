@@ -1,0 +1,5 @@
+# Only these files are needed in the build context.
+*
+!gcp_phase1_sage.py
+!cloudbuild_phase1_sage.yaml
+!Dockerfile.sage_ore
