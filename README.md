@@ -41,7 +41,7 @@ is established:
 | The first ~80 terms and the closed-form sum | **Verified** | Exact integer arithmetic, reproducible |
 | This exact sum is not previously tabulated (we did **not** find it) | **Unconfirmed; not a significance claim** | Manual search returned no match; A397213 **pending editor review**. Absence from OEIS reflects attention, not depth — see significance note |
 | Cubic supercongruence $S_{20}(p)\equiv 3\pmod{p^3}$, $p\ge 5$ | **Proven in Lean 4 (but shallow — see note)** | Unconditional, axiom-clean; the proof is elementary and applies to any such sum with $\binom{n}{k}$ to a power $\ge 3$ |
-| Order-4/5 linear recurrence | **Computed; base cases formalized** | Q-nullspace solver; Lean checks small $n$, general case rests on a WZ/creative-telescoping certificate we have **not** independently re-derived in this repo |
+| Minimal **order-4** linear recurrence | **Proved for all $n$** (certificate) | Order 4 from four independent derivations; a Maxima/Zeilberger creative-telescoping **certificate** (computed on GCP/SageMath) proves it for all $n$. Lean re-check of the certificate still pending. See [`docs/PHASE1_FINDINGS.md`](docs/PHASE1_FINDINGS.md) |
 | Mirror-map (Lian–Yau) integrality for $q_d$, small $d$ | **Computational evidence** | Exact rational arithmetic for $d \le 16$ |
 | Calabi-Yau period / mirror-symmetry interpretation | **Conjectural (and possibly mis-stated)** | Structural analogy, not a proof; note the order-4 operator suggests a **3-fold**, in tension with "weight-5 / 4-fold" phrasing elsewhere |
 | INT64 attention kernels (AI hardware) | **Exploratory proof-of-concept** | Heuristic; benchmarks largely CPU — see caveats |
@@ -127,13 +127,20 @@ Picard–Fuchs operator, a Calabi–Yau period identification, and modularity,
 together with a proposed resolution of the "weight-5 / 4-fold" inconsistency —
 is in [`docs/RESEARCH_PLAN.md`](docs/RESEARCH_PLAN.md).
 
-**Phase 1 update.** A first computation (exact linear algebra, cross-checked over
-two primes and over $\mathbb{Q}$, verified on 101 terms) finds that the **minimal
-recurrence order is 4**, not 5 — which points to a Calabi–Yau **3-fold**, not a
-4-fold, and resolves the inconsistency in favour of the 3-fold narrative. This is
-a rigorous computation, not yet a proof; details and the exact operator are in
-[`docs/PHASE1_FINDINGS.md`](docs/PHASE1_FINDINGS.md), reproducible via
-[`src/picard_fuchs/`](src/picard_fuchs/).
+**Phase 1 — progress (the minimal recurrence is now proved).** The **minimal
+recurrence order is 4** (degree-13 coefficients), not 5 — which points to a
+Calabi–Yau **3-fold**, not a 4-fold, resolving the inconsistency in favour of the
+3-fold narrative. This order is now established by **four independent
+derivations** (pure-Python GF($p$) nullspace, exact $\mathbb{Q}$ reconstruction,
+`ore_algebra` `guess`, and Maxima `Zeilberger`), and a creative-telescoping
+**certificate** — computed on SageMath via Google Cloud Build — **proves the
+recurrence for all $n$** (not merely the 101 verified terms). The exact operator,
+the certificate, and the full run are in
+[`docs/PHASE1_FINDINGS.md`](docs/PHASE1_FINDINGS.md) and
+[`src/picard_fuchs/`](src/picard_fuchs/). Still open: a Lean 4 re-check of the
+certificate identity, and pinning the minimal *irreducible differential* order
+(the series-guessed ODE has order 6 — apparent singularities — vs. the
+essential order-4 piece).
 
 ---
 
