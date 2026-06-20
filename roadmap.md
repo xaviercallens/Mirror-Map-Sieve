@@ -1,79 +1,73 @@
 # Mirror Map Sieve — Roadmap
 
-## Phase 1: Discovery & Publication ✅ COMPLETE
-- [x] Discover S(n) = sum C(n,k)^4 * C(n+k,k)
-- [x] Extract order-5, degree-9 recurrence (Q-nullspace, 80 terms)
-- [x] Verify mirror map integrality (d ≤ 16)
-- [x] Lean 4 base-case verification (sorry-free)
-- [x] Paper v3 camera-ready
-- [x] Zenodo DOI 10.5281/zenodo.20747943
-- [x] GitHub release v1.0.0
+This roadmap reflects the **mathematics research program** (`docs/RESEARCH_PLAN.md`)
+as the priority. It is an honest, falsifiable plan — not a promise of results.
+We claim no discovery; the goal is rigorous, expert-reviewable progress.
 
-## Phase 2: Computer Science & AI Hardware (The Deep Tech Pivot)
-**Goal: Revolutionize LLM context efficiency with Holonomic INT64 Attention.**
+## Stage 0: Discovery & honest re-baselining ✅ COMPLETE
+- [x] Define S(n) = Σ C(n,k)⁴ C(n+k,k); compute & verify the first ~80 terms.
+- [x] Mirror-map integrality q_d ∈ ℤ for d ≤ 16 (exact rational arithmetic).
+- [x] Lean 4 base-case verification (sorry-free).
+- [x] Zenodo DOI 10.5281/zenodo.20747943; GitHub releases through v3.0.0.
+- [x] De-eponymize; mark OEIS A397213 as a **pending draft** (not accepted);
+      add honest-scope framing and an expert-review call (issue #2).
 
-### Week 1: Custom Triton Kernel
-- [ ] Write a custom OpenAI Triton kernel (`s20_attention.py`)
-- [ ] Implement exact S20 positional decay $Mask(d) \propto 1 / S_{20}(d)$
-- [ ] Move sequence generation into GPU SRAM using INT64 linear recurrence (bypassing HBM floats)
-- [ ] Implement extreme super-exponential sparsity cutoff for $d \ge 3$ (bypassing SoftMax denominator)
+## Stage 1: Certified Picard–Fuchs recurrence ✅ DONE (Lean re-check open)
+- [x] Minimal recurrence order = **4**, degree 13 (four independent derivations;
+      orders 2–3 impossible).
+- [x] Exact operator over ℚ; verified on 101 terms.
+- [x] Creative-telescoping **certificate** (Maxima Zeilberger, GCP/SageMath) ⇒
+      recurrence proved **for all n**.
+- [ ] Lean 4 kernel re-check of the certificate identity (gold standard).
 
-### Week 2: Benchmarking & NeurIPS Paper
-- [ ] Benchmark memory throughput against standard FlashAttention
-- [ ] Demonstrate zero floating-point drift over long contexts
-- [ ] Draft paper: "Holonomic INT64 Attention: Bypassing SoftMax with Exact Calabi-Yau Geometries"
-- [ ] Target submission: NeurIPS 2026
+## Stage 2: Calabi–Yau period identification 🔶 IN PROGRESS
+- [x] Minimal **ODE** order of f(z) = **6**, degree 15 (exact nullspace).
+- [x] Indicial equation at z=0: −715·s⁴(s−1)² ⇒ **order-4 MUM block**
+      (Calabi–Yau **3-fold** evidence) + order-2 apparent singularity.
+      → resolves the old "weight-5 / CY 4-fold" inconsistency in favour of a **3-fold**.
+- [ ] Exhibit the factorization L₆ = L₄·L₂ with L₄ irreducible
+      (**blocked** on a version-matched Sage + ore_algebra).
+- [ ] Correct CY-3 Yukawa coupling from L₄ → **instanton-number integrality**
+      (placeholder normalization gave non-integers — unresolved, flagged).
+- [ ] Operator-level match against AESZ / van Straten databases (novelty + ID).
 
-## Phase 3: Supercongruences (Next 1-3 Months)
-**Goal: Resolve the three open conjectures. This is the highest-impact work.**
+## Stage 3: Modularity 🔒 GATED on L₄
+- [ ] Locate rigid / conifold fibers (roots of L₄'s leading coefficient).
+- [ ] Frobenius traces a_p; search LMFDB S₄(Γ₀(N)) for a matching **weight-4
+      newform**.
+- [ ] Formulate + test a Beukers/Atkin–Swinnerton-Dyer-type supercongruence
+      relating S to the newform.
 
-### Lucas Congruence: S(mp+r) ≡ S(m)S(r) (mod p)
-- **Approach**: Apply Lucas's theorem directly to each binomial factor in the summand
-- **Difficulty**: Low-moderate (standard p-adic technique)
-- **Tools**: SageMath symbolic computation + manual proof
+## Arithmetic of S(n) (supercongruences) — runs alongside
+- [x] S(p) ≡ 3 (mod p³), p ≥ 5 — **proved, Lean-verified** (elementary).
+- [x] S(p−1) ≡ 1 (mod p) — **proved, Lean-verified**.
+- [ ] **Conjecture** S(p−1) ≡ 1 (mod p³), p ≥ 5 (numeric to p=200; open).
+- [ ] **Conjecture** Lucas: S(mp+r) ≡ S(m)S(r) (mod p) (numeric; open).
 
-### Apéry-style: S(p-1) ≡ 1 (mod p³)
-- **Approach**: p-adic Gamma function techniques (Beukers/Ahlgren/Osburn framework)
-- **Difficulty**: Moderate-high
-- **Tools**: WZ-pairs evaluated p-adically
+## Community & publication
+- [ ] Fold Stage 1/2 into the v6 paper (proofs + honest caveats); keep arXiv-ready.
+- [ ] Submit OEIS draft once reviewed; update repo when an A-number is assigned.
+- [ ] Engage specialists in Apéry-like sequences / CY operators (Zudilin, Osburn,
+      van Straten, …) via issue #2 — especially for the L₄ factorization, the
+      Yukawa normalization, and a possible prior appearance.
 
-### Cubic: S(p) ≡ 3 (mod p³)
-- **Approach**: Unknown — this is the genuinely novel finding
-- **Difficulty**: High (may require formal group law of the CY 4-fold)
-- **Tools**: Deep number theory; may need expert collaboration
-- **Fallback**: Present as strong computational evidence up to p ≤ 100+
-
-### Deliverables
-- [ ] Paper v4 or standalone note with proofs/extended evidence
-- [ ] Lean 4 formalization of proven congruences
-- [ ] Updated Zenodo record
-
-## Phase 4: Community Engagement (Months 3-6)
-**Goal: Get the work recognized by the number theory community.**
-
-- [ ] Post to MathOverflow (diagonal representation is a strong open question)
-- [ ] Contact Wadim Zudilin (leading expert on Apéry-like sequences)
-- [ ] Contact Robert Osburn (supercongruences specialist)
-- [ ] Submit to Experimental Mathematics or Journal of Number Theory
-- [ ] Present at a workshop (CIRM, Oberwolfach, or AIM)
-
-## Phase 5: Diagonal Representation (Long-term)
-**Goal: Find F(x₁,...,x₅) such that Diag(F) = S(n). This is an open research problem.**
-
-- The `diagonal_search.py` script has already eliminated several natural candidates
-- The integral representation CT[Λⁿ · R] is known but R is rational, not Laurent
-- The key question: can R be absorbed into Λ?
-- This may require techniques from Bostan-Lairez-Salvy or new ideas
+## Parked
+- AI-hardware INT64 attention (`4_ai_hardware_attention/`): exploratory heuristic,
+  benchmarks need an independent GPU run. Unrelated to the mathematical
+  contribution; parked, not abandoned.
 
 ---
 
-## Key Milestones
+## Honest milestone notes (no dates promised)
 
-| Milestone | Target Date | Impact |
-|-----------|-------------|--------|
-| OEIS A-number assigned | July 2026 | Permanence in mathematics |
-| arXiv preprint live | July 2026 | Visibility |
-| Lucas congruence proved | Aug 2026 | Paper v4 upgrade |
-| Apéry supercongruence | Sep 2026 | Significant number theory result |
-| Journal submission | Oct 2026 | Peer review |
-| Cubic congruence resolved | Dec 2026 | Major contribution if proved |
+| Milestone | Status | Impact if achieved |
+|-----------|--------|--------------------|
+| Order-4 recurrence proved (certificate) | **done** | Settles the holonomic structure |
+| CY 3-fold identification (L₄ + Yukawa) | in progress | A (likely modest) AESZ-style entry |
+| Lean re-check of certificate | open | Fully machine-checked recurrence |
+| Weight-4 newform / modularity | gated | Deepest potential result |
+| S(p−1) ≡ 1 (mod p³) proof | open | Strengthens the arithmetic picture |
+| OEIS A-number assigned | pending editor | Permanence (after acceptance) |
+
+These are research aims, not commitments; several may fail or turn out already
+known. Corrections and expert review are welcome.

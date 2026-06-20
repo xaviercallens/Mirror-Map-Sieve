@@ -42,3 +42,51 @@ A reviewer reading a paper about Calabi-Yau periods will be confused by INT64 GP
 
 ### 10. Tests Are Not Optional
 A mathematics repository without tests is like a theorem without a proof. The recurrence can be verified at 70 points in under 10 seconds. There is no excuse for not having automated tests.
+
+## Phase 1 & 2 Lessons (Picard–Fuchs research program, 2026-06-20)
+
+### 11. `ore_algebra` Is Not pip-Installable — and Its Sage Pairing Is Fragile
+`ore_algebra` imports `sage.all` and is not on PyPI; `pip install ore_algebra`
+fails outright. Worse, there is a real **version matrix**: its Cython extension
+won't compile against Sage 10.4's older FLINT (`unknown type name 'slong'`),
+while on Sage `:latest` its symbolic `.factor()` path crashes
+(`sage.rings.abc has no attribute 'SymbolicRing'`). Lesson: for CY-operator work,
+either pin a maintainer-blessed Sage+`ore_algebra` pair, or route around it.
+The robust route we found: use `:latest` for `guess` (which worked) and
+**Maxima's `Zeilberger`** (bundled with Sage, no compilation, version-independent)
+for the certificate.
+
+### 12. Recurrence Order ≠ ODE Order — Don't Conflate Them
+The recurrence in $n$ has order **4**; the minimal ODE for $f(z)$ has order
+**6**. These are different invariants (the holonomic rank of $f$ need not equal
+the recurrence order). We nearly misread the order-6 ODE as "CY 5-fold." The
+**indicial equation** ($-715\,s^4(s-1)^2$) is what disambiguates: an order-4 MUM
+block + an order-2 apparent singularity. Always compute the local exponents
+before reading off a Calabi–Yau dimension.
+
+### 13. A Certificate Beats a Guess — Insist on It
+We had the order-4 operator verified on 101 terms (overwhelming, but not a
+proof). The Maxima **Zeilberger certificate** turns it into a proof for *all*
+$n$. The lesson from the original journal — "the finite-vs-infinite bridge is not
+formalized" — is now half-closed: the certificate exists; only the Lean re-check
+of its finite rational identity remains.
+
+### 14. Instanton Integrality Is a Normalization Trap
+Mirror-map ($q_d$) integrality is easy to get right and was integral. But the
+**instanton numbers** $n_d$ require the *geometrically correct* Yukawa coupling,
+read off the operator — not a guessed $\theta_q^2$. A wrong normalization
+produces non-integers with denominators exactly $\sim d^3$, which *looks* like a
+refutation but is an artifact. Lesson: report such a result as "normalization
+unresolved," never as evidence against CY-ness, and never fudge it to integers.
+
+### 15. Multiple Independent Derivations Are Worth the Cost
+The order-4 result is believable precisely because four unrelated methods
+(GF($p$) nullspace, $\mathbb{Q}$ reconstruction, `ore_algebra` `guess`, Maxima
+`Zeilberger`) agree coefficient-for-coefficient. When a result gates a whole
+geometric narrative, redundancy is not waste — it is the evidence.
+
+### 16. Cloud Iterations Have a Budget — Stop When the Science Is Secured
+Settling the certificate took several GCP Cloud Build iterations chasing version
+incompatibilities. Once the decisive result was triply confirmed, the right call
+was to stop iterating on a green `.factor()` and document the blockers, rather
+than keep spending on diminishing returns.

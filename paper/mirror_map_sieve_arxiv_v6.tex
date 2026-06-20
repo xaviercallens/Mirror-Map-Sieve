@@ -117,8 +117,10 @@ $\Sx(p)\equiv 3\ (p^3)$, $p\ge5$ & \textbf{proved} (+ Lean) & \S\ref{sec:cubic} 
 $\binom{2p}{p}\equiv 2\ (p^3)$, $p\ge5$ & \textbf{proved} (+ Lean) & \S\ref{sec:wolstenholme} \\
 $\Sx(p-1)\equiv 1\ (p)$, all $p$ & \textbf{proved} (+ Lean) & \S\ref{sec:apery} \\
 $\Sx(p-1)\equiv 1\ (p^3)$ & open conjecture (numeric only) & \S\ref{sec:apery} \\
-order-4 recurrence (general $n$) & computed, not formally certified & \S\ref{sec:open} \\
-Calabi--Yau period interpretation & conjectural analogy & \S\ref{sec:open} \\
+order-4 recurrence (general $n$) & \textbf{proved} (Zeilberger certificate) & \S\ref{sec:operator} \\
+minimal ODE order of $f(z)$ is $6$ & computed (exact) & \S\ref{sec:operator} \\
+order-4 MUM block (CY 3-fold) & evidence (indicial eq.) & \S\ref{sec:operator} \\
+Calabi--Yau period interpretation & conjectural analogy & \S\ref{sec:operator}, \S\ref{sec:open} \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -455,6 +457,131 @@ Theorem~\ref{thm:babbage}), and \ref{thm:apery} have been formalized in Lean~4
 audit is recorded in \texttt{VERIFICATION\_REPORT.md}.
 
 %% =====================================================================
+\section{The Picard--Fuchs operator: order and Calabi--Yau structure}
+\label{sec:operator}
+%% =====================================================================
+
+This section reports the computational study of the operator governing $\Sx$.
+We are careful to separate what is \emph{proved} (the recurrence, via a
+certificate), what is \emph{exactly computed} (the differential order and the
+local exponents), and what remains \emph{conjectural} (the Calabi--Yau
+identification). The computations are reproducible from the scripts in
+\texttt{src/picard\_fuchs/} of the repository.
+
+\subsection{The minimal recurrence has order $4$, and is proved for all $n$}
+
+\begin{proposition}[Minimal $P$-recurrence]\label{prop:rec4}
+The sequence $\Sx(n)$ satisfies a linear recurrence
+\[
+  \sum_{j=0}^{4} P_j(n)\,\Sx(n+j) = 0,
+\]
+with explicit integer polynomials $P_0,\dots,P_4$ of degree $13$, and no such
+recurrence of order $2$ or $3$ exists.
+\end{proposition}
+
+\noindent\emph{Evidence and proof.} The order and the exact coefficients were
+obtained \emph{four independent ways}, which agree coefficient-for-coefficient
+(up to a global sign): (i) an exact nullspace over $\mathrm{GF}(p)$ for two
+primes, heavily over-determined; (ii) an exact nullspace over $\mathbb Q$,
+verified on $101$ consecutive terms; (iii) \texttt{ore\_algebra}'s \texttt{guess}
+in SageMath; and (iv) Maxima's \texttt{Zeilberger}. The non-existence of an
+order-$2$ or order-$3$ relation was checked over the same range. Crucially,
+Maxima's \texttt{Zeilberger} returns the order-$4$ telescoper \emph{together with
+a rational certificate} $R(n,k)$ satisfying
+\[
+  \sum_{j=0}^{4} P_j(n)\,T(n+j,k) \;=\; \Delta_k\!\big[R(n,k)\,T(n,k)\big],
+  \qquad \Delta_k g(k) := g(k+1)-g(k),
+\]
+for the summand $T(n,k)=\binom{n}{k}^4\binom{n+k}{k}$. Summing over $k$
+telescopes the right-hand side to boundary terms, which vanish; hence the
+recurrence holds \emph{for all $n$}, not merely on the tested range. The leading
+coefficient returned by Maxima equals our $P_4(n)=(n+3)^2(n+4)^4\,Q(n)$ with
+$Q$ an explicit degree-$7$ integer polynomial. \hfill$\square$
+
+\begin{remark}
+The certificate constitutes a proof in the standard sense of creative
+telescoping. A fully kernel-checked version --- re-verifying the (finite,
+denominator-cleared) rational identity inside Lean~4 --- is not yet done; we flag
+it as the natural next step and an inviting, self-contained formalization target.
+\end{remark}
+
+\subsection{The differential operator has order $6$, with an order-$4$ MUM block}
+
+It is tempting to read the recurrence order ($4$) as the order of the
+Picard--Fuchs operator, but these are different invariants. Let
+$f(z)=\sum_{n\ge0}\Sx(n)\,z^n$.
+
+\begin{proposition}[Holonomic rank]\label{prop:ode6}
+The minimal linear ODE with polynomial coefficients annihilating $f(z)$ has order
+$6$ (and coefficient degree $15$); no annihilating operator of order $\le 5$
+exists.
+\end{proposition}
+
+\noindent This was established by an exact nullspace computation on the Taylor
+coefficients (two primes, stable under heavy over-determination), and agrees with
+\texttt{ore\_algebra}'s series \texttt{guess}. The apparent tension with
+Proposition~\ref{prop:rec4} is resolved by the local analysis at the origin.
+
+\begin{proposition}[Indicial equation at $z=0$]\label{prop:indicial}
+Writing the order-$6$ operator in the form $\sum_{i=0}^{6}R_i(z)\,\theta^i$ with
+$\theta=z\,\mathrm d/\mathrm dz$, its indicial polynomial at $z=0$ is
+\[
+  -715\,s^{4}(s-1)^{2},
+\]
+so the local exponents at $z=0$ are $\{0,0,0,0,\,1,1\}$.
+\end{proposition}
+
+\noindent The exponent $0$ occurs with multiplicity $4$: this is a
+\emph{maximal-unipotent-monodromy} (MUM) block of order $4$, the structural
+hallmark of a Calabi--Yau $3$-fold Picard--Fuchs operator (the situation of the
+Ap\'ery numbers for $\zeta(3)$). The remaining exponents $\{1,1\}$ form an
+integer-shifted order-$2$ block, the signature of an \emph{apparent singularity}:
+it raises the holonomic rank of $f$ from $4$ to $6$ but carries no new
+transcendental content. Thus the geometrically essential operator is the
+order-$4$ MUM block, consistent with Proposition~\ref{prop:rec4}.
+
+\begin{remark}[Honest status of the factorization]
+We have not yet \emph{exhibited} the factorization $L_6=L_4\cdot L_2$ with $L_4$
+irreducible; the local-exponent data strongly indicates it, but a rigorous
+factorization (and the irreducibility of $L_4$) requires a version-matched
+computer-algebra setup and would benefit from expert verification.
+\end{remark}
+
+\subsection{Mirror map and instanton numbers}
+
+Computing the holomorphic period $f$ and the logarithmic period
+$g(z)=\sum_n B(n)z^n$ with
+$B(n)=\sum_k\binom nk^4\binom{n+k}k\big[4(H_n-H_{n-k})+(H_{n+k}-H_n)\big]$,
+the mirror map $q(z)=z\exp(g/f)$ has \emph{integer} coefficients
+$q_1=1,q_2=9,q_3=165,q_4=4110,\dots$ for $1\le d\le 16$ (exact rational
+arithmetic). This is consistent with Lian--Yau integrality and independently
+corroborates the MUM structure.
+
+We must, however, report a genuine \emph{negative}. The more stringent test is
+integrality of the genus-$0$ instanton numbers $n_d$ extracted from the
+normalized Yukawa coupling $K(q)=n_0+\sum_d n_d\,d^3 q^d/(1-q^d)$. With a
+\emph{placeholder} normalization (a second $\theta_q$-derivative of the mirror
+map) the resulting $n_d$ are \emph{not} integers, and their denominators are
+exactly of the form $d^3$ (e.g.\ $165/2^3$, $3463611/5^3$, $2144305763/7^3$).
+This denominator pattern is the signature of an incorrect Yukawa normalization
+rather than a failure of Calabi--Yau structure: the geometrically correct
+coupling must be read off the (desingularized) order-$4$ operator $L_4$, which we
+have not yet isolated. We therefore regard instanton integrality as
+\emph{unresolved}, and the mirror-map integrality above as the robust positive
+evidence.
+
+\subsection{Summary of the geometric picture}
+
+The data support, but do not prove, the following picture: $\Sx$ is the
+holomorphic period of a one-parameter family of Calabi--Yau \emph{$3$-folds};
+the associated operator is the order-$4$ MUM block sitting inside the order-$6$
+holonomic operator of $f$. In particular the earlier ``weight-$5$ / Calabi--Yau
+$4$-fold'' description (where ``weight $5$'' was merely the count of binomial
+factors) is \emph{incorrect}: the operator-theoretic invariant points to a
+$3$-fold. We state this as a corrected \emph{conjecture}, contingent on the
+factorization and the correct instanton normalization.
+
+%% =====================================================================
 \section{What remains open}\label{sec:open}
 %% =====================================================================
 
@@ -462,14 +589,12 @@ We close by stating clearly the parts of the broader picture that are
 \emph{not} theorems in this paper, in the hope that experts will engage with
 them.
 
-\paragraph{Linear recurrence.}
-Numerical linear algebra (a $\mathbb Q$-nullspace computation) indicates that
-$\Sx(n)$ satisfies a minimal linear recurrence of order $4$ and polynomial
-degree $13$, with an order-$5$, degree-$9$ left-multiple.  We have verified
-small base cases in Lean, but the general-$n$ statement currently rests on a
-creative-telescoping (Zeilberger) certificate that we have \emph{not}
-re-derived inside a formally verified setting.  A verified certificate would be
-a valuable contribution.
+\paragraph{Operator factorization and a Lean-checked certificate.}
+Two concrete items from \S\ref{sec:operator} remain open: a rigorous
+factorization $L_6=L_4\cdot L_2$ exhibiting the irreducible order-$4$
+Calabi--Yau operator $L_4$, and a kernel-checked (Lean~4) re-verification of the
+Zeilberger certificate's finite rational identity. Both are self-contained and
+would materially strengthen the formal status of the results.
 
 \paragraph{Diagonal representation.}
 We observe the identity, verified for $0\le n\le 6$ and provable by elementary
@@ -484,15 +609,12 @@ extracting the diagonal yields exactly $\sum_{r}\binom{n}{r}^4\binom{n+r}{r}$.
 The \emph{symmetric} five-variable candidate does not represent $\Sx$; its
 diagonal is $2^n$.
 
-\paragraph{Calabi--Yau period.}
-The order of the (conjectural) minimal Picard--Fuchs operator is $4$, which
-would be consistent with a one-parameter family whose period geometry is that of
-a Calabi--Yau $3$-fold.  We computed mirror-map coefficients $q_d$ via exact
-rational arithmetic and found them to be integers for $1\le d\le 16$,
-consistent with Lian--Yau integrality.  We emphasize that this is
-\emph{evidence and analogy}: we do not prove that $\Sx$ is the period of a
-specific Calabi--Yau manifold, and the precise geometry (including its
-dimension) deserves expert scrutiny.
+\paragraph{Calabi--Yau period and instanton normalization.}
+As detailed in \S\ref{sec:operator}, the order-$4$ MUM block and the integral
+mirror map are evidence --- not proof --- that $\Sx$ is a Calabi--Yau $3$-fold
+period. The correct Yukawa normalization (and hence a genuine instanton-number
+integrality test) requires the isolated operator $L_4$ and deserves expert
+scrutiny; the precise geometry remains conjectural.
 
 \paragraph{Invitation.}
 This is a preprint released specifically to invite review.  Corrections,

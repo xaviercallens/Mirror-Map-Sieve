@@ -43,7 +43,9 @@ is established:
 | Cubic supercongruence $S_{20}(p)\equiv 3\pmod{p^3}$, $p\ge 5$ | **Proven in Lean 4 (but shallow — see note)** | Unconditional, axiom-clean; the proof is elementary and applies to any such sum with $\binom{n}{k}$ to a power $\ge 3$ |
 | Minimal **order-4** linear recurrence | **Proved for all $n$** (certificate) | Order 4 from four independent derivations; a Maxima/Zeilberger creative-telescoping **certificate** (computed on GCP/SageMath) proves it for all $n$. Lean re-check of the certificate still pending. See [`docs/PHASE1_FINDINGS.md`](docs/PHASE1_FINDINGS.md) |
 | Mirror-map (Lian–Yau) integrality for $q_d$, small $d$ | **Computational evidence** | Exact rational arithmetic for $d \le 16$ |
-| Calabi-Yau period / mirror-symmetry interpretation | **Conjectural (and possibly mis-stated)** | Structural analogy, not a proof; note the order-4 operator suggests a **3-fold**, in tension with "weight-5 / 4-fold" phrasing elsewhere |
+| Minimal **differential** operator order of $f(z)$ | **Computed: order 6, degree 15** | Exact nullspace + `ore_algebra`; indicial eq. $-715\,s^4(s-1)^2$ ⇒ order-4 **MUM block** + order-2 apparent singularity. See [`docs/PHASE2_FINDINGS.md`](docs/PHASE2_FINDINGS.md) |
+| Calabi-Yau **3-fold** period interpretation | **Conjectural — evidence strengthened** | Two strands now point to a CY **3-fold** (order-4 MUM block; $q_d\in\mathbb{Z}$), refuting "4-fold". Still needs the explicit $L_6=L_4\cdot L_2$ factorization to be a claim |
+| Instanton-number integrality | **Unresolved (honest negative)** | Placeholder Yukawa gave non-integers (denominators $\sim d^3$ — a normalization artifact); the correct coupling needs $L_4$. Not evidence against CY-ness |
 | INT64 attention kernels (AI hardware) | **Exploratory proof-of-concept** | Heuristic; benchmarks largely CPU — see caveats |
 
 If you find an error in any row above, please open an issue — that is exactly
@@ -138,9 +140,21 @@ recurrence for all $n$** (not merely the 101 verified terms). The exact operator
 the certificate, and the full run are in
 [`docs/PHASE1_FINDINGS.md`](docs/PHASE1_FINDINGS.md) and
 [`src/picard_fuchs/`](src/picard_fuchs/). Still open: a Lean 4 re-check of the
-certificate identity, and pinning the minimal *irreducible differential* order
-(the series-guessed ODE has order 6 — apparent singularities — vs. the
-essential order-4 piece).
+certificate identity.
+
+**Phase 2 — progress (Calabi–Yau structure, with one honest negative).** The
+minimal *differential* operator for $f(z)$ has order **6** (degree 15, exact
+nullspace) — but its indicial equation at $z=0$ is $-715\,s^4(s-1)^2$, i.e. an
+**order-4 maximal-unipotent-monodromy (MUM) block** (the Calabi–Yau **3-fold**
+hallmark) plus an order-2 **apparent-singularity** factor. With the integral
+mirror map ($q_d\in\mathbb{Z}$, $d\le16$), two independent strands now support a
+CY **3-fold** — consistent with the proved order-4 recurrence, and definitively
+*not* a 4-fold. **Honest negative:** a placeholder Yukawa normalization gives
+**non-integer** instanton numbers (denominators $\sim d^3$ — a normalization
+artifact, not a refutation), so instanton integrality is **unresolved**. The
+CY identification stays **conjectural** pending the explicit $L_6=L_4\cdot L_2$
+factorization and the correct coupling. Details:
+[`docs/PHASE2_FINDINGS.md`](docs/PHASE2_FINDINGS.md).
 
 ---
 
