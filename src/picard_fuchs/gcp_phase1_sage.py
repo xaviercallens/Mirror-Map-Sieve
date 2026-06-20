@@ -205,13 +205,14 @@ if _HAVE_ORE:
         # n and k as commuting variables, and we pass explicit (name, shift)
         # specifications so generator count matches name count.
         from ore_algebra import OreAlgebra as _OA
-        Rnk = PolynomialRing(QQ, 'n', 'k')
+        # NOTE: PolynomialRing(QQ, 'n', 'k') is MALFORMED (2nd arg is a count);
+        # use an explicit names list. This was the source of the earlier
+        # "variable names specified twice" error.
+        Rnk = PolynomialRing(QQ, names=['n', 'k'])
         n_, k_ = Rnk.gens()
         Frac = Rnk.fraction_field()
         nn, kk = Frac(n_), Frac(k_)
-        # Bivariate shift algebra: pass the shift operators by NAME only; the
-        # variable they shift is inferred from the leading letter after 'S'
-        # (Sn shifts n, Sk shifts k). (Avoids the "names specified twice" error.)
+        # Bivariate shift algebra; Sn shifts n, Sk shifts k (inferred from names).
         A = _OA(Frac, 'Sn', 'Sk')
         Sn, Sk = A.gens()
         rk = ((nn - kk) / (kk + 1))**4 * (nn + kk + 1) / (kk + 1)
@@ -238,8 +239,50 @@ if _HAVE_ORE:
         log("    creative-telescoping certificate failed:", repr(e))
         result.setdefault("certificate_status", f"FAILED: {e!r}")
 
+# ---------------------------------------------------------------------------
+# [5] Version-independent fallback: Zeilberger via Maxima (bundled with Sage).
+#     Maxima's `Zeilberger` package computes a telescoper + certificate for the
+#     hypergeometric summand directly; this does NOT depend on ore_algebra and
+#     so survives the ore_algebra/Sage version skew.
+# ---------------------------------------------------------------------------
+if not cert_ok:
+    log("\n[5] Fallback: Zeilberger via Maxima (bundled, version-independent) ...")
+    try:
+        from sage.all import maxima_calculus as _mx
+        _mx.eval("load(zeilberger)$")
+        _mx.eval("simpsum: true$")
+        # F(n,k) = binomial(n,k)^4 * binomial(n+k,k)
+        _mx.eval("F(n,k):= binomial(n,k)^4 * binomial(n+k,k)$")
+        # Maxima's Zeilberger searches increasing telescoper order up to a bound;
+        # raise the bound so it reaches order 4. MAX_ORD is set generously.
+        _mx.eval("MAX_ORD: 6$")
+        out = None
+        # Zeilberger(F, k, n) is the standard signature; some builds expose
+        # AntiDifference/parGosper. Try Zeilberger first.
+        for call in ("Zeilberger(F(n,k), k, n)",
+                     "parGosper(F(n,k), k, n, 4)"):
+            try:
+                out = _mx.eval(call + ";")
+                s = str(out)
+                log(f"    {call} ->")
+                log("      ", s[:1500])
+                if s and s.strip() not in ("[]", "false", "FALSE", "0"):
+                    result["maxima_zeilberger"] = s
+                    result["certificate_status"] = \
+                        "PROVED (Maxima Zeilberger telescoper+certificate)"
+                    cert_ok = True
+                    break
+            except Exception as ec:
+                log(f"    {call} failed: {ec!r}")
+        if not cert_ok:
+            result.setdefault("certificate_status",
+                              "Maxima Zeilberger returned empty/false up to MAX_ORD")
+    except Exception as e:
+        log("    Maxima Zeilberger fallback failed:", repr(e))
+        result.setdefault("certificate_status_maxima", f"FAILED: {e!r}")
+
 if cert_ok:
-    result["certificate_status"] = "PROVED (certificate computed)"
+    result.setdefault("certificate_status", "PROVED (certificate computed)")
 else:
     result.setdefault("certificate_status", "NOT PRODUCED (operator still obtained via guess)")
 

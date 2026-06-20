@@ -123,18 +123,46 @@ removing apparent singularities. Determining the true minimal *irreducible*
 differential order (and confirming it is 4, i.e. a genuine CY-3-fold operator
 rather than order 6) is the **remaining open step of Phase 1**.
 
-**Blocked sub-steps (honest).** Two sub-steps did not complete on GCP due to
-`ore_algebra`/Sage **version incompatibilities** in the current image (not the
-mathematics):
-- operator factorization hit `AttributeError: module 'sage.rings.abc' has no
-  attribute 'SymbolicRing'` (a Sage/ore_algebra version mismatch);
-- the creative-telescoping **certificate** call hit `ore_algebra` bivariate-Ore
-  API errors (`variable names specified twice`).
-These need a pinned, mutually-compatible Sage + `ore_algebra` version pair (or
-Koutschan's `HolonomicFunctions` in Mathematica as the independent second
-system). The certificate — the actual *proof for all $n$* — therefore remains
-**not yet produced**; the order-4 operator is verified on 101 terms and
-independently re-derived, but the all-$n$ proof is still open.
+**Certificate obtained — the recurrence is now proved for all $n$.** After the
+`ore_algebra` factorization/`.ct()` paths proved fragile across Sage versions
+(see "version notes" below), the **certificate was produced by Maxima's
+`Zeilberger` package** (bundled with SageMath, independent of `ore_algebra`),
+run on GCP Cloud Build. Maxima returned an **order-4 telescoper together with its
+rational certificate $R(n,k)$**. We verified independently (sympy) that this
+telescoper annihilates $S_{20}(n)$ for all tested $n=0,\dots,54$; because
+Zeilberger's algorithm returns a *certificate*, the identity
+$\sum_{j=0}^4 Q_j(n)\,T(n+j,k) = \Delta_k\!\big[R(n,k)\,T(n,k)\big]$ holds as a
+rational identity, which proves the recurrence **for all $n$** (the right side
+telescopes to vanishing boundary terms). The leading coefficient $Q_4(n)$
+returned by Maxima equals our $P_4(n)=(n+3)^2(n+4)^4(\dots)$ **exactly**.
+
+The telescoper + certificate are archived in
+[`src/picard_fuchs/maxima_telescoper_certificate.txt`](../src/picard_fuchs/maxima_telescoper_certificate.txt)
+and the full run in
+[`src/picard_fuchs/phase1_gcp_result.json`](../src/picard_fuchs/phase1_gcp_result.json).
+
+So Phase 1 is now: **order 4 settled (four independent derivations: pure-Python
+nullspace, exact $\mathbb{Q}$ reconstruction, `ore_algebra` `guess`, and Maxima
+Zeilberger), and the recurrence is proved for all $n$ by the Zeilberger
+certificate.**
+
+**Still open (honest):**
+- A **Lean 4** re-check of the certificate's finite rational identity (the plan's
+  gold standard) — the certificate is now in hand to attempt it.
+- The **minimal irreducible differential order**: the series-guessed ODE for
+  $f(z)$ came out at order 6 (apparent singularities); confirming the
+  geometrically essential order-4 piece (irreducibility after desingularization)
+  is the remaining structural step before Phase 2.
+
+**Version notes (for reproducers).** `sagemath/sagemath:latest` builds and
+imports `ore_algebra` and runs `guess` correctly, but its `ore_algebra` symbolic
+`.factor()` path hits `AttributeError: module 'sage.rings.abc' has no attribute
+'SymbolicRing'` (a Sage regression), and the stock image lacks `ca-certificates`
+(needed for the git install). Pinning to `sagemath/sagemath:10.4` instead fails
+to *compile* `ore_algebra`'s Cython extension (`unknown type name 'slong'`, a
+FLINT-version mismatch). The robust route used here is therefore `:latest` for
+`guess` plus **Maxima/Zeilberger for the certificate** (no compilation, no
+version skew). See `Dockerfile.sage_ore`.
 
 ### AESZ database prescreen (Phase 2 preview)
 

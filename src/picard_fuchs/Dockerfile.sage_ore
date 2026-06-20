@@ -1,22 +1,28 @@
-# Dockerfile.sage_ore — SageMath + ore_algebra, for the Phase 1B certificate.
+# Dockerfile.sage_ore — SageMath + ore_algebra for Phase 1B.
 #
-# The stock sagemath/sagemath image ships neither ore_algebra nor git, and its
-# /workspace is not writable by the `sage` user. This image fixes all three:
-# installs git, pip-installs ore_algebra from source against Sage's Python, and
-# runs as root with a writable workdir.
+# Version strategy (learned across builds):
+#   * sagemath/sagemath:10.4 ships no ca-certificates AND an older FLINT, so
+#     ore_algebra's Cython extension fails to compile ("unknown type name slong").
+#   * sagemath/sagemath:latest compiles & imports ore_algebra fine and runs
+#     `guess` successfully (it re-derived our exact order-4 operator); only
+#     ore_algebra's symbolic `.factor()` path is broken there by a Sage
+#     `sage.rings.abc.SymbolicRing` regression.
+# Therefore we use `latest` for the parts that work (guess => exact operator),
+# and obtain the proof CERTIFICATE via Maxima's Zeilberger (bundled with Sage,
+# needs no compilation and is independent of the ore_algebra/Sage skew).
 FROM sagemath/sagemath:latest
 
 USER root
 
-# git is needed to pip-install ore_algebra from its source repository.
-RUN apt-get update && apt-get install -y --no-install-recommends git \
+RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates \
+    && update-ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Install ore_algebra into Sage's own Python (sage -pip), so `from ore_algebra
-# import ...` works inside `sage` scripts.
+# ore_algebra (used for the independent `guess` re-derivation of the operator).
 RUN sage -pip install --no-build-isolation \
-        git+https://github.com/mkauers/ore_algebra.git \
-    || sage -pip install git+https://github.com/mkauers/ore_algebra.git
+        "git+https://github.com/mkauers/ore_algebra.git" \
+    || sage -pip install "git+https://github.com/mkauers/ore_algebra.git" \
+    || true   # tolerate failure: the Maxima certificate path does not need it
 
 WORKDIR /work
 COPY gcp_phase1_sage.py /work/gcp_phase1_sage.py
