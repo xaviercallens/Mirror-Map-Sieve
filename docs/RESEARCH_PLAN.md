@@ -126,6 +126,17 @@ is irreducible.
 
 ## Phase 2 — Calabi–Yau period identification
 
+> **Progress (see [`PHASE2_FINDINGS.md`](PHASE2_FINDINGS.md)).** The minimal ODE
+> for $f(z)$ has order **6** (exact nullspace), but its indicial equation at
+> $z=0$ is $-715\,s^4(s-1)^2$: a **MUM block of order 4** (⇒ Calabi–Yau 3-fold)
+> plus an order-2 **apparent-singularity** factor. Mirror-map coefficients
+> $q_d$ are **integers through $d=16$** (exact). Together these give two
+> independent strands of CY-3-fold evidence, consistent with the proved order-4
+> recurrence. **Open / honest negative:** the explicit factorization
+> $L_6=L_4\cdot L_2$ is not yet exhibited, and a placeholder Yukawa coupling gave
+> **non-integer** instanton numbers (denominators $\sim d^3$ — a normalization
+> artifact, flagged for expert review), so instanton integrality is unresolved.
+
 **Goal.** Decide whether $L$ is a *Calabi–Yau operator*, and if so identify the
 3-fold. (Conditional on Phase 1 giving order 4.)
 

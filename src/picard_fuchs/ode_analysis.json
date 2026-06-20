@@ -1,0 +1,11 @@
+{
+  "ode_order": 6,
+  "theta_z_degree": 11,
+  "indicial_at_0": "-715*s**6 + 1430*s**5 - 715*s**4",
+  "local_exponents_at_0": {
+    "1": 2,
+    "0": 4
+  },
+  "is_MUM_full_order": false,
+  "leading_theta_coeff_factored": "(27*z**4 + 6451*z**3 + 799*z**2 + 21*z - 1)*(312130*z**7 + 198370081*z**6 + 231491905*z**5 + 852361377*z**4 - 328319456*z**3 + 49202067*z**2 + 321245*z + 715)"
+}

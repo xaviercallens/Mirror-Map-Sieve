@@ -1,0 +1,6 @@
+{
+  "min_ode_order": 6,
+  "min_ode_degree": 15,
+  "cy_dimension_if_irreducible": 5,
+  "note": "empirical (exact GF(p) nullspace, 2 primes); apparent singularities may still allow a lower irreducible core"
+}
