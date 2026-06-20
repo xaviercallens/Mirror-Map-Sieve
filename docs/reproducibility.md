@@ -1,6 +1,6 @@
 # Reproducibility Guide
 
-To reproduce the discovery and verification of the A397213 sequence:
+To reproduce the discovery and verification of the weight-5 Apéry-like sequence S₂₀(n) (proposed OEIS A397213, pending review):
 
 ## 1. Environment Setup
 You can use the provided Docker container to ensure all dependencies (Python, Lean 4, SageMath) are properly installed.

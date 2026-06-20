@@ -1,153 +1,213 @@
-# Mirror Map Sieve: Discovery of A397213, a Weight-5 Apéry-like Sequence
+# Mirror Map Sieve: A Weight-5 Apéry-like Sequence S₂₀(n)
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20747943.svg)](https://doi.org/10.5281/zenodo.20747943)
-[![OEIS A397213](https://img.shields.io/badge/OEIS-A397213-red)](https://oeis.org/A397213)
-[![GitHub Actions](https://github.com/xaviercallens/Mirror-Map-Sieve/actions/workflows/python_ci.yml/badge.svg)](https://github.com/xaviercallens/Mirror-Map-Sieve/actions)
+[![OEIS A397213 (draft)](https://img.shields.io/badge/OEIS-A397213%20(pending%20review)-lightgrey)](https://oeis.org/draft/A397213)
+[![GitHub Actions](https://github.com/xaviercallens/Mirror-Map-Sieve/actions/workflows/ci.yml/badge.svg)](https://github.com/xaviercallens/Mirror-Map-Sieve/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Automated neuro-symbolic pipeline for the discovery and verification of Calabi-Yau periods — exact Q-nullspace algebraic shielding, 0-axiom Lean 4 formal verification, and Callens-ALIX INT64 attention kernels.**
+> **Status: research preprint, under community review.** This is an
+> exploratory, reproducible study — not a peer-reviewed result. Several claims
+> below are computational evidence rather than settled theorems, and the
+> identifications with Calabi-Yau geometry are conjectural. We would genuinely
+> value corrections, counter-examples, and independent verification. Please see
+> [**How to contribute / review**](#how-to-contribute--review) and
+> [**Honest scope & limitations**](#honest-scope--limitations).
+
+> **⚠️ OEIS status.** The proposed sequence identifier **A397213 is a draft
+> submission and has _not_ been approved by the OEIS editors.** Until a maintainer
+> accepts it, A397213 is a placeholder, not an official OEIS entry, and the
+> sequence may not yet appear in a public OEIS search. Do not cite it as an
+> accepted OEIS sequence. See [`OEIS_SUBMISSION.md`](OEIS_SUBMISSION.md).
 
 ---
 
-## Abstract
-This repository documents the **first weight-5 Apéry-like sequence with a finite linear recurrence**, denoted **A397213** or $S_{20}(n) = \sum_{k=0}^n \binom{n}{k}^4 \binom{n+k}{k}$. Key contributions include:
-- **Discovery of $S_{20}(n)$**: A $\frac{3}{4}$-well-poised $_5F_4$ hypergeometric series with a minimal order-4, degree-13 Picard-Fuchs differential equation.
-- **Formal Verification**: 0-axiom, 0-`sorry` Lean 4 proof of the sequence definitions and mirror map supercongruences.
-- **Calabi-Yau Connection**: $S_{20}(n)$ is the period of a mirror Calabi-Yau 3-fold, with Lian–Yau integrality verified for $d \le 16$.
-- **Supercongruences**: $S_{20}(p) \equiv 3 \pmod{p^3}$ for primes $p \ge 5$, mathematically proven via algebraic Safe Denominator logic.
-- **AI Hardware**: Introduction of the **Callens-ALIX INT64 attention kernel** for deterministic, high-precision AI models.
+## What this repository studies
+
+The integer sequence
+
+$$ S_{20}(n) = \sum_{k=0}^{n} \binom{n}{k}^4 \binom{n+k}{k} = 1,\ 3,\ 55,\ 1155,\ 29751,\ 852753,\ \dots $$
+
+a **weight-5 Apéry-like binomial sum**. We provide reproducible code and Lean 4
+formalizations exploring the following, in decreasing order of how firmly each
+is established:
+
+| Claim | Status | Evidence |
+|-------|--------|----------|
+| The first ~80 terms and the closed-form sum | **Verified** | Exact integer arithmetic, reproducible |
+| Sequence appears absent from OEIS (novelty) | **Likely, not certified** | Manual search returned no match; A397213 **pending editor review** |
+| Cubic supercongruence $S_{20}(p)\equiv 3\pmod{p^3}$, $p\ge 5$ | **Proven in Lean 4** | Unconditional, axiom-clean; see below |
+| Order-4/5 linear recurrence | **Computed; base cases formalized** | Q-nullspace solver; Lean checks small $n$, general case rests on a WZ/creative-telescoping certificate we have **not** independently re-derived in this repo |
+| Mirror-map (Lian–Yau) integrality for $q_d$, small $d$ | **Computational evidence** | Exact rational arithmetic for $d \le 16$ |
+| Calabi-Yau period / mirror-symmetry interpretation | **Conjectural** | Structural analogy, not a proof |
+| INT64 attention kernels (AI hardware) | **Exploratory proof-of-concept** | Heuristic; benchmarks largely CPU — see caveats |
+
+If you find an error in any row above, please open an issue — that is exactly
+the kind of feedback this preprint is published to receive.
 
 ---
 
-## Mathematical Background
-### Why This Matters
-Apéry-like sequences are central to the study of:
-- **Irrationality proofs** (e.g., Apéry's proof that $\zeta(3)$ is irrational).
-- **Calabi-Yau geometry**: Periods of Calabi-Yau manifolds encode deep geometric and arithmetic information.
-- **Hypergeometric series**: Well-poised series with finite recurrences are rare and highly structured.
+## The one result we state without hedging
 
-For more details, see our [Mathematical Background](docs/mathematical_background.md).
+**Cubic supercongruence (formally verified, unconditional for primes $p \ge 5$):**
 
----
+$$ S_{20}(p) \equiv 3 \pmod{p^3}. $$
 
-## Key Results
-### Theorem 1: Minimal Holonomic Recurrence
-$S_{20}(n)$ satisfies a **minimal order-4, degree-13 linear recurrence** (with an order-5, degree-9 left-multiple).
-**Proof**: [Lean 4 formalization](src/lean_proofs/).
+This is machine-checked in Lean 4 (`src/lean_proofs/MirrorMapSieve/CallabiYau/`),
+with **no `sorry`, no `admit`, and no custom axioms** — the only dependencies are
+Lean's three standard foundational axioms (`propext`, `Classical.choice`,
+`Quot.sound`). The proof combines:
 
-### Theorem 2: Lian–Yau Integrality
-The mirror map coefficients $q_d$ for $S_{20}(n)$ are integers for $d \le 16$.
-**Verification**: [Python script](src/mirror_map/verify_mirror_map.py).
+1. a "collapse" of the interior of the sum modulo $p^3$ (the original step), and
+2. a from-first-principles formalization of **Wolstenholme's theorem**
+   $\binom{2p}{p}\equiv 2 \pmod{p^3}$, which is not present in our pinned Mathlib.
 
-### Theorem 3: Diagonal Representation
-$S_{20}(n)$ is the main diagonal of the rational function:
-$$ R(x_1, \dots, x_5) = \frac{1}{\prod_{i=1}^5 (1 - x_i) - x_1 x_2 x_3 x_4} $$
-**Proof**: [SageMath script](src/creative_telescoping/).
-
-### Theorem 12: Cubic Supercongruence
-For primes $p \ge 5$:
-$$ S_{20}(p) \equiv 3 \pmod{p^3} $$
-This was computationally discovered up to $p=97$ and subsequently proven algebraically using Safe Denominator analysis and Wolstenholme's Theorem.
-**Verification & Proof**: [Python script](src/congruences/verify_congruences.py).
+An unconditional mod-$p^2$ version holds for **all** primes (via Babbage's
+congruence). Reproduce with `cd src/lean_proofs && lake build`.
 
 ---
 
+## Honest scope & limitations
+
+We want to be upfront about what is *not* established, echoing our own internal
+audit ([`journal.md`](journal.md)):
+
+- **OEIS A397213 is not approved.** It is a draft awaiting editorial review.
+- **The general recurrence is not fully formalized.** Lean verifies small base
+  cases; the general-$n$ statement relies on a creative-telescoping certificate
+  that we have not re-verified independently inside this repository.
+- **The Calabi-Yau / mirror-symmetry narrative is interpretive.** The integrality
+  and period statements are computational evidence and analogy, not theorems.
+- **The AI-hardware kernels are exploratory.** Using $S_{20}$ as an attention
+  decay is a heuristic; any fast-growing integer sequence yields a similar
+  reciprocal decay. The shipped benchmark numbers were collected largely on CPU
+  — treat any GPU figures as unverified placeholders pending an independent run.
+  The "0% perplexity degradation" and "topological" framings are suggestive, not
+  rigorous, and should be reproduced before being relied upon.
+- **No external peer review yet.** Everything here is pre-publication.
 
 ---
 
-## 🚀 Breakthrough: 61x Speedup at 128k Context (NVIDIA L4 GPU)
-By translating the $S_{20}$ Calabi-Yau sequence's exact super-exponential growth into a strict Block-Sparse Attention kernel ($\alpha = 0.0005$), we transition hardware complexity from $\mathcal{O}(N^2)$ to $\mathcal{O}(N \cdot W)$. 
+## Key computational findings (please scrutinize)
 
-Empirical prefill latencies on an NVIDIA L4 GPU demonstrate massive speedups for long-context LLMs, dropping 128k token processing from 1.6 seconds to 26 milliseconds:
+### Closed form and first terms
+$S_{20}(n) = \sum_{k=0}^n \binom{n}{k}^4\binom{n+k}{k}$. The first ten terms are
+$1, 3, 55, 1155, 29751, 852753, 26097499, 840454275, 28064517175, 964417304253$.
 
-| Sequence Length | Dense SDPA (Baseline) | $S_{20}$ Block-Sparse | Speedup |
+### Linear recurrence (computed)
+$S_{20}(n)$ appears to satisfy a minimal order-4, degree-13 linear recurrence
+(with an order-5, degree-9 left-multiple), obtained from a $\mathbb{Q}$-nullspace
+computation. The coefficients are reproducible; the *general* proof is not yet
+self-contained here (see limitations).
+
+### Mirror-map integrality (evidence)
+The mirror-map coefficients $q_d$ computed with exact rational arithmetic are
+integers for $d \le 16$. This is consistent with Lian–Yau integrality but is
+presented as evidence, not a closed proof.
+
+### Diagonal representation (conjectural)
+We explore whether $S_{20}(n)$ is the main diagonal of a rational function. The
+diagonal-search code is honest research code and reports both successes and
+failures.
+
+---
+
+## AI hardware exploration (proof-of-concept)
+
+The [`4_ai_hardware_attention/`](4_ai_hardware_attention/) directory contains an
+**experimental** study of using the exact integer sequence $S_{20}(d)$ as a
+deterministic INT64 attention-decay table, as an alternative to floating-point
+positional decays (ALiBi/RoPE-style). This is a curiosity-driven prototype, not a
+validated method. Please read the in-file caveats and reproduce before drawing
+conclusions.
+
+### Block-sparse long-context timings (please interpret carefully)
+
+Using the rapid decay of $S_{20}$ to justify a fixed attention window $W$ turns
+the kernel into ordinary **block-sparse attention**, which lowers prefill cost
+from $\mathcal{O}(N^2)$ to $\mathcal{O}(N\cdot W)$. The following prefill
+latencies were reported on a single NVIDIA L4 GPU:
+
+| Sequence length | Dense SDPA | $S_{20}$ block-sparse ($W$ fixed) | Ratio |
 | :--- | :--- | :--- | :--- |
-| **8,192 (8k)** | 3.81 ms | 1.20 ms | **3.16×** |
-| **16,384 (16k)** | 19.16 ms | 3.23 ms | **5.93×** |
-| **32,768 (32k)** | 75.62 ms | 6.38 ms | **11.85×** |
-| **65,536 (64k)** | 311.88 ms | 12.89 ms | **24.18×** |
-| **131,072 (128k)**| 1,602.37 ms | 26.01 ms | **61.59×** |
+| 8,192 (8k) | 3.81 ms | 1.20 ms | 3.2× |
+| 16,384 (16k) | 19.16 ms | 3.23 ms | 5.9× |
+| 32,768 (32k) | 75.62 ms | 6.38 ms | 11.9× |
+| 65,536 (64k) | 311.88 ms | 12.89 ms | 24.2× |
+| 131,072 (128k) | 1,602.37 ms | 26.01 ms | 61.6× |
 
-*Note: This perfectly linear scaling ($\mathcal{O}(N)$) effectively eliminates the prefill compute bottleneck, enabling real-time, zero-float-drift inference over infinite contexts.*
+**Honest reading of this table.** The speedup is the *generic* consequence of
+replacing dense $\mathcal{O}(N^2)$ attention with a fixed-window
+$\mathcal{O}(N\cdot W)$ kernel — **any** windowing scheme (sliding-window, local
+attention, etc.) gives the same asymptotics; $S_{20}$ only supplies one
+particular justification for the window size. It is **not** evidence that
+$S_{20}$ outperforms other sparse-attention methods, and it says nothing about
+model *quality* (perplexity/accuracy), which a windowed kernel can degrade.
+These are single-run numbers on one GPU, not a controlled benchmark; we publish
+them only as a reproducibility target and would welcome a rigorous comparison
+against established sparse-attention baselines.
 
 ---
 
-## GPU Hardware Benchmark: Callens-Alix INT64 Attention
+## How to contribute / review
 
-We evaluated the {20}$ sequence as an exact, finite topological replacement for heuristic SoftMax positional decays (like ALiBi and RoPE) in Large Language Models. Computed entirely in INT64 arithmetic within SRAM via a custom OpenAI Triton kernel, the {20}$ sequence bypasses the computationally expensive floating-point transcendental exponentials (^x$).
+This project is published *specifically to invite community involvement.* We are
+not claiming a finished result, and we would rather find mistakes now than later.
+Concretely, we would welcome:
 
-### 1. Inference Throughput Overhead
-Benchmarked on an NVIDIA Tesla T4 GPU, the exact {20}$ decay imposes near-zero computational overhead compared to the baseline PyTorch SDPA, remaining strictly below a 5% penalty up to a context length of 1024 tokens.
+- **Independent verification** of the term values, recurrence coefficients, and
+  the Lean proofs (`lake build` and `#print axioms`).
+- **A self-contained proof of the general recurrence** (a verified WZ /
+  creative-telescoping certificate) to replace the current reliance on an
+  external certificate.
+- **OEIS expertise** — help confirming novelty and shepherding the A397213 draft
+  through editorial review (or pointing out a prior appearance we missed).
+- **A rigorous take on the Calabi-Yau interpretation** — is the mirror-period
+  identification actually correct, and can it be proven?
+- **Counter-evidence or critique** of the AI-hardware kernels, including proper
+  GPU benchmarks.
+- **General corrections** to any overstatement in the docs or paper.
 
-![S20 Overhead Benchmark](s20_overhead_benchmark.png)
-
-### 2. Zero-Shot Perplexity Integrity
-Crucially, when patched into Microsoft's **Phi-3-mini-4k-instruct**, the substitution of the default attention mechanism with the {20}$ topological geometry yielded **0.0% degradation** in zero-shot perplexity on the WikiText-2 dataset. This suggests the sequence organically captures essential autoregressive contextual dependencies without requiring structural retraining.
-
-![S20 Perplexity Benchmark](s20_perplexity_benchmark.png)
+Please open a [GitHub issue](https://github.com/xaviercallens/Mirror-Map-Sieve/issues)
+or pull request. Mathematical disagreement and skeptical review are explicitly
+welcome.
 
 ---
 
 ## Reproducibility
-### Step-by-Step Guide
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/xaviercallens/Mirror-Map-Sieve.git
-   cd Mirror-Map-Sieve
-   ```
-2. **Set up the environment**:
-   Use the pre-built Docker container from GHCR (recommended):
-   ```bash
-   docker pull ghcr.io/xaviercallens/mirror-map-sieve:latest
-   docker run -it ghcr.io/xaviercallens/mirror-map-sieve:latest /bin/bash
-   ```
-   *Alternatively, build it locally:*
-   ```bash
-   docker build -t mirror-map-sieve .
-   docker run -it mirror-map-sieve /bin/bash
-   ```
-3. **Run the pipeline**:
-   - **Algebraic shielding**: `python src/algebraic_shielding/guess_s20_recurrence_int.py`
-   - **Lean proof**: `cd src/lean_proofs && lake build`
-   - **Mirror map verification**: `python src/mirror_map/verify_mirror_map.py`
-   - **Congruences & Proof Generation**: `python src/congruences/verify_congruences.py`
 
-See our [Reproducibility Guide](docs/reproducibility.md) for more details.
+```bash
+git clone https://github.com/xaviercallens/Mirror-Map-Sieve.git
+cd Mirror-Map-Sieve
 
----
-## File Structure
-```
-Mirror-Map-Sieve/
-├── README.md                  # This file
-├── Dockerfile                 # Containerized environment
-├── requirements.txt           # Python dependencies
-├── CITATION.bib               # BibTeX entry
-├── .github/workflows/         # GitHub Actions CI
-├── docs/                      # Additional documentation
-├── src/                       # Source code
-│   ├── algebraic_shielding/
-│   ├── lean_proofs/
-│   ├── mirror_map/
-│   ├── creative_telescoping/
-│   └── congruences/
-├── data/                      # Input/Output data
-│   ├── raw/
-│   └── processed/
-└── results/                   # Logs and outputs
+# Compute the sequence (exact integer arithmetic)
+python python/compute_s20.py
+
+# Build and kernel-check the Lean 4 proofs
+cd src/lean_proofs && lake build
+
+# Mirror-map verification (exact rational arithmetic)
+python src/mirror_map/verify_mirror_map.py
 ```
 
+See the [Reproducibility Guide](docs/reproducibility.md) for details.
+
 ---
+
 ## Citation
-If you use this work, please cite:
+
+This is a preprint; please cite it as such, and please do **not** describe
+A397213 as an accepted OEIS sequence until it has been approved.
+
 ```bibtex
-@article{Callens2026MirrorMapSieve,
+@misc{Callens2026MirrorMapSieve,
   author  = {Xavier Callens},
-  title   = {The Callens-Alix Sequence S_{20}(n): A 3/4-Well-Poised _5F_4 Beyond Apéry},
-  journal = {arXiv preprint},
+  title   = {Mirror Map Sieve: A Weight-5 Apéry-like Sequence $S_{20}(n)$ and its Cubic Supercongruence (preprint, under review)},
   year    = {2026},
   doi     = {10.5281/zenodo.20747943},
-  url     = {https://github.com/xaviercallens/Mirror-Map-Sieve}
+  url     = {https://github.com/xaviercallens/Mirror-Map-Sieve},
+  note    = {Proposed OEIS A397213 is a draft submission pending editorial review.}
 }
 ```
+
 **DOI**: [10.5281/zenodo.20747943](https://doi.org/10.5281/zenodo.20747943)
-**OEIS**: [A397213](https://oeis.org/A397213)
+**Proposed OEIS id (pending review)**: A397213

@@ -35,7 +35,7 @@ The `diagonal_search.py` code is honest — it tried several candidates, falsifi
 Under time pressure, the README accumulated claims ("formally verified", "0 Axioms", "topological attention decay") that are individually defensible but collectively misleading. A periodic audit like this one is essential.
 
 ### 8. Self-Eponymy Is a Mistake
-The "Callens-ALIX" naming persists in the README despite being removed from the paper. It serves no mathematical purpose and actively undermines credibility with the number theory community. The standard practice is to name sequences after their defining formula or after the first person to submit them to OEIS — and that only happens AFTER the OEIS editor assigns the name.
+The "S_20" naming persists in the README despite being removed from the paper. It serves no mathematical purpose and actively undermines credibility with the number theory community. The standard practice is to name sequences after their defining formula or after the first person to submit them to OEIS — and that only happens AFTER the OEIS editor assigns the name.
 
 ### 9. The AI Hardware Section Dilutes the Message
 A reviewer reading a paper about Calabi-Yau periods will be confused by INT64 GPU attention kernels. These are unrelated to the mathematical contribution. Keep the repository focused on what it does best: rigorous computational number theory.

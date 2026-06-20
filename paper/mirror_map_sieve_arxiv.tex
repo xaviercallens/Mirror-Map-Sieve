@@ -7,7 +7,7 @@
 \usepackage{xcolor}
 \geometry{margin=1in}
 
-\title{The Callens-ALIX Sequence $S_{20}(n)$: \\ A New Apéry-like Sequence and its Calabi-Yau 4-fold}
+\title{A Weight-5 Apéry-like Sequence $S_{20}(n)$ and its Conjectural Calabi-Yau Period}
 \author{Xavier Callens \\ SocrateAI Laboratory \\ \texttt{https://github.com/xaviercallens/Mirror-Map-Sieve}}
 \date{\today}
 
@@ -18,13 +18,13 @@
 \maketitle
 
 \begin{abstract}
-We introduce a new binomial sum sequence, denoted $S_{20}(n) = \sum_{k=0}^n \binom{n}{k}^4 \binom{n+k}{k}$, which extends the classical Apéry numbers. We provide a rigorous human mathematical demonstration that $S_{20}(n)$ is the main diagonal of an elegant rational function in five variables, linking it to the periods of a Calabi-Yau 4-fold. Using a combination of high-performance matrix nullspace solvers and Zeilberger's creative telescoping executed on Google Cloud Platform, we compute its minimal linear recurrence of order 5 and degree 9. Finally, we verify the base cases of this recurrence and the numerical values of the sequence using the Lean 4 proof assistant, achieving a completely formal, kernel-verified proof with no unproved assumptions (``sorry''-free) and no external axioms.
+We study a binomial sum sequence, denoted $S_{20}(n) = \sum_{k=0}^n \binom{n}{k}^4 \binom{n+k}{k}$, which appears to extend the classical Apéry numbers and which we have been unable to locate in the existing literature or the OEIS (a draft submission, proposed id A397213, is pending editorial review and is \emph{not} yet an accepted entry). We give a diagonal representation of $S_{20}(n)$ as the main diagonal of a rational function in five variables, which we conjecturally interpret in terms of the periods of a Calabi-Yau manifold; we stress that this geometric interpretation is suggestive rather than fully proven. Using a combination of matrix nullspace solvers and Zeilberger's creative telescoping, we compute a minimal linear recurrence of order 5 and degree 9; we caution that the general-$n$ validity of this recurrence rests on a creative-telescoping certificate that we have not independently re-derived in a formally verified setting. We do, however, machine-verify in Lean 4 (``sorry''-free, no external axioms) both the sequence's numerical values and the recurrence base cases, and---unconditionally for primes $p\ge 5$---the cubic supercongruence $S_{20}(p)\equiv 3\pmod{p^3}$. We offer this as an exploratory preprint and explicitly invite independent verification, correction, and critique.
 \end{abstract}
 
 \section{Introduction}
 Apéry's proof of the irrationality of $\zeta(3)$ famously relied on the sequence $\sum_{k=0}^n \binom{n}{k}^2 \binom{n+k}{k}^2$. Since then, classifying sequences of the form $\sum_k \binom{n}{k}^A \binom{n+k}{k}^B$ has been a fertile ground for discovering connections to modular forms, mirror symmetry, and Calabi-Yau varieties.
 
-In this work, we present the analysis of the case $A=4, B=1$, which we denote as the Callens-ALIX sequence:
+In this work, we present the analysis of the case $A=4, B=1$, which we denote as the weight-5 Apéry-like sequence:
 \begin{equation}
 S_{20}(n) = \sum_{k=0}^n \binom{n}{k}^4 \binom{n+k}{k}.
 \end{equation}
@@ -43,11 +43,11 @@ The first few values of $S_{20}(n)$ for $n \ge 0$ are given in Table~\ref{tab:s2
         $S_{20}(n)$ & 852753 & 26097499 & 840454275 & 28064517175 & 964417304253 \\
         \hline
     \end{tabular}
-    \caption{First 10 terms of the Callens-ALIX Sequence}
+    \caption{First 10 terms of the weight-5 Apéry-like Sequence}
     \label{tab:s20}
 \end{table}
 
-This sequence represents the holomorphic period of a mirror Calabi-Yau 4-fold. Furthermore, we verified the Lian-Yau integrality up to $d=16$, meaning the mirror map coefficients (instanton numbers) $q_d$ extracted from $S_{20}$ are all exact integers.
+We conjecture that this sequence is the holomorphic period of a mirror Calabi-Yau manifold; this remains an interpretation rather than a theorem. As supporting computational evidence, we verified the Lian-Yau integrality up to $d=16$: the mirror map coefficients (candidate instanton numbers) $q_d$ extracted from $S_{20}$ are all exact integers in this range.
 
 \section{Diagonal Representation and Human Mathematical Demonstration}
 A central result of our investigation is the exact diagonal representation of $S_{20}(n)$, which connects the sequence to multivariate geometry. 
@@ -74,7 +74,7 @@ Multiplying these independent coefficients together and summing over $k$ yields:
 \]
 This completes the mathematical demonstration.
 \end{proof}
-This representation directly identifies the geometry underlying $S_{20}(n)$ as the Calabi-Yau 4-fold defined by $(1-x_1)(1-x_2)(1-x_3)(1-x_4)(1-x_5) - x_1 x_2 x_3 x_4 = 0$.
+This diagonal representation suggests that the geometry underlying $S_{20}(n)$ is related to the variety defined by $(1-x_1)(1-x_2)(1-x_3)(1-x_4)(1-x_5) - x_1 x_2 x_3 x_4 = 0$. A precise identification of the associated Calabi-Yau geometry (including its dimension, given that the minimal Picard-Fuchs ODE we compute has order 4) is left to future work and would benefit from expert review.
 
 \section{Minimal Recurrence via Zeilberger's Algorithm}
 To compute the minimal linear recurrence satisfied by $S_{20}(n)$, we employed two parallel computational strategies:
@@ -88,7 +88,7 @@ To establish absolute trust in our computational discoveries, we formalized the 
 
 We successfully compiled the Lean 4 kernel with \textbf{no ``sorry'' statements, no warnings, and no unproved axioms}. The formalization includes the base sequence definition and uses the Lean kernel to definitively compute the exact integer evaluations via the \texttt{decide} tactic:
 \begin{verbatim}
-/-- The Callens-ALIX sequence: S20(n) = Sum_{k=0}^{n} C(n,k)^4 * C(n+k,k) -/
+/-- The weight-5 Apéry-like sequence: S20(n) = Sum_{k=0}^{n} C(n,k)^4 * C(n+k,k) -/
 def S20 (n : Nat) : Int :=
   ↑((Finset.range (n + 1)).sum (fun k => (Nat.choose n k)^4 * (Nat.choose (n + k) k)))
 

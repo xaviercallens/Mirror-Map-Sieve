@@ -11,9 +11,9 @@
 \geometry{margin=1in}
 
 %% v4: 2026-06-18.  Corrected recurrence order (4 minimal, 5 left-multiple),
-%%     CY 3-fold geometry, asymptotic prefactor, OEIS A397213.
+%%     CY 3-fold geometry, asymptotic prefactor, proposed OEIS A397213 (draft, pending review).
 
-\title{The Callens--Alix Sequence $S_{20}(n)$:\\
+\title{A Weight-5 Apéry-like Sequence $S_{20}(n)$:\\
        A $\frac{3}{4}$-Well-Poised ${}_5F_4$ Beyond Ap\'ery}
 \author{Xavier Callens \\
   SocrateAI Laboratory \\
@@ -35,7 +35,7 @@ We study the binomial sum
 \[
   S(n) \;=\; \sum_{k=0}^n \binom{n}{k}^4 \binom{n+k}{k},
 \]
-a weight-$(4,1)$ Ap\'ery-like sequence (OEIS \href{https://oeis.org/A397213}{A397213}).  We prove that $S(n)$ admits a
+a weight-$(4,1)$ Ap\'ery-like sequence (proposed OEIS \href{https://oeis.org/draft/A397213}{A397213}, a draft pending editorial review).  We prove that $S(n)$ admits a
 closed-form hypergeometric representation as a $\tfrac{3}{4}$-well-poised
 ${}_5F_4$ at unit argument, and arises as the
 main diagonal of the asymmetric rational function
@@ -627,7 +627,7 @@ $p$ & $S(p)\bmod p^3$ & $S(p-1)\bmod p^3$ & Lucas $\bmod p$ \\
 %% =========================================================================
 
 We have presented a complete analysis of the weight-$(4,1)$ Ap\'ery-like
-sum $S(n)=\sum_{k=0}^n\binom{n}{k}^4\binom{n+k}{k}$ (OEIS \href{https://oeis.org/A397213}{A397213}).  The main results are:
+sum $S(n)=\sum_{k=0}^n\binom{n}{k}^4\binom{n+k}{k}$ (proposed OEIS \href{https://oeis.org/draft/A397213}{A397213}, a draft pending editorial review).  The main results are:
 \begin{itemize}
   \item A combinatorial proof that $S(n)$ is the main diagonal of the
         asymmetric rational function $1/\bigl(\prod(1-x_i) - x_1 x_2 x_3 x_4\bigr)$
@@ -651,7 +651,7 @@ The striking cubic congruence $S(p)\equiv 3\pmod{p^3}$ is, to our
 knowledge, new for sequences of this weight.  Proving these conjectures,
 and elucidating their connection to modular forms, $p$-adic cohomology, or
 the geometry of the Calabi--Yau 3-fold, constitutes a natural direction for
-future work.  The sequence has been submitted to the OEIS as \href{https://oeis.org/A397213}{A397213}.
+future work.  The sequence has been submitted to the OEIS as a draft (proposed id \href{https://oeis.org/draft/A397213}{A397213}); as of this writing it has not yet been approved by the OEIS editors.
 
 All computational artifacts---recurrence polynomials, Lean~4 proofs,
 Python scripts, and the first 80 terms of $S(n)$---are publicly available

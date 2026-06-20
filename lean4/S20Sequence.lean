@@ -2,7 +2,7 @@
   S₂₀ Sequence — Formal Lean 4 Verification
   ============================================
 
-  The Callens–Alix sequence S₂₀(n) = Σ_{k=0}^{n} C(n,k)⁴ · C(n+k,k).
+  The weight-5 Apéry-like sequence S₂₀(n) = Σ_{k=0}^{n} C(n,k)⁴ · C(n+k,k).
 
   This module provides:
   • The definition of S₂₀ via Finset.sum
@@ -13,7 +13,7 @@
   All proofs use `decide` — the Lean 4 kernel evaluates the exact integer
   arithmetic and confirms equality. No external oracles.
 
-  Reference: "The Callens–Alix Sequence S₂₀(n): A ¾-Well-Poised ₅F₄
+  Reference: "The weight-5 Apéry-like sequence S₂₀(n): A ¾-Well-Poised ₅F₄
   Beyond Apéry", Xavier Callens, SocrateAI Lab, June 2026.
 -/
 
@@ -24,7 +24,7 @@ import Mathlib.Tactic
 
 namespace Agora.Discovery.S20Seq
 
-/-- The Callens–Alix sequence: S₂₀(n) = Σ_{k=0}^{n} C(n,k)⁴ · C(n+k,k) -/
+/-- The weight-5 Apéry-like sequence S₂₀: S₂₀(n) = Σ_{k=0}^{n} C(n,k)⁴ · C(n+k,k) -/
 def S20 (n : ℕ) : ℤ :=
   ↑((Finset.range (n + 1)).sum (fun k => (Nat.choose n k)^4 * (Nat.choose (n + k) k)))
 

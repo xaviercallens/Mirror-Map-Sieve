@@ -1,24 +1,29 @@
 #!/usr/bin/env python3
 """
-callens_alix_kernel.py — Callens-ALIX INT64 Causal Attention Decay Kernel
+s20_int64_kernel.py — S_20 INT64 Causal Attention Decay Kernel
 
-Implements a deterministic, exact INT64 topological attention decay kernel for
-LLMs, based on the arithmetic rigidity of the Callens-ALIX sequence S_20(n).
+EXPLORATORY / EXPERIMENTAL. This kernel uses the weight-5 Apéry-like sequence
+S_20(n) = sum_k C(n,k)^4 C(n+k,k) as an exact-integer attention-decay table.
+It is a proof-of-concept exploring whether an exact-integer decay can stand in
+for heuristic float decays (ALiBi/RoPE-style). The choice of S_20 as the decay
+profile is heuristic — any rapidly growing integer sequence would yield a
+similar reciprocal decay — and is not claimed to be optimal or uniquely
+motivated. We publish it to invite scrutiny, not as an established result;
+please read the README caveats before drawing conclusions from the benchmarks.
 
-The key insight: the order-5, degree-9 recurrence for S_20 defines a unique
-algebraic structure that can be used as an exact integer decay function for
-attention weights, eliminating floating-point precision drift.
+The construction: S_20 grows fast, so the reciprocal ratio S_20(0)/S_20(d)
+gives a rapidly decaying, exactly representable INT64 fixed-point weight.
 
-Target hardware: L4, T4, A100 GPUs (INT64 arithmetic)
-Fallback: CPU pure-Python (no GPU required for correctness verification)
+Target hardware: any GPU with INT64 support; the reference path runs on CPU.
+Fallback: CPU pure-Python (no GPU required for correctness verification).
 
-NAMING:
-  Callens-ALIX: Main causal INT64 decay kernel (this file)
-  Callens-LIA:  Long-range language-model attention variant
-  Callens-AL:   Sparse-block large-batch inference variant
+KERNEL VARIANTS:
+  s20_int64_kernel.py        — main causal INT64 decay kernel (this file)
+  s20_longrange_kernel.py    — long-range language-model attention variant
+  s20_sparse_block_kernel.py — sparse-block large-batch inference variant
 
 Usage:
-    python callens_alix_kernel.py --seq_len 512 --head_dim 64
+    python s20_int64_kernel.py --seq_len 512 --head_dim 64
 
 Author: SocrateAI Scientific Agora, Xavier Callens
 License: MIT
@@ -44,17 +49,17 @@ except ImportError:
     HAS_TRITON = False
 
 # ─────────────────────────────────────────────────────────────
-# 1.  The Callens-ALIX Sequence (exact integer arithmetic)
+# 1.  The S_20 Sequence (exact integer arithmetic)
 # ─────────────────────────────────────────────────────────────
 
-def callens_alix_s20(n: int) -> int:
+def s20_exact(n: int) -> int:
     """Exact S_20(n) = sum_{k=0}^{n} C(n,k)^4 * C(n+k,k) (Python arbitrary precision)."""
     return sum(comb(n, k) ** 4 * comb(n + k, k) for k in range(n + 1))
 
 
 # Precomputed S_20 values for INT64-safe range (S_20(17) < 2^63)
 # Verified against GCP SageMath execution (June 2026)
-_S20_EXACT = [callens_alix_s20(n) for n in range(18)]
+_S20_EXACT = [s20_exact(n) for n in range(18)]
 _S20_EXACT_VERIFIED = [1, 3, 55, 1155, 29751, 852753, 26097499, 840454275, 28064517175,
                        964417304253, 33903837716805, 1214258225057265, 44166395275424475,
                        1627604857066000725, 60654810749855283555, 2282379931043443585155,
@@ -67,7 +72,7 @@ print(f"✅ S_20 reference check passed for n=0..17")
 
 def build_int64_decay_table(max_distance: int) -> list[int]:
     """
-    Build exact INT64 Callens-ALIX decay table for attention distances 0..max_distance.
+    Build exact INT64 S_20 decay table for attention distances 0..max_distance.
     
     Decay is computed as S_20(d) mod 2^63 (INT64-safe via modular arithmetic).
     For d > 17 we use the order-5 recurrence to extend without overflow.
@@ -113,9 +118,9 @@ def build_int64_decay_table(max_distance: int) -> list[int]:
 # 2.  PyTorch Reference Implementation
 # ─────────────────────────────────────────────────────────────
 
-def callens_alix_attention_cpu(q, k, v, decay_table: list[int], causal: bool = True):
+def s20_int64_attention_cpu(q, k, v, decay_table: list[int], causal: bool = True):
     """
-    Reference Callens-ALIX INT64 causal attention (CPU, pure-Python).
+    Reference S_20 INT64 causal attention (CPU, pure-Python).
     
     For hardware reproduction without GPU: works on any standard CPU.
     Converts to float for softmax but applies exact integer decay structure.
@@ -143,7 +148,7 @@ def callens_alix_attention_cpu(q, k, v, decay_table: list[int], causal: bool = T
                 decay_float[i, j] = decay_table[d] / (2**32)
             # else decay = 0 (very distant tokens → zero decay weight)
     
-    # Standard scaled dot-product attention with Callens-ALIX decay
+    # Standard scaled dot-product attention with S_20 decay
     scale = math.sqrt(D)
     scores = torch.einsum("bhid,bhjd->bhij", q, k) / scale  # [B,H,L,L]
     
@@ -160,15 +165,17 @@ def callens_alix_attention_cpu(q, k, v, decay_table: list[int], causal: bool = T
     return out, attn
 
 
-def callens_alix_attention(q, k, v, seq_len: int, head_dim: int,
+def s20_int64_attention(q, k, v, seq_len: int, head_dim: int,
                            max_distance: int = 17, causal: bool = True):
     """
-    Callens-ALIX INT64 attention entry point.
-    
-    For L4/T4/A100: uses PyTorch INT64 tensors with fixed-point decay.
-    For CPU: falls back to float reference implementation.
-    Tested on: L4 (24GB), T4 (16GB), A100 (40/80GB).
-    
+    S_20 INT64 attention entry point.
+
+    On a GPU: uses PyTorch tensors with the fixed-point decay table.
+    On CPU: uses the float reference implementation below.
+    NOTE: the benchmark numbers shipped in this repo were collected on CPU
+    unless a results file explicitly records a GPU device; treat any GPU
+    figures as unverified placeholders pending an independent GPU run.
+
     INT64 overflow safety: max_distance=17 keeps all values < 2^63.
     For longer sequences: decay table wraps to 0 (attention ignores distant tokens).
     """
@@ -176,7 +183,7 @@ def callens_alix_attention(q, k, v, seq_len: int, head_dim: int,
         raise RuntimeError("PyTorch required")
     
     table = build_int64_decay_table(max_distance)
-    return callens_alix_attention_cpu(q, k, v, table, causal=causal)
+    return s20_int64_attention_cpu(q, k, v, table, causal=causal)
 
 
 # ─────────────────────────────────────────────────────────────
@@ -185,11 +192,11 @@ def callens_alix_attention(q, k, v, seq_len: int, head_dim: int,
 
 def benchmark(seq_len: int, head_dim: int, batch: int = 1, heads: int = 8):
     """
-    Benchmark Callens-ALIX attention on available hardware.
+    Benchmark S_20 attention on available hardware.
     Reports: latency (ms), throughput (tokens/s), and numerical correctness.
     """
     print(f"\n{'='*60}")
-    print(f"  Callens-ALIX INT64 Causal Attention Benchmark")
+    print(f"  S_20 INT64 Causal Attention Benchmark")
     print(f"  seq_len={seq_len}, head_dim={head_dim}, batch={batch}, heads={heads}")
     print(f"{'='*60}")
     
@@ -217,7 +224,7 @@ def benchmark(seq_len: int, head_dim: int, batch: int = 1, heads: int = 8):
     
     # Warmup
     for _ in range(3):
-        out, attn = callens_alix_attention(q, k, v, seq_len, head_dim)
+        out, attn = s20_int64_attention(q, k, v, seq_len, head_dim)
     
     # Benchmark
     N = 20
@@ -225,7 +232,7 @@ def benchmark(seq_len: int, head_dim: int, batch: int = 1, heads: int = 8):
         torch.cuda.synchronize()
     t0 = time.perf_counter()
     for _ in range(N):
-        out, attn = callens_alix_attention(q, k, v, seq_len, head_dim)
+        out, attn = s20_int64_attention(q, k, v, seq_len, head_dim)
         if device == "cuda":
             torch.cuda.synchronize()
     elapsed = (time.perf_counter() - t0) / N * 1000  # ms
@@ -246,13 +253,13 @@ def benchmark(seq_len: int, head_dim: int, batch: int = 1, heads: int = 8):
     status = "✅ PASS" if max_deviation < 1e-5 else "❌ FAIL"
     print(f"    Normalization check: {status}")
     
-    print(f"\n✅ Callens-ALIX kernel benchmark complete.")
+    print(f"\n✅ S_20 kernel benchmark complete.")
     return elapsed, tokens_per_sec
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Callens-ALIX INT64 Attention Kernel — Benchmark & Verification")
+        description="S_20 INT64 Attention Kernel — Benchmark & Verification")
     parser.add_argument("--seq_len", type=int, default=256,
                         help="Sequence length (default: 256, safe INT64 up to ~10K)")
     parser.add_argument("--head_dim", type=int, default=64,
@@ -262,12 +269,12 @@ def main():
     args = parser.parse_args()
     
     # Verify the S_20 arithmetic first
-    print("Verifying Callens-ALIX sequence (S_20) arithmetic...")
+    print("Verifying S_20 sequence (S_20) arithmetic...")
     for n in range(10):
-        val = callens_alix_s20(n)
+        val = s20_exact(n)
         ref = _S20_EXACT_VERIFIED[n]
         assert val == ref, f"S_20({n})={val} != expected {ref}"
-    print(f"✅ S_20(0)..S_20(9) verified: {[callens_alix_s20(n) for n in range(10)]}")
+    print(f"✅ S_20(0)..S_20(9) verified: {[s20_exact(n) for n in range(10)]}")
     
     benchmark(args.seq_len, args.head_dim, args.batch, args.heads)
 

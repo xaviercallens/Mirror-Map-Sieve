@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-run_full_benchmark.py — Full Callens-ALIX/LIA/AL Benchmark Suite
+run_full_benchmark.py — Full S_20 dense/long-range/sparse Benchmark Suite
 
-Runs comparative benchmarks across all three Callens kernel variants:
-  - Callens-ALIX: standard INT64 causal attention
-  - Callens-LIA:  long-range attention with log tail decay
-  - Callens-AL:   sparse-block large-batch attention
+Runs comparative benchmarks across all three S_20 kernel variants:
+  - S_20 dense:      standard INT64 causal attention
+  - S_20 long-range: attention with log tail decay
+  - S_20 sparse:     sparse-block large-batch attention
 
 Also compares against standard scaled dot-product attention (FP16 baseline).
 
@@ -30,12 +30,12 @@ try:
 except ImportError:
     HAS_TORCH = False
 
-from callens_alix_kernel import (
-    callens_alix_attention, build_int64_decay_table,
-    callens_alix_s20, _S20_EXACT_VERIFIED
+from s20_int64_kernel import (
+    s20_int64_attention, build_int64_decay_table,
+    s20_exact, _S20_EXACT_VERIFIED
 )
-from callens_lia_kernel import callens_lia_attention, build_lia_decay_table
-from callens_al_kernel import callens_al_sparse_attention
+from s20_longrange_kernel import s20_longrange_attention, build_longrange_decay_table
+from s20_sparse_block_kernel import s20_sparse_block_attention
 
 
 def fp16_baseline_attention(q, k, v, causal: bool = True):
@@ -68,21 +68,21 @@ def time_kernel(fn, *args, n_warmup=3, n_runs=20, device="cpu"):
 
 def run_benchmark_suite(seq_len=256, head_dim=64, batch=1, heads=8, output=None):
     print("=" * 70)
-    print("  MIRROR MAP SIEVE — Callens Attention Kernel Benchmark Suite")
+    print("  MIRROR MAP SIEVE — S_20 Attention Kernel Benchmark Suite")
     print("=" * 70)
     print(f"\nConfiguration: seq_len={seq_len}, head_dim={head_dim}, batch={batch}, heads={heads}")
     
     # ── 1. Verify S_20 arithmetic ──────────────────────────────────────────
-    print("\n[1/4] Verifying Callens-ALIX sequence S_20 arithmetic...")
+    print("\n[1/4] Verifying S_20 sequence arithmetic...")
     for n in range(10):
-        v = callens_alix_s20(n)
+        v = s20_exact(n)
         assert v == _S20_EXACT_VERIFIED[n], f"S_20({n}) mismatch!"
-    print(f"  ✅ S_20(0..9) = {[callens_alix_s20(n) for n in range(10)]}")
+    print(f"  ✅ S_20(0..9) = {[s20_exact(n) for n in range(10)]}")
     
     # ── 2. Build and verify decay tables ──────────────────────────────────
     print("\n[2/4] Building INT64 decay tables...")
     alix_table = build_int64_decay_table(17)
-    lia_table = build_lia_decay_table(20)
+    lia_table = build_longrange_decay_table(20)
     print(f"  ALIX decay[0..4]: {alix_table[:5]}")
     print(f"  LIA  decay[0..4]: {lia_table[:5]}")
     print("  ✅ All decay tables validated")
@@ -117,9 +117,9 @@ def run_benchmark_suite(seq_len=256, head_dim=64, batch=1, heads=8, output=None)
     
     kernels = [
         ("FP16 Baseline", lambda: fp16_baseline_attention(q, k, v)),
-        ("Callens-ALIX (INT64)", lambda: callens_alix_attention(q, k, v, seq_len, head_dim)),
-        ("Callens-LIA (INT64 long-range)", lambda: callens_lia_attention(q, k, v, max_distance=seq_len)),
-        ("Callens-AL (INT64 sparse)", lambda: callens_al_sparse_attention(q, k, v)),
+        ("S_20 dense (INT64)", lambda: s20_int64_attention(q, k, v, seq_len, head_dim)),
+        ("S_20 long-range (INT64)", lambda: s20_longrange_attention(q, k, v, max_distance=seq_len)),
+        ("S_20 sparse-block (INT64)", lambda: s20_sparse_block_attention(q, k, v)),
     ]
     
     kernel_results = []
@@ -174,7 +174,7 @@ def run_benchmark_suite(seq_len=256, head_dim=64, batch=1, heads=8, output=None)
             json.dump(results, f, indent=2)
         print(f"\n✅ Results written to: {output}")
     
-    print("\n✅ Callens Attention Kernel Benchmark Suite complete.")
+    print("\n✅ S_20 Attention Kernel Benchmark Suite complete.")
     return results
 
 

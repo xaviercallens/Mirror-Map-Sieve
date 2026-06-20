@@ -1,23 +1,24 @@
 #!/usr/bin/env python3
 """
-callens_al_kernel.py — Callens-AL Sparse-Block Large-Batch Attention Kernel
+s20_sparse_block_kernel.py — S_20 Sparse-Block Large-Batch Attention Kernel
 
-Callens-AL (named after A.L.) is a sparse-block variant of the Callens-ALIX
-INT64 attention kernel, designed for efficient large-batch inference.
+EXPLORATORY / EXPERIMENTAL (see s20_int64_kernel.py for the shared caveats).
+A sparse-block variant of the S_20 INT64 attention kernel, aimed at
+large-batch inference.
 
-Key differences from Callens-ALIX (standard):
+Key differences from the dense S_20 kernel:
   - Uses block-sparse attention: only computes attention for tokens within
     a distance d <= BLOCK_RADIUS where the S_20 decay is significant
-  - Dramatically reduces memory from O(L^2) to O(L * BLOCK_RADIUS)
+  - Reduces memory from O(L^2) to O(L * BLOCK_RADIUS)
   - Maintains exact INT64 arithmetic within each sparse block
-  - Optimized for throughput (large batch × moderate seq_len)
+  - Aimed at throughput (large batch × moderate seq_len)
 
-The AL variant exploits the fact that the Callens-ALIX sequence decays
-rapidly: S_20(0)=1, S_20(1)=3, ..., S_20(17) ≈ 3.35×10^18, and beyond
-distance 17 the fixed-point decay is negligibly small vs INT64 precision.
+This variant exploits the fact that the S_20 sequence grows rapidly:
+S_20(0)=1, S_20(1)=3, ..., S_20(17) ≈ 3.35×10^18, so the reciprocal
+fixed-point decay beyond distance 17 is negligible at INT64 precision.
 
 Usage:
-    python callens_al_kernel.py --seq_len 1024 --batch 32
+    python s20_sparse_block_kernel.py --seq_len 1024 --batch 32
 
 Author: SocrateAI Scientific Agora, Xavier Callens
 License: MIT
@@ -34,7 +35,7 @@ except ImportError:
     HAS_TORCH = False
     print("⚠️  PyTorch not found. Running CPU-only reference implementation.")
 
-from callens_alix_kernel import (callens_alix_s20, _S20_EXACT_VERIFIED,
+from s20_int64_kernel import (s20_exact, _S20_EXACT_VERIFIED,
                                   build_int64_decay_table)
 
 # Block radius: beyond this distance, decay is zero in INT64 fixed-point
@@ -42,10 +43,10 @@ from callens_alix_kernel import (callens_alix_s20, _S20_EXACT_VERIFIED,
 BLOCK_RADIUS = 17
 
 
-def callens_al_sparse_attention(q, k, v, block_radius: int = BLOCK_RADIUS,
+def s20_sparse_block_attention(q, k, v, block_radius: int = BLOCK_RADIUS,
                                  causal: bool = True):
     """
-    Callens-AL sparse-block causal attention.
+    S_20 sparse-block causal attention.
     
     Only computes attention scores for token pairs within block_radius.
     Memory: O(L * block_radius) vs O(L^2) for dense attention.
@@ -108,7 +109,7 @@ def callens_al_sparse_attention(q, k, v, block_radius: int = BLOCK_RADIUS,
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Callens-AL Sparse-Block Attention Kernel")
+        description="S_20 Sparse-Block Attention Kernel")
     parser.add_argument("--seq_len", type=int, default=512)
     parser.add_argument("--head_dim", type=int, default=64)
     parser.add_argument("--batch", type=int, default=4)
@@ -116,7 +117,7 @@ def main():
     parser.add_argument("--block_radius", type=int, default=BLOCK_RADIUS)
     args = parser.parse_args()
     
-    print(f"Callens-AL Sparse-Block Attention Kernel")
+    print(f"S_20 Sparse-Block Attention Kernel")
     print(f"seq_len={args.seq_len}, head_dim={args.head_dim}, batch={args.batch}")
     print(f"block_radius={args.block_radius} (INT64-safe: max S_20 distance)")
     
@@ -138,14 +139,14 @@ def main():
     
     # Warmup
     for _ in range(3):
-        out, attn = callens_al_sparse_attention(q, k, v, args.block_radius)
+        out, attn = s20_sparse_block_attention(q, k, v, args.block_radius)
     
     N = 20
     if device == "cuda":
         torch.cuda.synchronize()
     t0 = time.perf_counter()
     for _ in range(N):
-        out, attn = callens_al_sparse_attention(q, k, v, args.block_radius)
+        out, attn = s20_sparse_block_attention(q, k, v, args.block_radius)
         if device == "cuda":
             torch.cuda.synchronize()
     elapsed = (time.perf_counter() - t0) / N * 1000
@@ -159,7 +160,7 @@ def main():
     sparse_ops = args.seq_len * min(args.block_radius * 2 + 1, args.seq_len)
     efficiency = (1 - sparse_ops / dense_ops) * 100
     print(f"Sparse efficiency: {efficiency:.1f}% fewer ops vs dense O(L^2)")
-    print("✅ Callens-AL kernel verified.")
+    print("✅ S_20 sparse-block kernel verified.")
 
 
 if __name__ == "__main__":

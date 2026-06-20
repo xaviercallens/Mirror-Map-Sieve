@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.0] - 2026-06-18
 ### Added
-- Initial discovery of OEIS A397213.
+- Initial draft OEIS submission (proposed id A397213; pending editorial review, not yet approved).
 - Lean 4 proof for the order-5 degree-9 recurrence of S_20(n).
 - Python exact arithmetic solvers for algebraic shielding.
 - SageMath creative telescoping validation.

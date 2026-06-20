@@ -42,9 +42,9 @@ paper — the connection here is computational, not geometric.
 4_ai_hardware_attention/
 ├── s20_decay.py          ← NEW: Vectorized core (no Python loops, torch.compile)
 ├── benchmark.py          ← NEW: Complete benchmark suite with Markdown output
-├── callens_alix_kernel.py ← Legacy v1 (kept for regression baseline)
-├── callens_lia_kernel.py  ← Legacy LIA v1
-├── callens_al_kernel.py   ← Legacy sparse-block v1
+├── s20_int64_kernel.py        ← Dense INT64 causal kernel
+├── s20_longrange_kernel.py    ← Long-range variant
+├── s20_sparse_block_kernel.py ← Sparse-block variant
 ├── benchmark_results.json       ← seq 64–512 comparison with legacy
 ├── benchmark_results_full.json  ← seq 64–2048 extended run
 └── benchmark_results_full.md    ← Markdown table for Hugging Face model card

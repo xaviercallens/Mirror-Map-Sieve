@@ -1,5 +1,5 @@
 {
-  "title": "Mirror Map Integrality Results — Callens-ALIX Sequence S_20",
+  "title": "Mirror Map Integrality Results — S_20 Sequence S_20",
   "description": "Exact rational arithmetic verification of Lian-Yau integrality conjecture for S_20(n) mirror map coefficients q_d.",
   "execution": {
     "date": "2026-06-18",
@@ -26,7 +26,7 @@
     "q_15": 260877511906858891334,
     "q_16": 9848682801654949278015
   },
-  "conclusion": "ALL q_d IN Z FOR d = 1, ..., 16. Lian-Yau integrality conjecture holds for the Callens-ALIX sequence.",
+  "conclusion": "ALL q_d IN Z FOR d = 1, ..., 16. Lian-Yau integrality conjecture holds for the weight-5 Apéry-like sequence S_20.",
   "generating_series": {
     "holomorphic_period": "f(z) = sum_{n>=0} S_20(n) z^n",
     "log_period": "g(z) = sum_{n>=0} B(n) z^n, B(n) = sum_{k=0}^n C(n,k)^4 C(n+k,k) [4(H_n-H_{n-k}) + (H_{n+k}-H_n)]",
