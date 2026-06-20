@@ -122,6 +122,11 @@ If you are a specialist in Apéry-like sequences or Calabi–Yau differential
 equations, we would be grateful for even a brief, skeptical reading. Please open
 a [GitHub issue](https://github.com/xaviercallens/Mirror-Map-Sieve/issues).
 
+A detailed, falsifiable plan for attacking these questions — a certified
+Picard–Fuchs operator, a Calabi–Yau period identification, and modularity,
+together with a proposed resolution of the "weight-5 / 4-fold" inconsistency —
+is in [`docs/RESEARCH_PLAN.md`](docs/RESEARCH_PLAN.md).
+
 ---
 
 ## Honest scope & limitations
