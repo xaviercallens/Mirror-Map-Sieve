@@ -5,12 +5,17 @@
 [![GitHub Actions](https://github.com/xaviercallens/Mirror-Map-Sieve/actions/workflows/ci.yml/badge.svg)](https://github.com/xaviercallens/Mirror-Map-Sieve/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> **Status: research preprint, under community review.** This is an
-> exploratory, reproducible study — not a peer-reviewed result. Several claims
-> below are computational evidence rather than settled theorems, and the
-> identifications with Calabi-Yau geometry are conjectural. We would genuinely
-> value corrections, counter-examples, and independent verification. Please see
-> [**How to contribute / review**](#how-to-contribute--review) and
+> **Status: exploratory preprint seeking expert review. We do not claim a
+> discovery.** This is a reproducible study of one member of a well-studied
+> family of binomial sums — not a peer-reviewed result and not a breakthrough.
+> $S_{20}$ being previously untabulated (if confirmed) would make it *new* only
+> in the narrow sense that this exact sum may not have been recorded before; it
+> would not, by itself, be mathematically significant. We are actively seeking
+> review from specialists in Apéry-like sequences and Calabi-Yau differential
+> operators, and we welcome corrections, counter-examples, and the news that
+> this is already known. Please see
+> [**Calibrated significance & call for expert review**](#calibrated-significance--call-for-expert-review),
+> [**How to contribute / review**](#how-to-contribute--review), and
 > [**Honest scope & limitations**](#honest-scope--limitations).
 
 > **⚠️ OEIS status.** The proposed sequence identifier **A397213 is a draft
@@ -34,11 +39,11 @@ is established:
 | Claim | Status | Evidence |
 |-------|--------|----------|
 | The first ~80 terms and the closed-form sum | **Verified** | Exact integer arithmetic, reproducible |
-| Sequence appears absent from OEIS (novelty) | **Likely, not certified** | Manual search returned no match; A397213 **pending editor review** |
-| Cubic supercongruence $S_{20}(p)\equiv 3\pmod{p^3}$, $p\ge 5$ | **Proven in Lean 4** | Unconditional, axiom-clean; see below |
+| This exact sum is not previously tabulated (we did **not** find it) | **Unconfirmed; not a significance claim** | Manual search returned no match; A397213 **pending editor review**. Absence from OEIS reflects attention, not depth — see significance note |
+| Cubic supercongruence $S_{20}(p)\equiv 3\pmod{p^3}$, $p\ge 5$ | **Proven in Lean 4 (but shallow — see note)** | Unconditional, axiom-clean; the proof is elementary and applies to any such sum with $\binom{n}{k}$ to a power $\ge 3$ |
 | Order-4/5 linear recurrence | **Computed; base cases formalized** | Q-nullspace solver; Lean checks small $n$, general case rests on a WZ/creative-telescoping certificate we have **not** independently re-derived in this repo |
 | Mirror-map (Lian–Yau) integrality for $q_d$, small $d$ | **Computational evidence** | Exact rational arithmetic for $d \le 16$ |
-| Calabi-Yau period / mirror-symmetry interpretation | **Conjectural** | Structural analogy, not a proof |
+| Calabi-Yau period / mirror-symmetry interpretation | **Conjectural (and possibly mis-stated)** | Structural analogy, not a proof; note the order-4 operator suggests a **3-fold**, in tension with "weight-5 / 4-fold" phrasing elsewhere |
 | INT64 attention kernels (AI hardware) | **Exploratory proof-of-concept** | Heuristic; benchmarks largely CPU — see caveats |
 
 If you find an error in any row above, please open an issue — that is exactly
@@ -63,6 +68,59 @@ Lean's three standard foundational axioms (`propext`, `Classical.choice`,
 
 An unconditional mod-$p^2$ version holds for **all** primes (via Babbage's
 congruence). Reproduce with `cd src/lean_proofs && lake build`.
+
+> **We are proud of the formalization, not the theorem.** The Lean proof is
+> clean and axiom-free, but the *result* is elementary: because $\binom{n}{k}$
+> enters the sum to the **fourth** power, each interior term is divisible by
+> $p^4$ and the sum collapses to $1+\binom{2p}{p}$, after which Wolstenholme
+> finishes it. The same argument gives $S(p)\equiv 3 \pmod{p^3}$ for **any**
+> sum $\sum_k \binom{n}{k}^a \binom{n+k}{k}$ with $a\ge 3$. An expert will (correctly)
+> see this as low-hanging fruit, not arithmetic depth. We state it plainly so
+> the formalization is not mistaken for a deep discovery.
+
+---
+
+## Calibrated significance & call for expert review
+
+We want to be candid about how significant this is likely to be, because
+over-claiming would waste reviewers' time and our own credibility.
+
+**Honest self-assessment.** $S_{20}$ is the $(A,B)=(4,1)$ member of the family
+$\sum_k \binom{n}{k}^A \binom{n+k}{k}^B$ (the Apéry numbers are the $(2,2)$
+case). This family has been searched systematically by Zagier, Almkvist–Zudilin,
+Cooper, and others. A previously-unlisted member of a well-mapped family is, at
+best, **a modest contribution — a possible new row in the
+Almkvist–van Straten–Zudilin tables — not a breakthrough.** "Not in OEIS"
+measures attention, not importance, and the cubic supercongruence we proved is
+elementary (see the note above). The genuinely interesting questions — a
+certified finite-order Picard–Fuchs recurrence, a real Calabi–Yau period
+identification, modularity — are exactly the ones this repository leaves
+*conjectural or merely computed*.
+
+**The most defensible framing of this work is:**
+> "A binomial sum in the Apéry-like family that we did not find previously
+> recorded; it satisfies the expected cubic supercongruence (now formally
+> verified in Lean), and *appears* to have an order-4 recurrence and Lian–Yau
+> integrality that we have not yet proven."
+
+That is true and modest, and it is the claim we stand behind. We explicitly do
+**not** claim a "discovery" or "breakthrough."
+
+**What would actually move the needle — and where we ask for expert help:**
+
+- **Is this sum already known?** A pointer to a prior appearance (possibly under
+  a different normalization, or in the AESZ Calabi–Yau database) would be the
+  single most useful response. We would gladly retract the novelty wording.
+- **Is the order-4 Picard–Fuchs operator genuinely new** among catalogued
+  Calabi–Yau / Apéry-like operators, or a known one in disguise?
+- **What is the correct geometry?** The order-4 operator points to a Calabi–Yau
+  **3-fold**; please correct our "weight-5 / 4-fold" phrasing if it is wrong.
+- **A verified recurrence certificate** (a checked WZ/creative-telescoping
+  proof) and **a proof or refutation** of the mod-$p^3$ Apéry-style conjecture.
+
+If you are a specialist in Apéry-like sequences or Calabi–Yau differential
+equations, we would be grateful for even a brief, skeptical reading. Please open
+a [GitHub issue](https://github.com/xaviercallens/Mirror-Map-Sieve/issues).
 
 ---
 
