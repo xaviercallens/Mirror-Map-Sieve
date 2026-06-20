@@ -1,0 +1,504 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\geometry{margin=1in}
+
+\hypersetup{colorlinks=true, linkcolor=blue!50!black, urlcolor=blue!50!black,
+  citecolor=blue!50!black}
+
+%% =====================================================================
+%% v6 (2026-06-20).  Focus: rigorous, human-readable proofs of the three
+%% congruence results that are also formally verified in Lean 4 (axiom-clean,
+%% sorry-free).  Names de-eponymized; OEIS A397213 marked as a pending draft.
+%% Modesty + explicit invitation for community review throughout.
+%% =====================================================================
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\Sx}{S_{20}}
+\newcommand{\modp}[1]{\ (\mathrm{mod}\ #1)}
+\DeclareMathOperator{\diag}{Diag}
+
+\title{A Weight-5 Ap\'ery-like Sequence $S_{20}(n)$:\\
+  Formally Verified Supercongruences and a Conjectural Calabi--Yau Period\\
+  \large (preprint, v6 --- under community review)}
+\author{Xavier Callens\\
+  SocrateAI Laboratory\\
+  \url{https://github.com/xaviercallens/Mirror-Map-Sieve}}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We study the integer sequence
+\[
+  \Sx(n) \;=\; \sum_{k=0}^{n} \binom{n}{k}^{4}\binom{n+k}{k}
+  \;=\; 1,\,3,\,55,\,1155,\,29751,\,852753,\dots,
+\]
+a weight-$5$ (more precisely weight-$(4,1)$) Ap\'ery-like binomial sum that we
+have been unable to locate in the literature or in the OEIS.  A draft OEIS
+submission (proposed identifier
+\href{https://oeis.org/draft/A397213}{A397213}) is \emph{pending editorial
+review and has not been approved}; we therefore make no novelty claim beyond
+``we did not find it.''  The purpose of this note is narrow and, we hope,
+honest: we give complete, human-readable proofs of three arithmetic congruences
+satisfied by $\Sx$, and we report that \emph{each of these three results has
+also been verified in the Lean~4 proof assistant with no \texttt{sorry}, no
+\texttt{admit}, and no axioms beyond Lean's three standard foundations}
+(\texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}).  The three
+results are:
+\begin{enumerate}\itemsep0pt
+  \item[(I)] the \emph{cubic supercongruence} $\Sx(p)\equiv 3 \modp{p^{3}}$ for
+        every prime $p\ge 5$;
+  \item[(II)] \emph{Wolstenholme's theorem} $\binom{2p}{p}\equiv 2 \modp{p^{3}}$
+        for $p\ge 5$, reproved from first principles (it is the one external
+        input of (I));
+  \item[(III)] the \emph{Ap\'ery-style boundary congruence}
+        $\Sx(p-1)\equiv 1 \modp{p}$ for every prime $p$.
+\end{enumerate}
+We are explicit about what is \emph{not} settled: the order-$4$ minimal linear
+recurrence is computed but not formally certified for general $n$; the mod-$p^3$
+refinement of (III) is an open conjecture; and the interpretation of $\Sx$ as a
+Calabi--Yau period is a structural analogy, not a theorem.  We invite
+correction, refutation, and independent verification.
+\end{abstract}
+
+\tableofcontents
+
+%% =====================================================================
+\section{Introduction and honest scope}
+%% =====================================================================
+
+Ap\'ery's irrationality proofs for $\zeta(2)$ and $\zeta(3)$ rest on integer
+sequences satisfying three-term recurrences with remarkable arithmetic
+properties.  A now-classical theme --- developed by Beukers, Zagier,
+Almkvist--Zudilin, and others --- is that such sequences often coincide with
+periods of one-parameter families of Calabi--Yau manifolds, and that their
+$p$-adic behaviour (supercongruences) reflects this geometry.
+
+This note concerns the specific binomial sum
+\begin{equation}\label{eq:def}
+  \Sx(n) \;=\; \sum_{k=0}^{n}\binom{n}{k}^{4}\binom{n+k}{k}.
+\end{equation}
+It is the $A=4,\ B=1$ member of the family
+$\sum_k \binom{n}{k}^A\binom{n+k}{k}^B$; the Ap\'ery numbers for $\zeta(3)$ are
+$A=B=2$.
+
+\paragraph{What this paper claims, and what it does not.}
+We have tried to separate rigour from speculation cleanly. The reader should
+read the following table as the precise scope of the work.
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Statement & Status & Where \\
+\midrule
+First terms / closed form \eqref{eq:def} & verified (exact arithmetic) & \S\ref{sec:prelim} \\
+$\Sx(p)\equiv 3\ (p^3)$, $p\ge5$ & \textbf{proved} (+ Lean) & \S\ref{sec:cubic} \\
+$\binom{2p}{p}\equiv 2\ (p^3)$, $p\ge5$ & \textbf{proved} (+ Lean) & \S\ref{sec:wolstenholme} \\
+$\Sx(p-1)\equiv 1\ (p)$, all $p$ & \textbf{proved} (+ Lean) & \S\ref{sec:apery} \\
+$\Sx(p-1)\equiv 1\ (p^3)$ & open conjecture (numeric only) & \S\ref{sec:apery} \\
+order-4 recurrence (general $n$) & computed, not formally certified & \S\ref{sec:open} \\
+Calabi--Yau period interpretation & conjectural analogy & \S\ref{sec:open} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{On the Lean~4 formalization.}
+All three congruence theorems below were transcribed into Lean~4 (Mathlib,
+toolchain \texttt{v4.31.0}).  Building the development with \texttt{lake build}
+succeeds with no errors; the command \texttt{\#print axioms} applied to each
+final theorem returns only \texttt{[propext, Classical.choice, Quot.sound]}.  We
+stress what this does and does not mean: it means the \emph{stated} theorems are
+correct relative to Lean's kernel and Mathlib; it does \emph{not} certify the
+recurrence for general $n$, nor any of the conjectural material.  We give the
+human proofs in full here precisely so that they can be checked by a
+mathematician without trusting the machine.  We would be grateful for scrutiny
+of both.
+
+%% =====================================================================
+\section{Preliminaries}\label{sec:prelim}
+%% =====================================================================
+
+Throughout, $p$ denotes a prime and $\binom{n}{k}$ the usual binomial
+coefficient, with $\binom{n}{k}=0$ for $k>n$.  We write the summand of
+\eqref{eq:def} as
+\[
+  T(n,k) \;=\; \binom{n}{k}^{4}\binom{n+k}{k}, \qquad
+  \Sx(n) \;=\; \sum_{k=0}^{n} T(n,k).
+\]
+
+We use two elementary facts repeatedly.
+
+\begin{lemma}[Prime divides interior binomials]\label{lem:dvdchoose}
+If $p$ is prime and $1\le k\le p-1$, then $p \mid \binom{p}{k}$.
+\end{lemma}
+
+\begin{proof}
+From $k\binom{p}{k}=p\binom{p-1}{k-1}$ we get $p \mid k\binom{p}{k}$.  Since
+$1\le k\le p-1$, the prime $p$ does not divide $k$, hence $p\mid\binom{p}{k}$.
+(This is \texttt{Nat.Prime.dvd\_choose\_self} in Mathlib.)
+\end{proof}
+
+\begin{lemma}[Factorial $p$-divisibility]\label{lem:dvdfact}
+For a prime $p$ and $m\in\mathbb N$, one has $p \mid m!$ if and only if
+$p\le m$.
+\end{lemma}
+
+\begin{proof}
+If $p\le m$ then $p$ is one of the factors of $m!$.  Conversely, if $p\mid m!$
+then, as $p$ is prime, $p$ divides one of $1,2,\dots,m$, forcing $p\le m$.
+(This is \texttt{Nat.Prime.dvd\_factorial}.)
+\end{proof}
+
+%% =====================================================================
+\section{The cubic supercongruence $\Sx(p)\equiv 3\ (\mathrm{mod}\ p^3)$}
+\label{sec:cubic}
+%% =====================================================================
+
+The main arithmetic result of this note is the following.
+
+\begin{theorem}[Cubic supercongruence]\label{thm:cubic}
+For every prime $p\ge 5$,
+\[
+  \Sx(p)\;\equiv\;3 \pmod{p^{3}}.
+\]
+\end{theorem}
+
+The proof has two ingredients: an elementary \emph{collapse} of the sum to its
+two boundary terms modulo $p^{3}$ (Proposition~\ref{prop:collapse}), and the
+classical Wolstenholme congruence for $\binom{2p}{p}$
+(Theorem~\ref{thm:wolstenholme}, proved independently in \S\ref{sec:wolstenholme}).
+The collapse is the part specific to $\Sx$, and it is genuinely simple; the
+arithmetic depth is entirely in Wolstenholme.
+
+\subsection{The collapse to boundary terms}
+
+\begin{proposition}[Collapse]\label{prop:collapse}
+For every prime $p$,
+\[
+  \Sx(p)\;\equiv\; 1 + \binom{2p}{p}\pmod{p^{3}}.
+\]
+\end{proposition}
+
+\begin{proof}
+Split the sum \eqref{eq:def} at its endpoints:
+\[
+  \Sx(p) \;=\; T(p,0) \;+\; \sum_{k=1}^{p-1} T(p,k) \;+\; T(p,p).
+\]
+The boundary terms are explicit:
+\[
+  T(p,0)=\binom{p}{0}^{4}\binom{p}{0}=1,
+  \qquad
+  T(p,p)=\binom{p}{p}^{4}\binom{2p}{p}=\binom{2p}{p}.
+\]
+It remains to show that each interior term vanishes modulo $p^{3}$.  Fix
+$1\le k\le p-1$.  By Lemma~\ref{lem:dvdchoose}, $p\mid\binom{p}{k}$, hence
+$p^{4}\mid\binom{p}{k}^{4}$.  The companion factor $\binom{p+k}{k}$ is an
+integer, so
+\[
+  p^{4}\ \Big|\ \binom{p}{k}^{4}\binom{p+k}{k} = T(p,k),
+\]
+and a fortiori $p^{3}\mid T(p,k)$.  Summing, $p^3 \mid \sum_{k=1}^{p-1}T(p,k)$,
+which gives the claim.
+\end{proof}
+
+\begin{remark}
+The factor of $\binom{p}{k}^{4}$ is crucial: a single power would give only
+$p^{1}\mid\binom{p}{k}$, enough for a mod-$p$ statement but not mod-$p^{3}$.  The
+fourth power provides $p^{4}$ ``for free,'' so the companion binomial
+$\binom{p+k}{k}$ --- whatever its $p$-adic valuation --- cannot spoil
+divisibility by $p^{3}$.  This is the only place the exponent $4$ in
+\eqref{eq:def} is used in this section.
+\end{remark}
+
+\subsection{Proof of Theorem~\ref{thm:cubic}}
+
+\begin{proof}
+By Proposition~\ref{prop:collapse}, $\Sx(p)\equiv 1+\binom{2p}{p}\pmod{p^{3}}$.
+By Wolstenholme's theorem (Theorem~\ref{thm:wolstenholme}), valid for $p\ge5$,
+we have $\binom{2p}{p}\equiv 2\pmod{p^{3}}$.  Therefore
+\[
+  \Sx(p)\;\equiv\;1+2\;=\;3\pmod{p^{3}}. \qedhere
+\]
+\end{proof}
+
+\begin{corollary}[Unconditional mod $p^2$]\label{cor:modsq}
+For \emph{every} prime $p$, $\Sx(p)\equiv 3\pmod{p^{2}}$.
+\end{corollary}
+
+\begin{proof}
+The collapse (Proposition~\ref{prop:collapse}) holds mod $p^{3}$ and hence mod
+$p^{2}$.  Babbage's congruence $\binom{2p}{p}\equiv 2\pmod{p^{2}}$ holds for all
+primes (Theorem~\ref{thm:babbage}), so $\Sx(p)\equiv 1+2=3\pmod{p^2}$.  No lower
+bound on $p$ is needed here.
+\end{proof}
+
+%% =====================================================================
+\section{Wolstenholme's theorem from first principles}\label{sec:wolstenholme}
+%% =====================================================================
+
+For completeness and because our Lean development does not assume it, we prove
+the two congruences for the central binomial coefficient used above.  Nothing
+here is new --- these are classical results of Babbage (1819) and Wolstenholme
+(1862) --- but we give self-contained arguments matching the formalization.
+
+The starting point is a Vandermonde identity.
+
+\begin{lemma}[Central binomial as a sum of squares]\label{lem:vandermonde}
+For all $p\ge 0$, $\displaystyle \binom{2p}{p}=\sum_{k=0}^{p}\binom{p}{k}^{2}.$
+\end{lemma}
+
+\begin{proof}
+Chu--Vandermonde gives $\binom{2p}{p}=\sum_{k=0}^{p}\binom{p}{k}\binom{p}{p-k}$,
+and $\binom{p}{p-k}=\binom{p}{k}$.
+\end{proof}
+
+\begin{theorem}[Babbage, mod $p^2$]\label{thm:babbage}
+For every prime $p$, $\binom{2p}{p}\equiv 2\pmod{p^{2}}$.
+\end{theorem}
+
+\begin{proof}
+By Lemma~\ref{lem:vandermonde},
+$\binom{2p}{p}=\binom{p}{0}^2+\sum_{k=1}^{p-1}\binom{p}{k}^2+\binom{p}{p}^2
+ = 2+\sum_{k=1}^{p-1}\binom{p}{k}^{2}$.
+For $1\le k\le p-1$, Lemma~\ref{lem:dvdchoose} gives $p\mid\binom{p}{k}$, hence
+$p^{2}\mid\binom{p}{k}^{2}$.  Thus the interior sum is divisible by $p^{2}$ and
+$\binom{2p}{p}\equiv 2\pmod{p^2}$.
+\end{proof}
+
+To upgrade to mod $p^{3}$ we need the harmonic input.  Work in the field
+$\mathbb F_p=\mathbb Z/p\mathbb Z$.
+
+\begin{lemma}[Pascal residues]\label{lem:pascal}
+For a prime $p$ and $0\le j\le p-1$, $\binom{p-1}{j}\equiv(-1)^{j}\pmod p$.
+\end{lemma}
+
+\begin{proof}
+Induction on $j$.  For $j=0$, $\binom{p-1}{0}=1$.  For the step, Pascal's rule
+gives $\binom{p}{j+1}=\binom{p-1}{j}+\binom{p-1}{j+1}$.  By
+Lemma~\ref{lem:dvdchoose}, $p\mid\binom{p}{j+1}$ when $1\le j+1\le p-1$, so in
+$\mathbb F_p$ we have $\binom{p-1}{j+1}\equiv-\binom{p-1}{j}\equiv
+-(-1)^{j}=(-1)^{j+1}$.
+\end{proof}
+
+\begin{lemma}[Harmonic core]\label{lem:harmonic}
+For a prime $p\ge 5$, $\displaystyle\sum_{k=1}^{p-1}\frac{1}{k^{2}}\equiv 0
+\pmod p$, where $1/k$ denotes the inverse of $k$ in $\mathbb F_p$.
+\end{lemma}
+
+\begin{proof}
+As $k$ ranges over $1,\dots,p-1$, the inverses $k^{-1}$ range over the same set
+$\mathbb F_p^{\times}$, so $\sum_{k=1}^{p-1}k^{-2}=\sum_{x\in\mathbb
+F_p^\times}x^{2}=\sum_{x\in\mathbb F_p}x^{2}$ (the $x=0$ term is $0$).  For any
+finite field $\mathbb F_q$ and exponent $i$ with $0<i<q-1$, one has
+$\sum_{x\in\mathbb F_q}x^{i}=0$ (a standard fact: the sum of all $i$-th powers
+over a finite field vanishes unless $(q-1)\mid i$).  Here $q=p$, $i=2$, and
+$2<p-1$ exactly when $p\ge5$, so the sum is $0$.
+\end{proof}
+
+\begin{theorem}[Wolstenholme, mod $p^3$]\label{thm:wolstenholme}
+For every prime $p\ge 5$, $\binom{2p}{p}\equiv 2\pmod{p^{3}}$.
+\end{theorem}
+
+\begin{proof}
+By Lemma~\ref{lem:vandermonde} and the boundary evaluation as in
+Theorem~\ref{thm:babbage},
+\[
+  \binom{2p}{p}-2 \;=\; \sum_{k=1}^{p-1}\binom{p}{k}^{2}.
+\]
+For $1\le k\le p-1$ write $\binom{p}{k}=\tfrac{p}{k}\binom{p-1}{k-1}$, which is
+the integer identity $k\binom{p}{k}=p\binom{p-1}{k-1}$ solved for
+$\binom{p}{k}$; set $d_k:=\binom{p}{k}/p=\tfrac1k\binom{p-1}{k-1}\in\mathbb Z$
+(an integer by Lemma~\ref{lem:dvdchoose}).  Then $\binom{p}{k}^{2}=p^{2}d_k^{2}$
+and
+\[
+  \binom{2p}{p}-2 \;=\; p^{2}\sum_{k=1}^{p-1} d_k^{2}.
+\]
+Thus $\binom{2p}{p}\equiv 2\pmod{p^{3}}$ if and only if
+$p\mid\sum_{k=1}^{p-1}d_k^{2}$.  Reduce $d_k$ modulo $p$.  From
+$k\,d_k=\binom{p-1}{k-1}$ and Lemma~\ref{lem:pascal},
+$k\,d_k\equiv(-1)^{k-1}\pmod p$, so in $\mathbb F_p$
+\[
+  d_k\equiv (-1)^{k-1}k^{-1},\qquad
+  d_k^{2}\equiv k^{-2}.
+\]
+Hence $\sum_{k=1}^{p-1}d_k^{2}\equiv\sum_{k=1}^{p-1}k^{-2}\equiv 0\pmod p$ by
+Lemma~\ref{lem:harmonic} (using $p\ge5$).  Therefore
+$p\mid\sum_k d_k^2$ and $\binom{2p}{p}\equiv 2\pmod{p^3}$.
+\end{proof}
+
+\begin{remark}
+The hypothesis $p\ge 5$ enters in exactly one place: Lemma~\ref{lem:harmonic}
+needs $2<p-1$.  For $p=3$ one checks directly $\binom{6}{3}=20\equiv 2\pmod 9$
+but $20\equiv 20\not\equiv2\pmod{27}$, so the mod-$p^3$ statement genuinely
+fails at $p=3$; the mod-$p^2$ statement (Theorem~\ref{thm:babbage}) survives.
+\end{remark}
+
+%% =====================================================================
+\section{The Ap\'ery-style boundary congruence}\label{sec:apery}
+%% =====================================================================
+
+The second sequence-specific result concerns the value at $p-1$.
+
+\begin{theorem}[Ap\'ery-style congruence mod $p$]\label{thm:apery}
+For every prime $p$, $\;\Sx(p-1)\equiv 1\pmod p$.
+\end{theorem}
+
+The mechanism mirrors the collapse of \S\ref{sec:cubic}, but now the
+divisibility comes from the \emph{companion} binomial rather than from
+$\binom{p-1}{k}$.
+
+\begin{lemma}[Companion divisibility]\label{lem:companion}
+For a prime $p$ and $1\le k\le p-1$, $\;p\mid\binom{p-1+k}{k}$.
+\end{lemma}
+
+\begin{proof}
+The factorial identity for binomial coefficients gives
+\[
+  \binom{p-1+k}{k}\cdot k!\cdot (p-1)! \;=\; (p-1+k)!,
+\]
+since $(p-1+k)-k=p-1$.  As $1\le k\le p-1$ we have $p\le p-1+k$, so by
+Lemma~\ref{lem:dvdfact} the prime $p$ divides the right-hand side $(p-1+k)!$.
+On the other hand $k<p$ and $p-1<p$, so by Lemma~\ref{lem:dvdfact} again $p\nmid
+k!$ and $p\nmid(p-1)!$.  Since $p$ is prime and divides the product
+$\binom{p-1+k}{k}\,k!\,(p-1)!$ but neither $k!$ nor $(p-1)!$, it must divide the
+remaining factor $\binom{p-1+k}{k}$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:apery}]
+Split the sum at $k=0$:
+\[
+  \Sx(p-1) \;=\; T(p-1,0) \;+\; \sum_{k=1}^{p-1} T(p-1,k),
+  \qquad T(p-1,0)=\binom{p-1}{0}^4\binom{p-1}{0}=1.
+\]
+For each interior index $1\le k\le p-1$,
+$T(p-1,k)=\binom{p-1}{k}^{4}\binom{p-1+k}{k}$, and
+Lemma~\ref{lem:companion} gives $p\mid\binom{p-1+k}{k}$, hence $p\mid
+T(p-1,k)$.  Therefore $\sum_{k=1}^{p-1}T(p-1,k)\equiv 0\pmod p$ and
+$\Sx(p-1)\equiv 1\pmod p$.
+\end{proof}
+
+\begin{conjecture}[Strong Ap\'ery-style congruence]\label{conj:apery3}
+For every prime $p\ge 5$, $\;\Sx(p-1)\equiv 1\pmod{p^{3}}$.
+\end{conjecture}
+
+We have verified Conjecture~\ref{conj:apery3} for all primes $5\le p\le 200$
+(see the reproducibility report).  We do \emph{not} have a proof; the mod-$p$
+argument above does not extend naively, because $\binom{p-1}{k}^4\equiv 1\pmod
+p$ controls only the leading $p$-adic order.  A proof would presumably require a
+harmonic-sum analysis in the spirit of \S\ref{sec:wolstenholme} (likely
+involving $\sum 1/k$ and $\sum 1/k^2$ to higher order), and we would welcome one.
+
+%% =====================================================================
+\section{Numerical and formal verification}\label{sec:verification}
+%% =====================================================================
+
+All numerical claims are reproduced by a single self-contained script,
+\texttt{python/verify\_all.py} (standard library only), whose checks include:
+the first $18$ terms against an independent transcription; the cubic
+supercongruence and Wolstenholme/Babbage congruences for all primes up to
+$200$; the Ap\'ery-style congruence mod $p$ (and the conjectural mod $p^3$) up
+to $200$; the collapse identity of Proposition~\ref{prop:collapse}; and the
+diagonal evaluation discussed in \S\ref{sec:open}.  The script terminates with
+exit code $0$ and the message \emph{``ALL NUMERICAL CHECKS PASSED.''}
+
+Theorems~\ref{thm:cubic}, \ref{thm:wolstenholme} (with
+Theorem~\ref{thm:babbage}), and \ref{thm:apery} have been formalized in Lean~4
+(Mathlib, toolchain \texttt{v4.31.0}) as, respectively,
+\texttt{Supercongruence.supercongruence\_unconditional},
+\texttt{Wolstenholme.wolstenholme} / \texttt{Wolstenholme.babbage}, and
+\texttt{AperyCongruence.apery\_congruence}.  Each compiles under
+\texttt{lake build} and, under \texttt{\#print axioms}, depends only on
+\texttt{propext}, \texttt{Classical.choice}, and \texttt{Quot.sound}.  The full
+audit is recorded in \texttt{VERIFICATION\_REPORT.md}.
+
+%% =====================================================================
+\section{What remains open}\label{sec:open}
+%% =====================================================================
+
+We close by stating clearly the parts of the broader picture that are
+\emph{not} theorems in this paper, in the hope that experts will engage with
+them.
+
+\paragraph{Linear recurrence.}
+Numerical linear algebra (a $\mathbb Q$-nullspace computation) indicates that
+$\Sx(n)$ satisfies a minimal linear recurrence of order $4$ and polynomial
+degree $13$, with an order-$5$, degree-$9$ left-multiple.  We have verified
+small base cases in Lean, but the general-$n$ statement currently rests on a
+creative-telescoping (Zeilberger) certificate that we have \emph{not}
+re-derived inside a formally verified setting.  A verified certificate would be
+a valuable contribution.
+
+\paragraph{Diagonal representation.}
+We observe the identity, verified for $0\le n\le 6$ and provable by elementary
+power-series extraction,
+\[
+  \Sx(n) \;=\; \diag\!\left[\frac{1}{(1-x_1)(1-x_2)(1-x_3)(1-x_4)(1-x_5)
+  - x_1x_2x_3x_4}\right],
+\]
+i.e.\ $\Sx(n)$ is the coefficient of $(x_1\cdots x_5)^n$.  Indeed expanding
+$1/(D-M)=\sum_{r\ge0}M^r/D^{r+1}$ with $D=\prod_i(1-x_i)$, $M=x_1x_2x_3x_4$ and
+extracting the diagonal yields exactly $\sum_{r}\binom{n}{r}^4\binom{n+r}{r}$.
+The \emph{symmetric} five-variable candidate does not represent $\Sx$; its
+diagonal is $2^n$.
+
+\paragraph{Calabi--Yau period.}
+The order of the (conjectural) minimal Picard--Fuchs operator is $4$, which
+would be consistent with a one-parameter family whose period geometry is that of
+a Calabi--Yau $3$-fold.  We computed mirror-map coefficients $q_d$ via exact
+rational arithmetic and found them to be integers for $1\le d\le 16$,
+consistent with Lian--Yau integrality.  We emphasize that this is
+\emph{evidence and analogy}: we do not prove that $\Sx$ is the period of a
+specific Calabi--Yau manifold, and the precise geometry (including its
+dimension) deserves expert scrutiny.
+
+\paragraph{Invitation.}
+This is a preprint released specifically to invite review.  Corrections,
+counterexamples, a proof of Conjecture~\ref{conj:apery3}, a verified recurrence
+certificate, an identification (or refutation) of the Calabi--Yau
+interpretation, or a prior appearance of $\Sx$ in the literature would all be
+very welcome.  Please open an issue or pull request at the repository.
+
+%% =====================================================================
+\section*{Acknowledgements}
+%% =====================================================================
+We thank the OEIS editors and the Lean/Mathlib community.  Any errors are the
+author's own, and the work is offered in a spirit of provisional, correctable
+inquiry rather than finality.
+
+\begin{thebibliography}{9}
+\bibitem{apery} R.~Ap\'ery, \emph{Irrationalit\'e de $\zeta(2)$ et
+  $\zeta(3)$}, Ast\'erisque \textbf{61} (1979), 11--13.
+\bibitem{babbage} C.~Babbage, \emph{Demonstration of a theorem relating to
+  prime numbers}, Edinburgh Phil.\ J.\ \textbf{1} (1819), 46--49.
+\bibitem{wolstenholme} J.~Wolstenholme, \emph{On certain properties of prime
+  numbers}, Quart.\ J.\ Pure Appl.\ Math.\ \textbf{5} (1862), 35--39.
+\bibitem{lianyau} B.~H.~Lian and S.-T.~Yau, \emph{Arithmetic properties of
+  mirror map and quantum coupling}, Comm.\ Math.\ Phys.\ \textbf{176} (1996),
+  163--191.
+\bibitem{almkvistzudilin} G.~Almkvist, C.~van Enckevort, D.~van Straten,
+  W.~Zudilin, \emph{Tables of Calabi--Yau equations}, arXiv:math/0507430.
+\bibitem{mathlib} The mathlib Community, \emph{The Lean mathematical library},
+  CPP 2020.
+\bibitem{repo} X.~Callens, \emph{Mirror Map Sieve} (software and Lean
+  formalization), \url{https://github.com/xaviercallens/Mirror-Map-Sieve},
+  DOI:\,10.5281/zenodo.20747943, 2026.
+\end{thebibliography}
+
+\end{document}
