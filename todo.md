@@ -64,8 +64,13 @@ Architecture + verified numbers in `vision.md`; staged plan in `roadmap.md`.
 - [done] **Stage B (CPU half)** `cy_sieve_attention.py`: dense SDPA + FlashAttention
   online-softmax variant with the bias; reference-vs-reference parity ~3e-16, plus
   a CPU needle-retrieval proxy (`tests.md` §4 + §5-proxy, 13 tests). All in CI.
-- [open] **Stage B (GPU half)** port the online-softmax algorithm to a Triton
-  kernel; Triton↔NumPy parity in FP16/BF16 (`tests.md` §4 T4.1). **Needs GPU.**
+- [done] **Stage B scaffold** `cy_sieve_triton.py` (GPU-guarded Triton kernel:
+  online softmax + bias), `requirements-gpu.txt`, `GPU_SETUP.md`, and
+  `test_cy_sieve_triton.py` (parity vs CPU oracle; auto-skips without CUDA).
+- [open] **Stage B (GPU run)** on a CUDA box: run the Triton kernel + the
+  Triton↔NumPy FP16/BF16 parity test (`tests.md` §4 T4.1). **Needs GPU.**
+- [done] **CPU obstacle work** robust recurrence-mod-p generator (the SRAM
+  "generate on-the-fly" path); found+documented P₄(n)≡0 reseed points (~p/80).
 - [open] **Stage C (the gate)** perplexity + NIAH vs RoPE/ALiBi/sliding-window at
   matched compute, sweeping τ; GPU throughput/HBM-traffic (`tests.md` §5–§6).
   **Kill if quality regresses >5%. Needs GPU + a model.**

@@ -131,6 +131,66 @@ def s_mod_p(d: int, p: int, seq: str = "S20") -> int:
     return s
 
 
+# --- The HARDWARE path: generate S20 mod p from the order-4 recurrence --------
+# This is the "generate on the fly in SRAM" claim made concrete. It uses ONLY
+# the proved order-4 recurrence  sum_{j=0}^4 P_j(n) S(n+j) = 0  (coefficients in
+# src/picard_fuchs/minimal_operator.json), seeded by the first 4 values:
+#   S(n+4) = -(P_0(n)S(n)+P_1(n)S(n+1)+P_2(n)S(n+2)+P_3(n)S(n+3)) / P_4(n)  in GF(p)
+# HONEST OBSTACLE (found on CPU): the leading coefficient P_4(n) VANISHES mod p
+# at ~p/80 points (e.g. n=176 for p=251). At those n the forward step divides by
+# zero and the recurrence cannot self-continue; a hardware generator must carry a
+# tiny "reseed" table of the true values at the vanishing points. This is a real
+# design constraint for the SRAM generator, documented rather than hidden.
+
+import json as _json, os as _os
+
+def _load_operator():
+    path = _os.path.join(_os.path.dirname(__file__), "..", "src",
+                         "picard_fuchs", "minimal_operator.json")
+    path = _os.path.normpath(path)
+    with open(path) as fh:
+        return _json.load(fh)["coefficients"]      # P_0..P_4, ascending coeffs
+
+_OP_COEFFS = None  # lazy
+
+def _poly_mod(coeffs_asc, n, p):
+    val = 0
+    for i, c in enumerate(coeffs_asc):
+        val = (val + (c % p) * pow(n, i, p)) % p
+    return val
+
+def recurrence_vanishing_points(p: int, N: int) -> list[int]:
+    """n in [0,N) where the order-4 leading coefficient P_4(n) == 0 (mod p):
+    the points where the forward recurrence cannot self-continue and a reseed
+    is required. Documents the SRAM-generator obstacle."""
+    global _OP_COEFFS
+    if _OP_COEFFS is None:
+        _OP_COEFFS = _load_operator()
+    return [n for n in range(N) if _poly_mod(_OP_COEFFS[4], n, p) == 0]
+
+def s20_mod_p_recurrence(N: int, p: int):
+    """Generate [S20(0..N-1) mod p] via the order-4 recurrence in GF(p), the
+    hardware-faithful path. Returns (values, reseed_points). At each n where
+    P_4(n)==0 the generator reseeds from the true S20 value (the tiny table a
+    real SRAM generator would carry); everywhere else it uses ONLY the recurrence.
+    """
+    global _OP_COEFFS
+    if _OP_COEFFS is None:
+        _OP_COEFFS = _load_operator()
+    P = _OP_COEFFS
+    seq = [S20(i) % p for i in range(min(4, N))]   # 4 seed values
+    reseed = []
+    for n in range(0, N - 4):
+        p4 = _poly_mod(P[4], n, p)
+        if p4 == 0:
+            seq.append(S20(n + 4) % p)              # reseed (table lookup)
+            reseed.append(n)
+            continue
+        acc = sum(_poly_mod(P[j], n, p) * seq[n + j] for j in range(4)) % p
+        seq.append((-acc * pow(p4, p - 2, p)) % p)  # GF(p) division
+    return seq[:N], reseed
+
+
 def tier2_keep_rule_density(p: int = 251, N: int = 2048, seq: str = "S20"):
     """Diagnostic for the PROPOSED keep-rule 'keep iff S(d) == 0 (mod p)'.
 

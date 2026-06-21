@@ -125,6 +125,29 @@ def test_s2_1_no_overflow_large_d():
         assert 0 <= r < 251
 
 
+@pytest.mark.parametrize("p", [251, 67, 17])
+def test_s2_1b_recurrence_generator_matches_direct(p):
+    """The HARDWARE path — generating S20 mod p from the order-4 recurrence in
+    GF(p) (the 'on-the-fly in SRAM' claim) — reproduces S20(d) mod p exactly."""
+    N = 300
+    vals, reseed = cy.s20_mod_p_recurrence(N, p)
+    assert len(vals) == N
+    assert all(vals[n] == cy.S20(n) % p for n in range(N))
+    # reseed points are exactly where the leading coefficient vanishes
+    assert reseed == cy.recurrence_vanishing_points(p, N)
+
+
+def test_s2_1c_leading_coeff_vanishing_is_documented():
+    """HONEST OBSTACLE: the order-4 leading coefficient P_4(n) vanishes mod p at
+    a small but nonzero set of n, where the forward recurrence cannot
+    self-continue (division by zero in GF(p)) and a reseed table is required.
+    This asserts the obstacle is real and small (so a tiny SRAM reseed table
+    suffices), rather than pretending the recurrence is self-sufficient."""
+    vp = cy.recurrence_vanishing_points(251, 1004)
+    assert 0 < len(vp) < 1004 // 40       # nonzero but sparse (~p/80)
+    assert 176 in vp                       # the first one, for p=251
+
+
 def test_s2_2_keep_rule_is_too_sparse():
     """T2.2 (diagnostic): the proposed 'keep iff S(d)==0 mod 251' rule is
     unusable — density ~0.78% and the nearest kept distance is far (>= 100),

@@ -1,0 +1,17 @@
+# GPU-phase dependencies for the CY-Sieve Triton kernel + quality gate.
+# Install on a CUDA machine:  pip install -r requirements-gpu.txt
+#
+# The CPU reference/tests (cy_sieve_reference.py, cy_sieve_attention.py and their
+# tests) need only numpy + pytest and run anywhere. These add the GPU path.
+
+numpy>=1.24
+pytest>=7.4
+
+# Triton kernel (Stage B GPU half). triton ships with recent torch on Linux+CUDA.
+torch>=2.2            # provides triton on CUDA Linux wheels
+triton>=2.2 ; platform_system == "Linux"
+
+# Quality gate (Stage C, tests.md §5): a small open model + datasets.
+transformers>=4.44
+datasets>=2.19
+accelerate>=0.30
