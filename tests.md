@@ -258,13 +258,54 @@ from steep local heads to shallow global heads.
 
 ## §4 — Kernel ↔ reference parity
 
-- **T4.1 Triton-vs-NumPy.** For random $Q,K,V$ (several shapes, seeded), the
-  fused Triton kernel output matches the pure-NumPy CY-Sieve reference within
-  FP16/BF16 tolerance ($\le 2^{-8}$ relative on attention rows).
-- **T4.2 Row-stochastic.** Post-softmax attention rows sum to $1\pm10^{-5}$.
-- **T4.3 Causality.** No attention weight to $j>i$ (causal mask intact).
-- **PASS:** all three within tolerance on CPU (reference) and, when available,
-  GPU (Triton).
+> **Implemented (CPU side).** `cy_sieve_attention.py` provides a dense
+> naive-softmax SDPA with the CY-Sieve bias AND a FlashAttention-style
+> **online/blocked-softmax** variant (the numerical recurrence a Triton kernel
+> runs). `test_cy_sieve_attention.py` checks them — the online softmax matches
+> the dense reference to **~3e-16**. The Triton-vs-reference half (T4.1) waits
+> for the GPU phase; the **reference-vs-reference** parity is done now.
+
+- **T4.0 Online-softmax parity (DONE, CPU).** `flash_sdpa_with_bias` ==
+  `sdpa_with_bias` to $<10^{-10}$ across shapes/τ/block sizes. This validates the
+  exact algorithm the GPU kernel will implement.
+- **T4.1 Triton-vs-NumPy (GPU phase).** The fused Triton kernel output matches
+  the NumPy reference within FP16/BF16 tolerance ($\le 2^{-8}$ relative).
+- **T4.2 Row-stochastic (DONE).** Post-softmax attention rows sum to $1\pm10^{-9}$.
+- **T4.3 Causality (DONE).** No attention weight to $j>i$.
+- **PASS:** CPU reference-parity done; GPU Triton parity pending hardware.
+
+## §5-proxy — synthetic retrieval probe (CPU, mechanism only)
+
+> **Implemented (CPU).** `test_cy_sieve_attention.py` includes a toy
+> needle-retrieval probe (a single query must attend to a planted needle key at
+> distance $d$). It is **NOT** the real §5 gate (no trained model), but it
+> demonstrates the mechanism on real attention math:
+
+- Native $\tau=1$: a needle at $d=64$ gets $<10^{-3}$ weight despite being the
+  best content match — **retrieval collapses** (asserts the failure).
+- A shallow ($\tau{=}480$) head recovers the same needle ($>0.5$ weight at
+  $L{=}128$).
+- The per-head $\tau$ ladder is **never worse than no-bias** at any distance and
+  **sharply better** at local/mid range (e.g. $0.93$ vs $0.24$ at $L{=}512,d{=}4$),
+  i.e. it adds locality without destroying long-range retrieval.
+- **This is a mechanism check, not the quality gate.** It cannot replace §5.
+
+## §5 — QUALITY GATE (the decisive test, GPU phase)
+
+This is the test that decides whether the kernel has any value at all.
+
+- **T5.1 Perplexity parity.** Patch CY-Sieve into a small open model
+  (e.g. Phi-3-mini or GPT-2) and measure zero-shot perplexity on WikiText-2 and
+  a long-context set, **against RoPE, ALiBi, and sliding-window** at matched
+  compute and context length. **Sweep $\tau$ / the per-head ladder; report the
+  $\tau$ used with every number.**
+- **T5.2 Long-context retrieval.** Needle-in-a-haystack accuracy at 4K, 16K, 64K
+  vs the same baselines.
+- **PASS criterion:** CY-Sieve perplexity is **within +1%** of the best baseline
+  (ideally lower) **and** retrieval accuracy is not worse beyond noise.
+- **KILL criterion:** if perplexity regresses by **>5%** vs the best baseline, or
+  retrieval collapses, the kernel (or the offending tier) is reported as a
+  **negative result** and not presented as a contribution.
 
 ## §5 — QUALITY GATE (the decisive test)
 

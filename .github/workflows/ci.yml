@@ -30,10 +30,13 @@ jobs:
         # the collapse identity, and the diagonal representation.
         python python/verify_all.py
 
-    - name: Run CY-Sieve reference tests (tests.md §1–§3)
+    - name: Run CY-Sieve CPU tests (tests.md §1–§4 + §5-proxy)
       run: |
-        # Blocking: the CY-Sieve CPU reference must pass its tier-1/2/3 tests.
-        pytest 4_ai_hardware_attention/test_cy_sieve.py -v --tb=short
+        # Blocking: the CY-Sieve CPU reference + attention reference must pass
+        # (tier-1/2/3 numerics, online-softmax parity, and the retrieval proxy).
+        pytest 4_ai_hardware_attention/test_cy_sieve.py \
+               4_ai_hardware_attention/test_cy_sieve_attention.py \
+               -v --tb=short
 
     - name: Run pytest suite
       run: |

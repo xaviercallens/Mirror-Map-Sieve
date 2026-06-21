@@ -69,16 +69,20 @@ fails. See `vision.md` for the corrected architecture and the verified numbers.
       kept distance **226** ⇒ the proposed keep-rule fails; Tier 2 reclassified
       as open research, not a feature.
 
-**Stage A — CPU reference + numerics (no GPU needed):**
-- [ ] `cy_sieve_reference.py`: exact INT64 Tier-1 table; recurrence-mod-$p$
-      generator; Tier-3 log-space penalty with $\lambda,\beta$ fixed from theory.
-- [ ] Unit tests (`tests.md` §1–§3): table correctness, recurrence-mod-$p$ vs
-      direct, asymptotic-penalty vs exact $\log S_{20}$ error bound.
+**Stage A — CPU reference + numerics (no GPU needed): ✅ DONE**
+- [x] `cy_sieve_reference.py`: exact INT64 Tier-1 table; recurrence-mod-$p$
+      generator; Tier-3 log-space penalty with $\lambda,\beta$ from theory; the
+      per-head $\tau$ ladder (fixing the native FP16 collapse).
+- [x] Unit tests (`tests.md` §1–§3 + §3T): 35 tests; caught the $2^{32}$
+      underflow bug and asserted the native-$\tau$ retrieval collapse.
 
-**Stage B — Triton kernel + parity:**
-- [ ] Fuse Tier 1 (L1 table) + Tier 3 (FMA penalty) into a FlashAttention-style
-      Triton kernel; **defer Tier 2** until it has a viable rule.
-- [ ] Kernel-vs-reference numerical parity test (`tests.md` §4).
+**Stage B — kernel + parity:**
+- [x] CPU half: `cy_sieve_attention.py` — dense SDPA + FlashAttention
+      online-softmax variant with the bias; reference-vs-reference parity
+      $\sim$3e-16; CPU needle-retrieval proxy. 13 tests (`tests.md` §4 + §5-proxy).
+- [ ] GPU half: port the online-softmax recurrence to a **Triton** kernel
+      (Tier 1 L1 table + Tier 3 FMA penalty; defer Tier 2); Triton-vs-NumPy
+      FP16/BF16 parity (`tests.md` §4 T4.1). **Needs GPU.**
 
 **Stage C — the gate that decides everything: quality, not just speed:**
 - [ ] Zero-shot **perplexity** on WikiText-2 / a long-context eval, CY-Sieve vs

@@ -57,13 +57,18 @@ Architecture + verified numbers in `vision.md`; staged plan in `roadmap.md`.
 
 - [done] Verify INT64 crossover (S20→d13, S15→d16), asymptotic λ=43.044 / β≈2,
   and that the mod-p keep-rule fails (0.78% kept, nearest 226).
-- [open] **Stage A** `cy_sieve_reference.py` (CPU): Tier-1 exact table, Tier-2
-  recurrence-mod-p generator, Tier-3 log-space penalty (λ, β fixed from theory).
-- [open] **Stage A** unit tests `tests.md` §1–§3 (table, mod-p parity, penalty error).
-- [open] **Stage B** Triton kernel fusing Tier 1 + Tier 3 (defer Tier 2); kernel↔
-  reference parity test (`tests.md` §4).
-- [open] **Stage C (the gate)** perplexity vs RoPE/ALiBi/sliding-window at matched
-  compute + GPU throughput/HBM-traffic (`tests.md` §5–§6). **Kill if quality regresses.**
+- [done] **Stage A** `cy_sieve_reference.py` (CPU): Tier-1 exact table, Tier-2
+  recurrence-mod-p generator, Tier-3 log-space penalty + per-head τ ladder.
+- [done] **Stage A** unit tests `tests.md` §1–§3 + §3T (35 tests; caught the
+  2^32 underflow bug and the native-τ FP16 collapse).
+- [done] **Stage B (CPU half)** `cy_sieve_attention.py`: dense SDPA + FlashAttention
+  online-softmax variant with the bias; reference-vs-reference parity ~3e-16, plus
+  a CPU needle-retrieval proxy (`tests.md` §4 + §5-proxy, 13 tests). All in CI.
+- [open] **Stage B (GPU half)** port the online-softmax algorithm to a Triton
+  kernel; Triton↔NumPy parity in FP16/BF16 (`tests.md` §4 T4.1). **Needs GPU.**
+- [open] **Stage C (the gate)** perplexity + NIAH vs RoPE/ALiBi/sliding-window at
+  matched compute, sweeping τ; GPU throughput/HBM-traffic (`tests.md` §5–§6).
+  **Kill if quality regresses >5%. Needs GPU + a model.**
 - [open] **Stage D (speculative, only if C passes)** redesign Tier-2 router;
   test MoE routing via S15(d) mod E; measure 4K→long-context extrapolation.
 - [parked] Legacy `4_ai_hardware_attention/` prototype kernels — superseded by
