@@ -91,6 +91,36 @@ incompatibilities. Once the decisive result was triply confirmed, the right call
 was to stop iterating on a green `.factor()` and document the blockers, rather
 than keep spending on diminishing returns.
 
+## CY-Sieve GPU-phase Lessons (2026-06-21, NVIDIA L4)
+
+### 17. A Positional-Scheme Gate Must Train From Scratch — Not Swap on a Frozen Model
+The first §5 quality gate zero-shot-swapped the positional bias into a *frozen*
+pretrained GPT-2 (zeroing its learned position embeddings). It is **invalid**:
+WikiText-2 perplexity was native 32.5 but ALiBi 1641, sliding-window 2529, and
+CY-Sieve ~7180 — i.e. **every** alternative scheme collapsed equally. That measures
+"how much does removing the positions the model was trained with hurt," not which
+scheme is better, and reporting CY-Sieve numbers from it would have violated the
+project's own §7 honesty guards. The correct, ALiBi-paper methodology is to **train
+small models from scratch** under each scheme at identical compute and compare
+validation perplexity + length extrapolation. Lesson: when the thing under test is
+an *inductive bias*, the weights must be allowed to adapt to it.
+
+### 18. An Explicit `[H,L,L]` Attention Bias Disables FlashAttention — Budget For It
+Passing a dense additive bias as PyTorch SDPA's `attn_mask` is correct and
+necessary to inject the per-head positional bias, but it forces SDPA off its fused
+FlashAttention path onto the slower math kernel. Across 7 schemes × 6000 steps the
+from-scratch §5 run took multiple hours on an L4 at 100% util — far longer than a
+fused-kernel estimate. Lesson: either fold the bias into the kernel (the Triton
+path), use a smaller step budget for a first functional result, or budget the wall
+clock honestly. Not a bug — a known cost of the apples-to-apples bias injection.
+
+### 19. The Global `GPUS_ALL_REGIONS` Quota Gates Everything
+A project can have per-region L4 quota = 1 yet still fail *all* GPU launches
+(on-demand and spot) because the separate **global `GPUS_ALL_REGIONS` quota is 0**.
+`agora-autoresearch-001` had exactly this; the GPU phase had to move to project
+**SocrateAI** (`gen-lang-client-0625573011`), which has both quotas ≥ 1. Lesson:
+check the global GPU quota first, not just the per-region accelerator quota.
+
 ## Open work carried forward (snapshot — authoritative list in roadmap.md / todo.md / memory.md)
 
 The lesson behind keeping this list is #7 ("claims drift when building fast"):

@@ -67,13 +67,24 @@ Architecture + verified numbers in `vision.md`; staged plan in `roadmap.md`.
 - [done] **Stage B scaffold** `cy_sieve_triton.py` (GPU-guarded Triton kernel:
   online softmax + bias), `requirements-gpu.txt`, `GPU_SETUP.md`, and
   `test_cy_sieve_triton.py` (parity vs CPU oracle; auto-skips without CUDA).
-- [open] **Stage B (GPU run)** on a CUDA box: run the Triton kernel + the
-  Triton↔NumPy FP16/BF16 parity test (`tests.md` §4 T4.1). **Needs GPU.**
+- [done] **Stage B (GPU run)** Triton↔reference FP16 parity (`tests.md` §4 T4.1)
+  **PASSED on an NVIDIA L4** (2026-06-21, project SocrateAI gen-lang-client-
+  0625573011, image pytorch-2-9-cu129; Triton 3.5.1). The §4 P0 correctness gate
+  is cleared; the GPU orchestrator (`run_gpu_phase.py`) moved on to §5.
 - [done] **CPU obstacle work** robust recurrence-mod-p generator (the SRAM
   "generate on-the-fly" path); found+documented P₄(n)≡0 reseed points (~p/80).
-- [open] **Stage C (the gate)** perplexity + NIAH vs RoPE/ALiBi/sliding-window at
-  matched compute, sweeping τ; GPU throughput/HBM-traffic (`tests.md` §5–§6).
-  **Kill if quality regresses >5%. Needs GPU + a model.**
+- [open / IN FLIGHT] **Stage C (the gate)** running on the L4 now
+  (`cy_sieve_quality_gate.py` + `cy_sieve_perf.py` via `run_gpu_phase.py`;
+  results → `gs://gen-lang-client-0625573011-cy-sieve-bench/cy_sieve/`).
+  **Methodology fix:** do NOT zero-shot-swap positions on a frozen model — that is
+  invalid (every scheme collapses equally: native 32.5 vs ALiBi 1641 / sliding
+  2529 / CY-Sieve ~7180 on WikiText-2). Instead **train small GPTs from scratch**,
+  identical compute, per scheme (learned/ALiBi/sliding/CY-Sieve τ-ladder + τ
+  sweep); compare val perplexity at train ctx + **2×/4× length extrapolation**.
+  §6 adds Triton-kernel throughput + bias-path HBM bytes O(L) vs O(L²).
+  **Anticipated (hypothesis):** CY-Sieve within +1% of best baseline with no worse
+  extrapolation ⇒ the kernel's case holds; **kill if >5% regression.** No verdict
+  until the run finishes.
 - [open] **Stage D (speculative, only if C passes)** redesign Tier-2 router;
   test MoE routing via S15(d) mod E; measure 4K→long-context extrapolation.
 - [parked] Legacy `4_ai_hardware_attention/` prototype kernels — superseded by

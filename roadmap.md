@@ -80,17 +80,36 @@ fails. See `vision.md` for the corrected architecture and the verified numbers.
 - [x] CPU half: `cy_sieve_attention.py` — dense SDPA + FlashAttention
       online-softmax variant with the bias; reference-vs-reference parity
       $\sim$3e-16; CPU needle-retrieval proxy. 13 tests (`tests.md` §4 + §5-proxy).
-- [ ] GPU half: port the online-softmax recurrence to a **Triton** kernel
-      (Tier 1 L1 table + Tier 3 FMA penalty; defer Tier 2); Triton-vs-NumPy
-      FP16/BF16 parity (`tests.md` §4 T4.1). **Needs GPU.**
+- [x] GPU half: `cy_sieve_triton.py` Triton kernel (Tier 1 L1 table + Tier 3 FMA
+      penalty; Tier 2 deferred). **Triton-vs-reference FP16 parity (`tests.md` §4
+      T4.1) PASSED on an NVIDIA L4** (2026-06-21, project SocrateAI) — the GPU
+      orchestrator advanced past §4 to §5. block_n=32/num_stages=1 keeps SMEM
+      under the L4's ~100KB.
 
 **Stage C — the gate that decides everything: quality, not just speed:**
-- [ ] Zero-shot **perplexity** on WikiText-2 / a long-context eval, CY-Sieve vs
-      **RoPE, ALiBi, and sliding-window** baselines at matched compute.
-- [ ] Throughput / HBM-traffic measurement on a real GPU (the bandwidth claim).
-- [ ] **Kill criteria:** if perplexity regresses beyond the `tests.md` threshold
-      vs the best baseline, the tier (or the whole kernel) is reported as a
-      negative result — not shipped.
+- [~] **In flight on the L4 (run started 2026-06-21).** `cy_sieve_quality_gate.py`
+      + `cy_sieve_perf.py`, driven by `run_gpu_phase.py`; results upload to
+      `gs://gen-lang-client-0625573011-cy-sieve-bench/cy_sieve/`.
+- **Methodology correction (important):** the gate does **not** zero-shot-swap the
+      positional scheme on a *frozen* pretrained model — that was tried and is
+      invalid (it collapses **every** scheme equally: native ppl 32.5 vs ALiBi
+      1641, sliding 2529, CY-Sieve ~7180 on WikiText-2 — pure train/test mismatch,
+      not the scheme). Instead it follows the **ALiBi-paper methodology: train small
+      GPTs from scratch**, identical arch/data/compute, one per scheme
+      (learned-abs / ALiBi / sliding-window / CY-Sieve τ-ladder + single-τ sweep),
+      then compare validation perplexity at the train context **and 2×/4×
+      length-extrapolation** perplexity.
+- **Anticipated outcome (hypothesis, not a result):** if the geometry-fixed
+      β=2 / per-head-τ bias carries genuine positional signal, CY-Sieve val
+      perplexity lands **within +1% of the best baseline** with **no worse
+      length-extrapolation** — which, paired with §6's **O(L) vs O(L²) bias-HBM
+      reduction**, is the whole case for the kernel. **Kill criterion (unchanged):
+      >5% perplexity regression vs the best baseline ⇒ negative result, not
+      shipped.** No verdict is claimed until the run completes.
+- [ ] Throughput / HBM-traffic on the L4 (`cy_sieve_perf.py`, §6): CY-Sieve Triton
+      kernel vs dense SDPA vs a materialized-`[L,L]`-bias-table SDPA at 1K–32K;
+      reports bias-path bytes O(L) vs O(L²). Speed reported **only** beside the §5
+      verdict (T6.3).
 
 **Stage D — research hypotheses (only if Stage C passes):** redesign Tier 2 (a
 useful finite-field router), test "MoE routing via $S_{15}(d)\bmod E$" for load

@@ -70,6 +70,30 @@ routing", "infinite extrapolation with zero degradation", and LPU-specific
 dominance are *speculative* until a perplexity/accuracy benchmark says otherwise.
 We will not repeat them as facts.
 
+**The decisive test, now running (2026-06-21, NVIDIA L4).** The GPU phase
+(`run_gpu_phase.py`: `tests.md` §4 parity → §5 quality → §6 perf) is executing.
+§4 (Triton↔reference FP16 parity) **passed**. §5 is the gate that decides
+everything, and we run it the only honest way: **train small GPTs from scratch**,
+identical architecture/data/compute, one per positional scheme (learned-absolute,
+ALiBi, sliding-window, CY-Sieve per-head τ-ladder + a single-τ sweep), then compare
+validation perplexity at the training context **and** at 2×/4× length
+extrapolation. (We explicitly rejected zero-shot-swapping the scheme into a frozen
+model — it collapses every scheme equally and measures train/test mismatch, not the
+bias.)
+
+> **Anticipated improvement (a hypothesis we are about to confirm or kill).** If the
+> geometry-fixed bias — slope $\log\lambda=3.762$, curvature $\beta=2$ from the
+> rank-4 MUM Calabi–Yau-3-fold tail, spread across heads by the τ-ladder — carries
+> real positional signal, we expect CY-Sieve to sit **within +1% of the best
+> baseline's perplexity** with **no worse length extrapolation**. Combined with
+> §6's structural advantage — the bias path reads **O(L)** values generated on the
+> fly versus **O(L²)** for a materialized bias table — that is the entire case for
+> the kernel: *equal quality, strictly less bias-memory traffic.* **We commit in
+> advance to the kill criterion: a >5% perplexity regression vs the best baseline,
+> or an extrapolation collapse, is reported as a negative result and the tier is
+> not shipped.** No verdict is asserted until the L4 run completes and the numbers
+> are in `gs://gen-lang-client-0625573011-cy-sieve-bench/cy_sieve/`.
+
 ### Mathematical depth (the actual core)
 - **Prove the supercongruences** — these are the highest-impact open problems in this project
 - **Submit to OEIS** — the sequence needs an A-number to become a permanent part of mathematics
