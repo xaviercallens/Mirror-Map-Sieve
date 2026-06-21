@@ -52,10 +52,45 @@ We claim no discovery; the goal is rigorous, expert-reviewable progress.
       van Straten, …) via issue #2 — especially for the L₄ factorization, the
       Yukawa normalization, and a possible prior appearance.
 
-## Parked
-- AI-hardware INT64 attention (`4_ai_hardware_attention/`): exploratory heuristic,
-  benchmarks need an independent GPU run. Unrelated to the mathematical
-  contribution; parked, not abandoned.
+## Applied track: the CY-Sieve attention kernel 🧪 EXPERIMENTAL (falsifiable)
+
+A real implementation of the $S_{20}$/$S_{15}$ holonomic structure as a
+memory-bandwidth-free positional-bias kernel. **Engineering hypothesis, not a
+claimed win** — each tier has a quality gate in `tests.md` and is killed if it
+fails. See `vision.md` for the corrected architecture and the verified numbers.
+
+**Verified pre-conditions (done):**
+- [x] INT64 crossover: $S_{20}$ safe to $d=13$, $S_{15}$ to $d=16$ (overflow at
+      14 / 17). Tier-1 window confirmed.
+- [x] Asymptotic constants: $\lambda=43.044$ ($\log\lambda=3.762$, **not** the
+      proposal's 2.456) and $\beta\approx2$ — the $n^{-2}$ tail predicted by the
+      rank-4 MUM Calabi–Yau-3-fold structure (links Phase 2 to the kernel).
+- [x] mod-$p$ router (p=251) measured: only **0.78%** of distances kept, nearest
+      kept distance **226** ⇒ the proposed keep-rule fails; Tier 2 reclassified
+      as open research, not a feature.
+
+**Stage A — CPU reference + numerics (no GPU needed):**
+- [ ] `cy_sieve_reference.py`: exact INT64 Tier-1 table; recurrence-mod-$p$
+      generator; Tier-3 log-space penalty with $\lambda,\beta$ fixed from theory.
+- [ ] Unit tests (`tests.md` §1–§3): table correctness, recurrence-mod-$p$ vs
+      direct, asymptotic-penalty vs exact $\log S_{20}$ error bound.
+
+**Stage B — Triton kernel + parity:**
+- [ ] Fuse Tier 1 (L1 table) + Tier 3 (FMA penalty) into a FlashAttention-style
+      Triton kernel; **defer Tier 2** until it has a viable rule.
+- [ ] Kernel-vs-reference numerical parity test (`tests.md` §4).
+
+**Stage C — the gate that decides everything: quality, not just speed:**
+- [ ] Zero-shot **perplexity** on WikiText-2 / a long-context eval, CY-Sieve vs
+      **RoPE, ALiBi, and sliding-window** baselines at matched compute.
+- [ ] Throughput / HBM-traffic measurement on a real GPU (the bandwidth claim).
+- [ ] **Kill criteria:** if perplexity regresses beyond the `tests.md` threshold
+      vs the best baseline, the tier (or the whole kernel) is reported as a
+      negative result — not shipped.
+
+**Stage D — research hypotheses (only if Stage C passes):** redesign Tier 2 (a
+useful finite-field router), test "MoE routing via $S_{15}(d)\bmod E$" for load
+balance, and measure extrapolation 4K→long-context. All explicitly speculative.
 
 ---
 

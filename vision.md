@@ -4,23 +4,63 @@
 
 A rigorous, reproducible computational mathematics laboratory that:
 1. Discovered a **genuinely new** integer sequence $S(n) = \sum_{k=0}^n \binom{n}{k}^4 \binom{n+k}{k}$
-2. Proved it satisfies an order-5, degree-9 holonomic recurrence (via exact integer nullspace computation)
+2. Proved it satisfies a minimal **order-4**, degree-13 holonomic recurrence — now established for all $n$ by a creative-telescoping certificate (Phase 1)
 3. Showed its mirror map coefficients are integers (Lian-Yau integrality, exact rational arithmetic, d ≤ 16)
 4. Provided sorry-free Lean 4 kernel verification of base cases and sequence values
 5. Published all artifacts under a citable DOI (Zenodo 10.5281/zenodo.20747943)
 
-## What This Project Should Become
+## Applied direction: the CY-Sieve attention kernel (a falsifiable engineering bet)
 
-### Phase 2: Computer Science & AI Hardware (The Deep Tech Pivot)
-**The Goal:** Revolutionize LLM context efficiency by replacing floating-point heuristic attention with exact topological geometry.
-The AI industry is currently hitting a "precision wall" where Softmax and relative positional encodings (RoPE, ALiBi) rely heavily on floating-point arithmetic and transcendental exponentials, causing drift and memory bottlenecks.
+> **Honest stance.** This is an *engineering hypothesis*, not a proven win, and
+> not the project's core contribution (that is the mathematics). We pursue it
+> because it is close to our actual expertise — a human number-theorist
+> (X. Callens) and an LLM coding assistant (Claude) — and because the holonomic
+> structure of $S_{20}$ maps cleanly onto a real hardware bottleneck. We commit
+> to **killing any tier that fails its quality gate** (see `tests.md`).
 
-We propose a new paradigm: **Holonomic INT64 Attention**.
-1. **The S_20 Positional Decay Kernel**: Replace continuous float decay with exact inverse Calabi-Yau 3-fold period: $Mask(d) \propto 1 / S_{20}(d)$.
-2. **The Hardware GPU Hack**: Compute decay weights dynamically in ultra-fast SRAM using pure INT64 arithmetic (via the exact order-4 linear integer recurrence).
-3. **Super-Exponential Sparsity**: Enforce extreme local sparsity (growth $G \approx 43.04$) to create a "Markovian" routing layer, bypassing the need for SoftMax denominator normalization and saving massive VRAM and FLOPs.
+**The one defensible core idea.** Modern accelerators are bound by **memory
+bandwidth**, not integer ALU compute. A positional-bias scheme whose values are
+generated *on the fly* from a short linear recurrence costs **zero HBM** for a
+bias table — that is a genuine, measurable advantage *if and only if* model
+quality is preserved. $S_{20}$ obeys a proved order-4 holonomic recurrence
+(see `docs/PHASE1_FINDINGS.md`), so it is exactly such a sequence.
 
-### Phase 3: Mathematical Depth
+**What we verified before planning (numbers, not assertions — see `tests.md`):**
+- **INT64 limit is real.** $S_{20}(d)$ overflows signed INT64 at **$d=14$**
+  (safe through $d=13$); the slower sibling $S_{15}(n)=\sum_k\binom nk^3\binom{n+k}k$
+  is safe through **$d=16$**. The proposal's $d\le13$ window is correct.
+- **The mod-$p$ "sparse router" fails as proposed.** With $p=251$, only
+  **0.8%** of distances satisfy $S_{20}(d)\equiv0$, and the nearest kept distance
+  is **226** — a token would attend to *nothing* between $d=14$ and $d=226$.
+  As a keep-rule this destroys local context. We therefore treat Tier 2 as a
+  **research question, not a feature** (it needs a different rule, e.g. residue
+  *classes* or a much smaller modulus, and must beat a sliding-window baseline).
+- **The asymptotic tier is sound but the proposal's constants are wrong.** The
+  growth constant is $\lambda\approx43.044$ (so $\log\lambda\approx3.762$, **not**
+  the proposal's $2.456$). The sub-exponential exponent fits $\beta\approx1.99$,
+  i.e. **$\beta=2$** — which is exactly the $n^{-2}$ tail predicted by the
+  **rank-4 MUM Calabi–Yau-3-fold** structure found in Phase 2. *This is the real
+  conceptual payoff:* the long-range log-space penalty
+  $-d\log\lambda+2\log d-\log C$ is not a heuristic — its exponent is dictated by
+  the geometry.
+
+**The CY-Sieve architecture (corrected, three tiers):**
+1. **Tier 1 — exact INT64 local anchor ($d\le13$, or $\le16$ for $S_{15}$):**
+   preloaded exact reciprocal-decay table in L1/registers; zero float drift,
+   zero HBM. This is the solid, shippable piece.
+2. **Tier 2 — mid-range routing (research, currently failing):** a finite-field
+   rule from the holonomic recurrence mod a small modulus. Must be redesigned
+   and must beat sliding-window/local attention on quality before it ships.
+3. **Tier 3 — asymptotic log-space penalty ($d>$ window):** the BF16/FP8 FMA
+   $-d\log\lambda+\beta\log d$ with $\lambda=43.044$, $\beta=2$ — a geometry-fixed
+   blend of ALiBi (linear) and log penalties. Cheap, HBM-free, testable.
+
+**Strategic claims we deliberately downgrade to hypotheses:** "zero-parameter MoE
+routing", "infinite extrapolation with zero degradation", and LPU-specific
+dominance are *speculative* until a perplexity/accuracy benchmark says otherwise.
+We will not repeat them as facts.
+
+### Mathematical depth (the actual core)
 - **Prove the supercongruences** — these are the highest-impact open problems in this project
 - **Submit to OEIS** — the sequence needs an A-number to become a permanent part of mathematics
 - **Find the diagonal representation** — this is the deepest open problem (Christol guarantees existence; finding it is research)

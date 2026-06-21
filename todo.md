@@ -49,7 +49,22 @@ research program (see `docs/RESEARCH_PLAN.md`) is the primary focus.
   operator…", with proofs + honest caveats). Refresh the release PDF asset next.
 - [open] Submit the OEIS draft (A397213 is a **pending** proposed id, not yet
   accepted) once an editor reviews it.
-- [parked] **AI-hardware INT64 attention** (`4_ai_hardware_attention/`):
-  exploratory only. Re-labelled as heuristic; benchmarks need an independent GPU
-  run. Not a research priority and unrelated to the mathematical contribution —
-  parked unless someone wants to benchmark it rigorously.
+## Applied track: CY-Sieve attention kernel (experimental, falsifiable)
+
+Real implementation of the holonomic structure as an HBM-free positional bias.
+Engineering hypothesis — each tier killed if it fails its `tests.md` quality gate.
+Architecture + verified numbers in `vision.md`; staged plan in `roadmap.md`.
+
+- [done] Verify INT64 crossover (S20→d13, S15→d16), asymptotic λ=43.044 / β≈2,
+  and that the mod-p keep-rule fails (0.78% kept, nearest 226).
+- [open] **Stage A** `cy_sieve_reference.py` (CPU): Tier-1 exact table, Tier-2
+  recurrence-mod-p generator, Tier-3 log-space penalty (λ, β fixed from theory).
+- [open] **Stage A** unit tests `tests.md` §1–§3 (table, mod-p parity, penalty error).
+- [open] **Stage B** Triton kernel fusing Tier 1 + Tier 3 (defer Tier 2); kernel↔
+  reference parity test (`tests.md` §4).
+- [open] **Stage C (the gate)** perplexity vs RoPE/ALiBi/sliding-window at matched
+  compute + GPU throughput/HBM-traffic (`tests.md` §5–§6). **Kill if quality regresses.**
+- [open] **Stage D (speculative, only if C passes)** redesign Tier-2 router;
+  test MoE routing via S15(d) mod E; measure 4K→long-context extrapolation.
+- [parked] Legacy `4_ai_hardware_attention/` prototype kernels — superseded by
+  CY-Sieve Stage A/B; keep for regression reference only.
