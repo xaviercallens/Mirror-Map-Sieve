@@ -39,9 +39,21 @@ def _gpu_info():
 def run_section4():
     """§4 — Triton<->reference parity via pytest. Returns (passed, detail)."""
     print("\n" + "=" * 74 + "\n  §4 — Triton kernel <-> CPU reference parity\n" + "=" * 74)
+    # pytest is not on the DLVM image by default; install it on demand so a
+    # missing-module error can't masquerade as a parity FAIL.
+    try:
+        import pytest  # noqa: F401
+    except ImportError:
+        print("  pytest not found — installing…")
+        subprocess.run([sys.executable, "-m", "pip", "install", "-q", "pytest"],
+                       capture_output=True, text=True)
     cmd = [sys.executable, "-m", "pytest", "-v",
            os.path.join(HERE, "test_cy_sieve_triton.py")]
     r = subprocess.run(cmd, capture_output=True, text=True)
+    if "No module named pytest" in (r.stderr + r.stdout):
+        return {"returncode": r.returncode, "passed": False,
+                "status": "ERROR (pytest unavailable — parity not run)",
+                "summary": "pytest could not be installed"}
     print(r.stdout[-3000:])
     if r.returncode != 0:
         print(r.stderr[-2000:])

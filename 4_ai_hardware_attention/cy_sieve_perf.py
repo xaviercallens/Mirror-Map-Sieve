@@ -92,17 +92,25 @@ def run(seq_lens, head_dim, seq="S20", tau=128.0, output=None,
         bias_vec = torch.tensor(cy.build_bias_vector(L, seq, tau)[:L],
                                 device=device, dtype=torch.float32)
 
-        # Materialized [L,L] bias table (the HBM-heavy baseline). Guard memory.
+        # Materialized [L,L] bias table (the HBM-heavy baseline). Guard memory:
+        # the construction peaks well above one L² tensor (int32 index grid 4B +
+        # fp16 table 2B + SDPA's own L² scores 2B ≈ 8 B/elem), so budget the PEAK
+        # at ~0.30·VRAM. Skipping a too-large L is reported, not silently dropped.
         table_ms = table_bytes = None
-        if L * L * 4 <= 0.5 * props.total_memory:
-            d = (torch.arange(L, device=device)[:, None]
-                 - torch.arange(L, device=device)[None, :])
-            mat = torch.where(d >= 0, bias_vec[d.clamp(min=0)],
-                              torch.full_like(d, 1, dtype=fp).float() * float("-inf"))
-            mat = mat.to(fp)
+        if L * L * 8 <= 0.30 * props.total_memory:
+            idx = torch.arange(L, device=device, dtype=torch.int32)
+            d = idx[:, None] - idx[None, :]                       # int32 [L,L]
+            mat = bias_vec[d.clamp(min=0)].to(fp)                 # fp16 [L,L]
+            mat.masked_fill_(d < 0, float("-inf"))               # causal, in place
+            del d
             table_bytes = mat.numel() * mat.element_size()
             table_ms = _time(lambda: sdpa_table_bias(Q, K, V, mat), device=device)
             del mat
+            if device == "cuda":
+                torch.cuda.empty_cache()
+        else:
+            print(f"  [skip] L={L}: materialized-table baseline exceeds VRAM "
+                  f"budget (need ~{L*L*8/1e9:.1f} GB peak); CY-Sieve path still timed.")
 
         dense_ms = _time(lambda: sdpa_dense(Q, K, V), device=device)
         cy_ms = _time(lambda: tri.cy_sieve_attention_triton(

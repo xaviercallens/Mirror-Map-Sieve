@@ -174,17 +174,22 @@ class TinyGPT(nn.Module):
 # ---------------------------------------------------------------------------
 
 def load_corpus(max_chars=2_000_000):
+    """Returns (train_txt, val_txt, source). `source` is "wikitext-2-raw-v1" for
+    the real corpus or "SYNTHETIC-FALLBACK" when datasets is unavailable — the
+    caller MUST record this, because the synthetic corpus is trivially memorized
+    (every scheme scores ppl~1.0) and a PASS on it is scientifically vacuous."""
     try:
         from datasets import load_dataset
         tr = load_dataset("wikitext", "wikitext-2-raw-v1", split="train")
         va = load_dataset("wikitext", "wikitext-2-raw-v1", split="validation")
         train_txt = "\n".join(t for t in tr["text"] if t.strip())[:max_chars]
         val_txt = "\n".join(t for t in va["text"] if t.strip())[:max_chars // 8]
+        return train_txt, val_txt, "wikitext-2-raw-v1"
     except Exception as e:
-        print(f"  [warn] datasets unavailable ({e}); using bundled sample.")
+        print(f"  [warn] datasets unavailable ({e}); using bundled sample. "
+              f"RESULTS WILL BE VACUOUS (ppl~1.0). Install datasets+xxhash.")
         base = (_FALLBACK_TEXT + "\n") * 4000
-        train_txt, val_txt = base[:max_chars], base[:max_chars // 8]
-    return train_txt, val_txt
+        return base[:max_chars], base[:max_chars // 8], "SYNTHETIC-FALLBACK"
 
 
 _FALLBACK_TEXT = (
@@ -328,9 +333,9 @@ def main():
           f"ctx={cfg['ctx']} steps={cfg['steps']}")
     print("=" * 74)
 
-    train_txt, val_txt = load_corpus()
+    train_txt, val_txt, corpus_source = load_corpus()
     train_data, val_data = to_bytes(train_txt), to_bytes(val_txt)
-    print(f"  corpus: train {train_data.numel():,} bytes | "
+    print(f"  corpus: {corpus_source} | train {train_data.numel():,} bytes | "
           f"val {val_data.numel():,} bytes\n")
 
     runs = []
@@ -353,7 +358,13 @@ def main():
         print()
 
     verdict = _verdict(runs, cfg["ctx"])
+    if corpus_source == "SYNTHETIC-FALLBACK":
+        verdict["status"] = "INVALID (synthetic corpus)"
+        verdict["summary"] = ("ran on the synthetic fallback corpus (ppl~1.0, "
+                              "trivially memorized) — NOT a real quality result. "
+                              + verdict.get("summary", ""))
     out = {"preset": args.preset, "device": device, "config": cfg,
+           "corpus_source": corpus_source,
            "window": args.window, "seq": args.seq, "runs": runs,
            "verdict": verdict}
     json.dump(out, open(args.output, "w"), indent=2)

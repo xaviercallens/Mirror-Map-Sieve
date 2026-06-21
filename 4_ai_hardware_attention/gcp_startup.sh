@@ -19,9 +19,12 @@ echo "=========================================="
 nvidia-smi || { echo "ERROR: nvidia-smi not found (no GPU?)"; }
 
 # ── Dependencies. The DLVM images ship torch+triton; add the quality-gate deps.
-#    --no-deps keeps the pre-installed CUDA torch in place.
+#    pytest is NOT on the image (§4 needs it); xxhash is required by datasets to
+#    actually load WikiText-2 (without it the gate silently falls back to its tiny
+#    synthetic corpus and every scheme scores ppl~1.0 — a vacuous PASS).
+pip3 install --quiet pytest xxhash 2>&1 | tail -3 || true
 pip3 install --quiet --no-deps datasets 2>&1 | tail -3 || true
-pip3 install --quiet huggingface_hub fsspec pyarrow 2>&1 | tail -3 || true
+pip3 install --quiet "requests>=2.32.2" huggingface_hub fsspec pyarrow 2>&1 | tail -3 || true
 
 python3 - <<'PY'
 import torch
