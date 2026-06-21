@@ -30,6 +30,11 @@ jobs:
         # the collapse identity, and the diagonal representation.
         python python/verify_all.py
 
+    - name: Run CY-Sieve reference tests (tests.md §1–§3)
+      run: |
+        # Blocking: the CY-Sieve CPU reference must pass its tier-1/2/3 tests.
+        pytest 4_ai_hardware_attention/test_cy_sieve.py -v --tb=short
+
     - name: Run pytest suite
       run: |
         pytest tests/ -v --tb=short || echo "pytest suite reported issues (non-blocking)"

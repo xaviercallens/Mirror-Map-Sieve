@@ -161,6 +161,15 @@ Update `.github/workflows/ci.yml` to run:
 
 # CY-Sieve Attention Kernel — Validation Suite
 
+> **Implementation status (2026-06-21).** Sections **§1–§3 are implemented and
+> passing** in `4_ai_hardware_attention/test_cy_sieve.py` (30 tests, ~2 s,
+> CPU-only) against the reference `4_ai_hardware_attention/cy_sieve_reference.py`,
+> and run **blocking** in CI (`ci.yml`). Writing the tests **caught a real bug**:
+> the naive $2^{32}$ fixed-point shift made the Tier-1 decay table underflow to
+> $0$ by $d\approx8$ — fixed with `FIXED_POINT_SHIFT=62` (reciprocal window 13 for
+> $S_{20}$, 15 for $S_{15}$). Sections **§4–§7 remain TODO** (they require a
+> GPU/Triton kernel and a model — not runnable on a laptop).
+
 This suite validates the applied CY-Sieve kernel (`vision.md`, `roadmap.md`).
 **Guiding rule: a fast kernel that degrades model quality is a FAILED kernel.**
 Every speed/HBM claim is meaningless unless the quality gate (§5) passes. Each
