@@ -196,6 +196,66 @@ def test_s3_unified_bias_matches_exact_in_window():
         assert abs(cy.cy_sieve_bias(d, "S20") - (-log(cy.S20(d)))) < 1e-6
 
 
+# ==========================================================================
+# §3T — temperature attenuation (tau): the fix for native-geometry collapse
+# ==========================================================================
+
+FP16_SUBNORMAL_MIN = 2.0 ** -24   # ~6e-8, smallest positive FP16
+
+
+def test_s3t_native_geometry_collapses_fp16():
+    """The raw geometry (tau=1) is so steep that exp(bias) underflows FP16 to 0
+    by a very small distance — i.e. it degenerates into a tiny sliding window and
+    would ANNIHILATE long-range retrieval. This test ASSERTS that failure, so the
+    fix (tau) is justified and the native version is never shipped by accident."""
+    from math import exp
+    # find first d where the attention weight underflows FP16 subnormal
+    underflow_d = next(d for d in range(1, 60)
+                       if exp(cy.cy_sieve_bias(d, "S20", tau=1.0)) < FP16_SUBNORMAL_MIN)
+    assert underflow_d <= 8, (
+        f"native penalty underflows FP16 at d={underflow_d}; the point is it is "
+        f"catastrophically early (a ~{underflow_d}-token window)")
+    # effective >1%-weight context at tau=1 is essentially nil
+    assert cy.effective_context("S20", tau=1.0) <= 3
+
+
+def test_s3t_tau_preserves_shape():
+    """tau scales the whole bias by exactly 1/tau (S(d)^(1/tau)): the linear slope
+    and the beta=2 log-curvature are preserved, only steepness changes."""
+    for tau in (10.0, 20.0, 40.0, 128.0):
+        for d in range(20, 200, 7):
+            assert abs(cy.cy_sieve_bias(d, "S20", tau)
+                       - cy.cy_sieve_bias(d, "S20", 1.0) / tau) < 1e-9
+
+
+def test_s3t_tau_extends_usable_context():
+    """A survivable tau yields a usable long-range context that grows with tau
+    (monotone), unlike the native collapse."""
+    reaches = [cy.effective_context("S20", tau) for tau in (10, 20, 40, 128, 512)]
+    assert reaches == sorted(reaches) and reaches[-1] > 500
+    # at tau>=128 the model can still attend at >1% weight past 128 tokens
+    assert cy.effective_context("S20", 128) > 128
+
+
+def test_s3t_tau_keeps_attention_representable():
+    """For a long-range head (large tau), the attention weight at a mid distance
+    stays ABOVE the FP16 floor — i.e. retrieval is not silently zeroed."""
+    from math import exp
+    # a shallow head (tau ~ 480) should keep d=256 representable in FP16
+    w = exp(cy.cy_sieve_bias(256, "S20", tau=480.0))
+    assert w > FP16_SUBNORMAL_MIN
+
+
+def test_s3t_alibi_ladder_spans_local_to_global():
+    """The per-head tau ladder (matched to ALiBi slopes) spans steep local heads
+    to shallow global heads, giving multi-scale coverage for NIAH."""
+    taus = cy.alibi_style_tau_ladder(8)
+    assert taus == sorted(taus)                  # increasing temperature
+    reaches = [cy.effective_context("S20", t) for t in taus]
+    assert reaches[0] <= 20                       # steepest head ~ local syntax
+    assert reaches[-1] >= 1000                    # shallowest head ~ long range
+
+
 if __name__ == "__main__":
     import subprocess
     raise SystemExit(subprocess.call(["pytest", "-v", __file__]))

@@ -223,6 +223,39 @@ Reference numbers below were verified in this session (see git history of
   would see as a hard cliff).
 - **PASS:** constants exact, error bound met, handoff continuous.
 
+## §3T — Temperature attenuation $\tau$ (mandatory; the native geometry fails)
+
+**The problem (a real failure mode).** Applied natively ($\tau=1$), the penalty
+is too steep: with $\log\lambda=3.762$, $\exp(\text{penalty})$ underflows FP16 to
+$0$ by $d\approx6$ (verified: effective $>1\%$ context $=2$ tokens). The exact
+$S_{20}$ geometry would degrade the LLM into a $\sim$6-token sliding window —
+likely *surviving* the perplexity gate (local n-grams dominate next-token loss)
+but **annihilating** Needle-in-a-Haystack retrieval. **The kernel must NOT ship
+$\tau=1$.**
+
+**The fix.** A temperature scalar applied to the whole bias,
+$\text{penalty}_\tau(d) = \tfrac1\tau\big(-d\log\lambda+\beta\log d-\log C\big)$,
+i.e. the bias of $S(d)^{1/\tau}$ — it preserves the linear slope and the
+$\beta=2$ curvature, only rescaling steepness. $\tau$ is assigned **per head**
+(ALiBi-style): $\tau_h=\log\lambda / m_h$ with $m_h=2^{-8h/H}$ gives a ladder
+from steep local heads to shallow global heads.
+
+- **T3T.1 Native collapse is asserted.** $\exp(\text{bias}_{\tau=1}(d))$
+  underflows FP16 by $d\le8$; effective context $\le3$. (Documents the failure.)
+- **T3T.2 Shape preserved.** $\text{bias}_\tau(d)=\text{bias}_1(d)/\tau$ exactly
+  (slope + $\beta=2$ curvature unchanged).
+- **T3T.3 Usable context grows with $\tau$.** Effective $>1\%$ context is
+  monotone in $\tau$; at $\tau\ge128$ it exceeds 128 tokens.
+- **T3T.4 Representable retrieval.** For a shallow (large-$\tau$) head, the
+  attention weight at a mid distance ($d=256$) stays above the FP16 floor.
+- **T3T.5 Multi-scale ladder.** The per-head $\tau$ ladder spans local
+  ($\lesssim20$ tokens) to global ($\gtrsim1000$ tokens) reach.
+- **PASS:** native collapse confirmed; $\tau$ form preserves shape, extends and
+  keeps representable a long-range context, and the head ladder is multi-scale.
+- **Note for §5/§6:** the quality gate must **sweep $\tau$** (and the per-head
+  ladder) — a single global $\tau$ is not expected to be optimal. Report the
+  $\tau$ used with every perplexity/NIAH number.
+
 ## §4 — Kernel ↔ reference parity
 
 - **T4.1 Triton-vs-NumPy.** For random $Q,K,V$ (several shapes, seeded), the

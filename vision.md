@@ -51,9 +51,19 @@ quality is preserved. $S_{20}$ obeys a proved order-4 holonomic recurrence
 2. **Tier 2 — mid-range routing (research, currently failing):** a finite-field
    rule from the holonomic recurrence mod a small modulus. Must be redesigned
    and must beat sliding-window/local attention on quality before it ships.
-3. **Tier 3 — asymptotic log-space penalty ($d>$ window):** the BF16/FP8 FMA
-   $-d\log\lambda+\beta\log d$ with $\lambda=43.044$, $\beta=2$ — a geometry-fixed
-   blend of ALiBi (linear) and log penalties. Cheap, HBM-free, testable.
+3. **Tier 3 — asymptotic log-space penalty ($d>$ window), with a temperature
+   $\tau$:** the BF16/FP8 FMA $\tfrac1\tau(-d\log\lambda+\beta\log d)$ with
+   $\lambda=43.044$, $\beta=2$ — a geometry-fixed blend of ALiBi (linear) and log
+   penalties. **The $\tau$ is not optional.** Applied raw ($\tau=1$) the slope
+   $\log\lambda=3.762$ is so steep that $\exp(\text{penalty})$ underflows FP16 to
+   $0$ by $d\approx6$ — it would collapse the model into a $\sim$6-token sliding
+   window and destroy long-range retrieval (it might still pass a perplexity gate
+   on local n-grams, which is exactly the trap). The fix is a per-head
+   temperature ($\tau_h=\log\lambda/m_h$ matched to ALiBi slopes $m_h$), i.e. the
+   bias of $S(d)^{1/\tau}$: it preserves the linear slope and the $\beta=2$
+   curvature while compressing the decay into a survivable, multi-scale range
+   (steep heads ≈ local syntax, shallow heads reach $>1000$ tokens). Cheap,
+   HBM-free, and tested (`tests.md` §3T).
 
 **Strategic claims we deliberately downgrade to hypotheses:** "zero-parameter MoE
 routing", "infinite extrapolation with zero degradation", and LPU-specific

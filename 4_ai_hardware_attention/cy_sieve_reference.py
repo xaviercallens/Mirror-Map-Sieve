@@ -158,45 +158,85 @@ def tier3_logC(seq: str = "S20", d0: int | None = None,
 
 
 def tier3_penalty(d: int, seq: str = "S20", logC: float | None = None,
-                  log_lambda: float = S20_LOG_LAMBDA, beta: float = S20_BETA) -> float:
-    """Asymptotic positional penalty ≈ -log S(d), for d beyond the exact window.
+                  log_lambda: float = S20_LOG_LAMBDA, beta: float = S20_BETA,
+                  tau: float = 1.0) -> float:
+    """Asymptotic positional penalty for d beyond the exact window, with an
+    optional temperature scalar tau.
 
-    penalty(d) = -d*logλ + β*log d - logC.   Lower (more negative) = stronger
-    decay (less attention) at larger distance.
+        penalty(d) = (1/tau) * ( -d*logλ + β*log d - logC ).
+
+    With tau=1 this is exactly -log S(d) (the raw Calabi-Yau geometry).
+    Mathematically the tau form is the bias of S(d)^(1/tau): it preserves the
+    shape (the linear slope and the β=2 log-curvature) but rescales steepness.
+
+    WHY tau MATTERS (see tests.md §3T / the τ-attenuation analysis): the raw
+    slope logλ = 3.762 is so steep that exp(penalty) underflows FP16 to 0 by
+    d≈6, collapsing the model into a ~6-token sliding window and ANNIHILATING
+    long-range retrieval (Needle-in-a-Haystack). tau in roughly [8, 1000],
+    assigned PER HEAD (à la ALiBi), compresses the decay into a survivable,
+    long-range logit range while keeping the topological curvature.
     """
     if logC is None:
         logC = tier3_logC(seq, log_lambda=log_lambda, beta=beta)
-    return -d * log_lambda + beta * log(d) - logC
+    return (-d * log_lambda + beta * log(d) - logC) / tau
+
+
+def alibi_style_tau_ladder(n_heads: int, log_lambda: float = S20_LOG_LAMBDA):
+    """Per-head temperature ladder, chosen so each head's effective CY slope
+    logλ/τ_h equals an ALiBi head slope m_h = 2^(-8 h / n_heads).  Hence
+    τ_h = logλ / m_h.  Steep heads (small τ) handle local syntax; shallow heads
+    (large τ) preserve long-range retrieval. Returns a list of τ per head."""
+    return [log_lambda / (2.0 ** (-8.0 * h / n_heads)) for h in range(1, n_heads + 1)]
 
 
 # ----------------------------------------------------------------------------
 # Unified CY-Sieve bias (Tier 1 exact, Tier 3 asymptotic; Tier 2 disabled)
 # ----------------------------------------------------------------------------
 
-def cy_sieve_bias(d: int, seq: str = "S20") -> float:
-    """The additive log-space attention bias at token distance d >= 0.
+def cy_sieve_bias(d: int, seq: str = "S20", tau: float = 1.0) -> float:
+    """The additive log-space attention bias at token distance d >= 0, with an
+    optional temperature scalar tau (see tier3_penalty / alibi_style_tau_ladder).
 
-    For d within the exact window: bias = -log S(d) computed from the exact
-    INT64 table (so it agrees with the integer hardware path).
-    For d beyond the window: bias = tier3_penalty(d) (continuous at the edge).
+    The whole bias scales by 1/tau (the S(d)^(1/tau) interpretation applied at
+    every distance), so Tier 1 and Tier 3 stay mutually continuous:
+      - d within the exact window: bias = (-log S(d)) / tau   (exact integer S(d))
+      - d beyond the window:       bias = tier3_penalty(d, tau=tau)
 
-    Tier 2 is intentionally NOT applied (the proposed keep-rule fails; see
-    tier2_keep_rule_density and tests.md §2).
+    tau=1 reproduces the raw geometry (which UNDERFLOWS FP16 by d≈6 — do not ship
+    it; use a per-head tau ladder instead). Tier 2 is intentionally not applied.
     """
     window = tier1_window(seq)
     if d <= window:
-        # Inside the exact window the bias is -log S(d) computed from the exact
-        # integer S(d) (no quantization). The fixed-point reciprocal `tier1_table`
-        # is the *integer-hardware* artifact (tested for exactness in §1); on a
-        # GPU one would use it directly, accepting its tail quantization, but the
-        # mathematically faithful reference bias uses the exact integer.
-        return -log(SEQUENCES[seq](d))
-    return tier3_penalty(d, seq)
+        return (-log(SEQUENCES[seq](d))) / tau
+    return tier3_penalty(d, seq, tau=tau)
 
 
-def build_bias_vector(max_distance: int, seq: str = "S20") -> list[float]:
+def attention_weight(d: int, seq: str = "S20", tau: float = 1.0,
+                     dtype_min: float = 2.0 ** -24) -> float:
+    """exp(bias) — the (unnormalized) relative attention weight at distance d.
+    `dtype_min` is the smallest representable positive value (FP16 subnormal by
+    default); a weight below it is functionally zero on that hardware."""
+    from math import exp
+    return exp(cy_sieve_bias(d, seq, tau))
+
+
+def effective_context(seq: str = "S20", tau: float = 1.0,
+                      threshold: float = 0.01, max_d: int = 200000) -> int:
+    """Largest distance d at which the attention weight (relative to d=0) still
+    exceeds `threshold` — a proxy for usable context length at temperature tau."""
+    last = 0
+    for d in range(1, max_d):
+        if attention_weight(d, seq, tau) >= threshold:
+            last = d
+        elif d > 16:               # past the window, weight is monotone decreasing
+            break
+    return last
+
+
+def build_bias_vector(max_distance: int, seq: str = "S20",
+                      tau: float = 1.0) -> list[float]:
     """Convenience: the full additive-bias vector for d = 0..max_distance."""
-    return [cy_sieve_bias(d, seq) for d in range(max_distance + 1)]
+    return [cy_sieve_bias(d, seq, tau) for d in range(max_distance + 1)]
 
 
 # ----------------------------------------------------------------------------
@@ -219,11 +259,18 @@ def main():
     print(f"  kept {len(kept)} distances ({dens*100:.2f}%), nearest nonzero kept = {nearest}")
     print(f"  -> UNUSABLE as a router; Tier 2 disabled in cy_sieve_bias().")
     print("\n[S20] Tier-3 asymptotic penalty vs exact -log S20(d):")
-    logC = tier3_logC("S20")
     for d in (14, 30, 100, 200):
         exact = -log(S20(d)); p = tier3_penalty(d)
         print(f"  d={d:3d}: exact={exact:11.4f}  penalty={p:11.4f}  "
               f"rel.err={abs(p-exact)/abs(exact)*100:.4f}%")
+    print("\n[S20] Temperature tau — native geometry collapses; tau rescues range:")
+    print(f"  tau=1 (native): effective >1% context = {effective_context('S20', 1.0)} tokens"
+          f"  (FP16 collapse -> NIAH would fail)")
+    for tau in (10, 20, 40, 128, 512):
+        print(f"  tau={tau:4d}: effective context = {effective_context('S20', tau):5d} tokens")
+    ladder = alibi_style_tau_ladder(8)
+    print(f"  per-head ALiBi-style tau ladder (H=8): {[round(t,1) for t in ladder]}")
+    print(f"    per-head reach: {[effective_context('S20', t) for t in ladder]} tokens")
 
 
 if __name__ == "__main__":
