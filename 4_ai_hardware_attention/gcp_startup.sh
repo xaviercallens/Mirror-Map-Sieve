@@ -4,7 +4,7 @@
 # v3 — replaces the stale gpu_benchmark_s20.py path with the CY-Sieve orchestrator.
 set -uo pipefail   # no -e: we handle errors and always try to upload + self-delete
 
-RESULTS_BUCKET="gs://agora-autoresearch-001-benchmark-results"
+RESULTS_BUCKET="gs://gen-lang-client-0625573011-cy-sieve-bench"
 WORKDIR="/tmp/Mirror-Map-Sieve/4_ai_hardware_attention"
 STAMP="$(date +%Y%m%d_%H%M%S)"
 RESULTS_FILE="/tmp/gpu_phase_results_${STAMP}.json"
