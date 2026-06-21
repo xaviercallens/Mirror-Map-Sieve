@@ -86,10 +86,16 @@ if HAS_TRITON:
                  mask=(offs_i[:, None] < L) & (offs_d[None, :] < D))
 
 
-def cy_sieve_attention_triton(Q, K, V, bias_vec, causal=True, block_n=64):
+def cy_sieve_attention_triton(Q, K, V, bias_vec, causal=True, block_n=32,
+                              num_stages=1, num_warps=4):
     """Run the Triton kernel. Q,K,V: [L,D] torch.cuda tensors; bias_vec: [L]
     distance-bias (host-built from cy_sieve_reference for the head's tau).
-    Raises if Triton/CUDA unavailable (use the CPU reference instead)."""
+    Raises if Triton/CUDA unavailable (use the CPU reference instead).
+
+    block_n=32 / num_stages=1 keep the kernel's shared-memory footprint under the
+    L4's ~100KB SMEM limit (an L4 run with block_n=64 + pipelining overflowed at
+    ~112KB). Larger blocks are fine on A100/H100 with more SMEM.
+    """
     if not HAS_TRITON:
         raise RuntimeError("Triton/CUDA unavailable; use cy_sieve_attention "
                            "(CPU reference) on this machine.")
@@ -100,7 +106,7 @@ def cy_sieve_attention_triton(Q, K, V, bias_vec, causal=True, block_n=64):
     grid = (triton.cdiv(L, block_n),)
     _cy_sieve_fwd[grid](Q, K, V, bias_vec, out, L, D,
                         sqk=1.0 / math.sqrt(D), BLOCK_N=block_n, BLOCK_D=BLOCK_D,
-                        CAUSAL=causal)
+                        CAUSAL=causal, num_stages=num_stages, num_warps=num_warps)
     return out
 
 
