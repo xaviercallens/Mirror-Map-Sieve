@@ -1,65 +1,64 @@
 #!/bin/bash
-# GCP L4 GPU Benchmark Startup Script (v2 — uses pre-installed PyTorch)
-# Auto-terminates after benchmark completion.
-set -uo pipefail  # Don't use -e, we handle errors ourselves
+# GCP L4 GPU startup — CY-Sieve GPU phase (tests.md §4 parity / §5 quality / §6 perf).
+# Runs run_gpu_phase.py, uploads results to GCS, then self-terminates.
+# v3 — replaces the stale gpu_benchmark_s20.py path with the CY-Sieve orchestrator.
+set -uo pipefail   # no -e: we handle errors and always try to upload + self-delete
 
 RESULTS_BUCKET="gs://agora-autoresearch-001-benchmark-results"
-RESULTS_FILE="/tmp/gpu_benchmark_results.json"
-LOG_FILE="/tmp/gpu_benchmark.log"
+WORKDIR="/tmp/Mirror-Map-Sieve/4_ai_hardware_attention"
+STAMP="$(date +%Y%m%d_%H%M%S)"
+RESULTS_FILE="/tmp/gpu_phase_results_${STAMP}.json"
+LOG_FILE="/tmp/gpu_phase_${STAMP}.log"
 
 exec > >(tee -a "$LOG_FILE") 2>&1
-
 echo "=========================================="
-echo "S20 GPU Benchmark — Startup $(date -u)"
+echo "CY-Sieve GPU phase — startup $(date -u)"
 echo "=========================================="
 
 # ── GPU diagnostics ──
-nvidia-smi || { echo "ERROR: nvidia-smi not found"; exit 1; }
-echo ""
+nvidia-smi || { echo "ERROR: nvidia-smi not found (no GPU?)"; }
 
-# ── Install only what's needed (don't reinstall torch — it's pre-installed) ──
-pip3 install --quiet --no-deps transformers==4.49.0 accelerate huggingface_hub sentencepiece protobuf 2>&1 | tail -5
-# Pin transformers to 4.49 which doesn't have the torchaudio import issue
+# ── Dependencies. The DLVM images ship torch+triton; add the quality-gate deps.
+#    --no-deps keeps the pre-installed CUDA torch in place.
+pip3 install --quiet --no-deps datasets 2>&1 | tail -3 || true
+pip3 install --quiet huggingface_hub fsspec pyarrow 2>&1 | tail -3 || true
 
-echo ""
-python3 -c "
+python3 - <<'PY'
 import torch
-print(f'PyTorch {torch.__version__}, CUDA {torch.version.cuda}')
-print(f'GPU: {torch.cuda.get_device_name(0)}')
-print(f'VRAM: {torch.cuda.get_device_properties(0).total_mem / 1e9:.1f} GB')
-import transformers
-print(f'Transformers: {transformers.__version__}')
-"
+print(f"PyTorch {torch.__version__}, CUDA {torch.version.cuda}")
+print(f"GPU: {torch.cuda.get_device_name(0)}")
+print(f"VRAM: {torch.cuda.get_device_properties(0).total_memory/1e9:.1f} GB")
+try:
+    import triton; print(f"Triton {triton.__version__}")
+except Exception as e:
+    print(f"Triton import failed: {e}")
+PY
 
-# ── Clone repo ──
+# ── Clone the repo ──
 cd /tmp
 rm -rf Mirror-Map-Sieve
 git clone --depth 1 https://github.com/xaviercallens/Mirror-Map-Sieve.git
-cd Mirror-Map-Sieve/4_ai_hardware_attention
+cd "$WORKDIR"
 
-# ── Run benchmark ──
+# ── Run the full GPU phase (§4 + §5 + §6) ──
 echo ""
-echo "Starting S20 GPU benchmark at $(date -u)..."
-python3 gpu_benchmark_s20.py \
-    --model microsoft/Phi-3-mini-4k-instruct \
-    --seq_lens 64 128 256 512 1024 \
-    --output "$RESULTS_FILE" 2>&1
-
+echo "Starting CY-Sieve GPU phase at $(date -u)..."
+python3 run_gpu_phase.py --output "$RESULTS_FILE" 2>&1
 BENCH_EXIT=$?
 echo ""
-echo "Benchmark exit code: $BENCH_EXIT at $(date -u)"
+echo "GPU phase exit code: $BENCH_EXIT at $(date -u)"
 
-# ── Upload results ──
-if [ -f "$RESULTS_FILE" ]; then
-    gsutil cp "$RESULTS_FILE" "${RESULTS_BUCKET}/gpu_benchmark_results_$(date +%Y%m%d_%H%M%S).json" 2>/dev/null && \
-        echo "✅ Results uploaded to GCS" || \
-        echo "⚠ Could not upload to GCS. Results saved locally at $RESULTS_FILE"
-fi
-gsutil cp "$LOG_FILE" "${RESULTS_BUCKET}/gpu_benchmark_$(date +%Y%m%d_%H%M%S).log" 2>/dev/null || true
+# ── Upload results + the per-section JSONs + log ──
+for f in "$RESULTS_FILE" \
+         "$WORKDIR/cy_sieve_quality_results.json" \
+         "$WORKDIR/cy_sieve_perf_results.json"; do
+    [ -f "$f" ] && gsutil cp "$f" "${RESULTS_BUCKET}/cy_sieve/$(basename "$f" .json)_${STAMP}.json" \
+        && echo "✅ uploaded $(basename "$f")" || echo "⚠ could not upload $f"
+done
+gsutil cp "$LOG_FILE" "${RESULTS_BUCKET}/cy_sieve/$(basename "$LOG_FILE")" 2>/dev/null || true
 
 # ── Self-terminate ──
 echo "Self-terminating instance at $(date -u)..."
 ZONE=$(curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/instance/zone | cut -d/ -f4)
 INSTANCE=$(curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/instance/name)
-gcloud compute instances delete "$INSTANCE" --zone="$ZONE" --quiet 2>/dev/null || \
-    shutdown -h now
+gcloud compute instances delete "$INSTANCE" --zone="$ZONE" --quiet 2>/dev/null || shutdown -h now

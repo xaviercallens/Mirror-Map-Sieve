@@ -14,3 +14,8 @@ build/
 *.ilean
 *.c
 generated_check.lean
+
+# CY-Sieve GPU-phase result artifacts (generated on the GPU box)
+4_ai_hardware_attention/cy_sieve_perf_results.json
+4_ai_hardware_attention/cy_sieve_quality_results.json
+4_ai_hardware_attention/gpu_phase_results*.json

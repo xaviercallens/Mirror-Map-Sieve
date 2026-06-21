@@ -25,17 +25,36 @@ pytest 4_ai_hardware_attention/test_cy_sieve_triton.py -v
 `cy_sieve_attention.flash_sdpa_with_bias` (the CPU oracle) within FP16/BF16
 tolerance (rel. err < 2⁻⁸).
 
-## Stage C — the quality gate (tests.md §5, the decisive test)
-Not yet implemented; this is the work that decides whether CY-Sieve is worth
-anything. Required:
-1. Patch the CY-Sieve bias (per-head τ ladder) into a small open model
-   (GPT-2 / Phi-3-mini) in place of RoPE.
-2. Zero-shot **perplexity** on WikiText-2 + a long-context set, vs **RoPE,
-   ALiBi, and sliding-window** at matched compute. **Sweep τ; report it.**
-3. **Needle-in-a-Haystack** accuracy at 4K / 16K / 64K vs the same baselines.
+## One-shot GPU phase entrypoint
+```bash
+pip install -r 4_ai_hardware_attention/requirements-gpu.txt
+python 4_ai_hardware_attention/run_gpu_phase.py            # §4 + §5 + §6, one JSON
+python 4_ai_hardware_attention/run_gpu_phase.py --quick    # fast functional check
+```
+`gcp_startup.sh` (v3) runs exactly this on an L4 and uploads to
+`gs://agora-autoresearch-001-benchmark-results/cy_sieve/`, then self-terminates.
 
-**Kill criterion (do not soften):** if perplexity regresses > 5% vs the best
-baseline, or NIAH collapses, report a **negative result** — do not ship.
+## Stage C — the quality gate (tests.md §5, the decisive test)
+Implemented in `cy_sieve_quality_gate.py`. **Methodology note (important):** an
+earlier attempt zero-shot-swapped the positional scheme on a *frozen* pretrained
+GPT-2. That is **invalid** — it was verified to collapse *every* scheme equally
+(native ppl 32.5 vs ALiBi 1641, sliding 2529, CY-Sieve ~7180 on WikiText-2),
+because GPT-2 was trained with learned absolute positions; the result measures
+train/test mismatch, not the scheme. Reporting it would break the §7 honesty
+guards.
+
+The gate therefore uses the ALiBi-paper methodology — **train small GPTs FROM
+SCRATCH**, identical arch/data/steps/compute, one per scheme:
+1. `learned` (control), `alibi`, `sliding-window`, `cy_sieve` (per-head τ ladder
+   + a single-τ sweep). The CY-Sieve bias is the only thing that differs.
+2. **Validation perplexity** at the training context **and length-extrapolation**
+   perplexity at 2×/4× the training context.
+3. (NIAH at 4K/16K/64K is the natural follow-up once the trained checkpoints
+   exist; the perplexity-extrapolation curve is the first decisive signal.)
+
+**PASS:** CY-Sieve within +1% of the best baseline (ideally lower). **Kill
+criterion (do not soften):** if perplexity regresses > 5% vs the best baseline,
+or extrapolation collapses, report a **negative result** — do not ship.
 
 ## Known constraints surfaced on CPU (carry into the GPU design)
 - **τ is mandatory.** Native τ=1 underflows FP16 by d≈6 → a ~6-token window.
