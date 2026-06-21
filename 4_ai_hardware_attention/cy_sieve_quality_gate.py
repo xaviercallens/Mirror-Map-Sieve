@@ -178,18 +178,30 @@ def load_corpus(max_chars=2_000_000):
     the real corpus or "SYNTHETIC-FALLBACK" when datasets is unavailable — the
     caller MUST record this, because the synthetic corpus is trivially memorized
     (every scheme scores ppl~1.0) and a PASS on it is scientifically vacuous."""
+    # Newer huggingface_hub rejects the bare "wikitext" repo id (wants
+    # namespace/name), so try the namespaced "Salesforce/wikitext" first.
+    from_ds = None
     try:
         from datasets import load_dataset
-        tr = load_dataset("wikitext", "wikitext-2-raw-v1", split="train")
-        va = load_dataset("wikitext", "wikitext-2-raw-v1", split="validation")
+        for repo in ("Salesforce/wikitext", "wikitext"):
+            try:
+                tr = load_dataset(repo, "wikitext-2-raw-v1", split="train")
+                va = load_dataset(repo, "wikitext-2-raw-v1", split="validation")
+                from_ds = (repo, tr, va)
+                break
+            except Exception:
+                continue
+    except Exception:
+        pass
+    if from_ds is not None:
+        repo, tr, va = from_ds
         train_txt = "\n".join(t for t in tr["text"] if t.strip())[:max_chars]
         val_txt = "\n".join(t for t in va["text"] if t.strip())[:max_chars // 8]
-        return train_txt, val_txt, "wikitext-2-raw-v1"
-    except Exception as e:
-        print(f"  [warn] datasets unavailable ({e}); using bundled sample. "
-              f"RESULTS WILL BE VACUOUS (ppl~1.0). Install datasets+xxhash.")
-        base = (_FALLBACK_TEXT + "\n") * 4000
-        return base[:max_chars], base[:max_chars // 8], "SYNTHETIC-FALLBACK"
+        return train_txt, val_txt, f"{repo}:wikitext-2-raw-v1"
+    print("  [warn] WikiText-2 could not be loaded; using bundled sample. "
+          "RESULTS WILL BE VACUOUS (ppl~1.0). Install datasets (with deps)+xxhash.")
+    base = (_FALLBACK_TEXT + "\n") * 4000
+    return base[:max_chars], base[:max_chars // 8], "SYNTHETIC-FALLBACK"
 
 
 _FALLBACK_TEXT = (

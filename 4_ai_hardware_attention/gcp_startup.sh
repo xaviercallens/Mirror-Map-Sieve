@@ -19,12 +19,17 @@ echo "=========================================="
 nvidia-smi || { echo "ERROR: nvidia-smi not found (no GPU?)"; }
 
 # ── Dependencies. The DLVM images ship torch+triton; add the quality-gate deps.
-#    pytest is NOT on the image (§4 needs it); xxhash is required by datasets to
-#    actually load WikiText-2 (without it the gate silently falls back to its tiny
-#    synthetic corpus and every scheme scores ppl~1.0 — a vacuous PASS).
-pip3 install --quiet pytest xxhash 2>&1 | tail -3 || true
-pip3 install --quiet --no-deps datasets 2>&1 | tail -3 || true
-pip3 install --quiet "requests>=2.32.2" huggingface_hub fsspec pyarrow 2>&1 | tail -3 || true
+#    pytest is NOT on the image (§4 needs it). datasets must be installed WITH its
+#    deps (multiprocess, pandas, xxhash, pyarrow, requests>=2.32.2) — a --no-deps
+#    install leaves it unimportable, so WikiText-2 won't load and the gate falls
+#    back to its synthetic corpus (ppl~1.0, vacuous). Install datasets normally;
+#    pip resolves its deps without touching the pre-installed CUDA torch.
+pip3 install --quiet pytest 2>&1 | tail -3 || true
+pip3 install --quiet "datasets>=2.19" xxhash multiprocess pandas \
+    "requests>=2.32.2" huggingface_hub fsspec pyarrow 2>&1 | tail -5 || true
+# sanity: confirm datasets imports + pytest present before the run
+python3 -c "import datasets, xxhash, pytest; print('deps OK: datasets', datasets.__version__)" 2>&1 | tail -2 || \
+    echo "WARN: dep check failed — §5 may fall back to synthetic corpus (it will self-flag)"
 
 python3 - <<'PY'
 import torch
