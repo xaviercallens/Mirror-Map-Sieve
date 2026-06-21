@@ -106,10 +106,21 @@ fails. See `vision.md` for the corrected architecture and the verified numbers.
       reduction**, is the whole case for the kernel. **Kill criterion (unchanged):
       >5% perplexity regression vs the best baseline ⇒ negative result, not
       shipped.** No verdict is claimed until the run completes.
-- [ ] Throughput / HBM-traffic on the L4 (`cy_sieve_perf.py`, §6): CY-Sieve Triton
-      kernel vs dense SDPA vs a materialized-`[L,L]`-bias-table SDPA at 1K–32K;
-      reports bias-path bytes O(L) vs O(L²). Speed reported **only** beside the §5
-      verdict (T6.3).
+- [x] Throughput / HBM-traffic on the L4 (`cy_sieve_perf.py`, §6) **MEASURED**
+      (2026-06-21; see `docs/PHASE3_CYSIEVE_GPU_FINDINGS.md`): bias-path HBM is
+      **O(L) vs O(L²) — 8192× less at L=16384** (the core claim, confirmed). Honest
+      caveat: the *unfused* kernel is ~3.7× **slower** than fused dense SDPA in
+      wall-clock — an HBM-traffic win, **not yet a latency win** (reported per T6.3).
+
+**Stage B′ — kernel optimization (NEW, the work §6 revealed):**
+- [ ] **Fuse the bias generation into the FlashAttention inner loop** so the O(L)
+      HBM saving becomes a *latency* saving (currently the bias is a precomputed
+      vector load; fold Tier-1 table + Tier-3 FMA into the score computation).
+- [ ] Autotune `block_n` / `num_stages` / `num_warps` per arch (L4 SMEM ≈ 100 KB
+      forced block_n=32; A100/H100 allow larger). Compare against FlashAttention-2/3.
+- [ ] Add a BF16 path; re-measure latency vs dense SDPA and vs RoPE at 8K–128K.
+- [ ] **Target:** match or beat fused dense SDPA latency *while* keeping the O(L)
+      bias HBM — only then is "HBM-free positional bias" a wall-clock contribution.
 
 **Stage D — research hypotheses (only if Stage C passes):** redesign Tier 2 (a
 useful finite-field router), test "MoE routing via $S_{15}(d)\bmod E$" for load

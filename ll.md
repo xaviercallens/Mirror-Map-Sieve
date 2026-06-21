@@ -121,6 +121,31 @@ A project can have per-region L4 quota = 1 yet still fail *all* GPU launches
 **SocrateAI** (`gen-lang-client-0625573011`), which has both quotas ≥ 1. Lesson:
 check the global GPU quota first, not just the per-region accelerator quota.
 
+### 20. An HBM-Traffic Win Is Not Automatically a Latency Win
+The CY-Sieve §6 measurement (NVIDIA L4) confirmed the project's central claim —
+the on-the-fly positional bias reads **O(L)** bytes of HBM vs **O(L²)** for a
+materialized table (**8192× less at L=16384**) — *and at the same time* showed the
+current Triton kernel is **~3.7× slower than fused dench SDPA** in wall-clock,
+because it is unfused and cuDNN's SDPA is heavily tuned. The two facts coexist: you
+can save the memory traffic yet still lose on time until the saving is *fused*
+into the attention inner loop. Lesson: report HBM and latency as **separate**
+axes (the `tests.md` T6.3 guard exists for exactly this), never let "bandwidth-
+optimal" imply "faster," and treat fusion as the work that converts the one into
+the other. The honest framing is "memory-traffic win at long context; latency work
+remaining," not "faster attention."
+
+### 21. `pip install --no-deps <pkg>` Silently Cripples the Package
+Trying to protect the DLVM's pre-installed CUDA torch, we ran
+`pip install --no-deps datasets`. Result: `datasets` imported-failed (missing
+`multiprocess`, `pandas`), so the §5 gate fell through to its synthetic corpus and
+produced a *vacuous* PASS (ppl≈1.0 for every scheme). A second trap followed: a
+newer `huggingface_hub` rejects the legacy bare repo id `"wikitext"` (wants
+`namespace/name`) — fixed by loading `"Salesforce/wikitext"`. Lessons: (a) install
+a library WITH its deps and only pin the one thing you must protect; (b) a
+data-loading fallback must **record its source** and the verdict must **self-flag
+INVALID** on fallback, or a tooling failure masquerades as a science result; (c)
+de-risk the data path with a tiny local run before spending hours of GPU.
+
 ## Open work carried forward (snapshot — authoritative list in roadmap.md / todo.md / memory.md)
 
 The lesson behind keeping this list is #7 ("claims drift when building fast"):

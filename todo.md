@@ -73,18 +73,27 @@ Architecture + verified numbers in `vision.md`; staged plan in `roadmap.md`.
   is cleared; the GPU orchestrator (`run_gpu_phase.py`) moved on to §5.
 - [done] **CPU obstacle work** robust recurrence-mod-p generator (the SRAM
   "generate on-the-fly" path); found+documented P₄(n)≡0 reseed points (~p/80).
-- [open / IN FLIGHT] **Stage C (the gate)** running on the L4 now
-  (`cy_sieve_quality_gate.py` + `cy_sieve_perf.py` via `run_gpu_phase.py`;
-  results → `gs://gen-lang-client-0625573011-cy-sieve-bench/cy_sieve/`).
-  **Methodology fix:** do NOT zero-shot-swap positions on a frozen model — that is
-  invalid (every scheme collapses equally: native 32.5 vs ALiBi 1641 / sliding
-  2529 / CY-Sieve ~7180 on WikiText-2). Instead **train small GPTs from scratch**,
+- [done] **§6 perf MEASURED on L4** (2026-06-21; `docs/PHASE3_CYSIEVE_GPU_FINDINGS.md`):
+  bias-path HBM **O(L) vs O(L²), 8192× less @L=16384** — core claim confirmed.
+  Caveat (reported per T6.3): unfused kernel is ~3.7× SLOWER than fused dense SDPA
+  → HBM-traffic win, NOT yet a latency win.
+- [open / IN FLIGHT] **Stage C (the §5 quality gate)** running on the L4
+  (`cy_sieve_quality_gate.py` via `run_gpu_phase.py`; results →
+  `gs://gen-lang-client-0625573011-cy-sieve-bench/cy_sieve/`).
+  **Methodology fix:** do NOT zero-shot-swap positions on a frozen model — invalid
+  (every scheme collapses equally: native 32.5 vs ALiBi 1641 / sliding 2529 /
+  CY-Sieve ~7180 on WikiText-2). Instead **train small GPTs from scratch**,
   identical compute, per scheme (learned/ALiBi/sliding/CY-Sieve τ-ladder + τ
   sweep); compare val perplexity at train ctx + **2×/4× length extrapolation**.
-  §6 adds Triton-kernel throughput + bias-path HBM bytes O(L) vs O(L²).
-  **Anticipated (hypothesis):** CY-Sieve within +1% of best baseline with no worse
-  extrapolation ⇒ the kernel's case holds; **kill if >5% regression.** No verdict
-  until the run finishes.
+  Early directional signal (synthetic shakedown): learned-abs collapses past
+  train-len (ppl 2495→251818), CY-Sieve τ-ladder/τ≤128 extrapolate like ALiBi,
+  τ=512 degrades. **Anticipated:** within +1% of best baseline ⇒ case holds;
+  **kill if >5%.** No verdict until the real-WikiText run finishes.
+- [open] **Stage B′ — kernel optimization (NEW, what §6 revealed):** fuse the bias
+  into the FlashAttention inner loop so the O(L) HBM saving becomes a *latency*
+  saving; autotune block_n/stages/warps per arch; add BF16; re-measure vs fused
+  SDPA + RoPE at 8K–128K. **Target: match/beat fused SDPA latency while keeping
+  O(L) bias HBM** — the only way "HBM-free bias" becomes a wall-clock win.
 - [open] **Stage D (speculative, only if C passes)** redesign Tier-2 router;
   test MoE routing via S15(d) mod E; measure 4K→long-context extrapolation.
 - [parked] Legacy `4_ai_hardware_attention/` prototype kernels — superseded by

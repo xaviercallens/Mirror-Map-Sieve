@@ -85,14 +85,29 @@ bias.)
 > geometry-fixed bias — slope $\log\lambda=3.762$, curvature $\beta=2$ from the
 > rank-4 MUM Calabi–Yau-3-fold tail, spread across heads by the τ-ladder — carries
 > real positional signal, we expect CY-Sieve to sit **within +1% of the best
-> baseline's perplexity** with **no worse length extrapolation**. Combined with
-> §6's structural advantage — the bias path reads **O(L)** values generated on the
-> fly versus **O(L²)** for a materialized bias table — that is the entire case for
-> the kernel: *equal quality, strictly less bias-memory traffic.* **We commit in
+> baseline's perplexity** with **no worse length extrapolation**. **We commit in
 > advance to the kill criterion: a >5% perplexity regression vs the best baseline,
 > or an extrapolation collapse, is reported as a negative result and the tier is
-> not shipped.** No verdict is asserted until the L4 run completes and the numbers
-> are in `gs://gen-lang-client-0625573011-cy-sieve-bench/cy_sieve/`.
+> not shipped.** No §5 verdict is asserted until the real-WikiText-2 L4 run completes.
+
+**What the L4 has already measured (intermediary — `docs/PHASE3_CYSIEVE_GPU_FINDINGS.md`):**
+- **§4 kernel correctness: PASS** — the Triton kernel matches the CPU reference
+  within FP16 tolerance (4/4).
+- **§6 the core memory claim: CONFIRMED** — the on-the-fly bias reads **O(L)** bytes
+  of HBM vs **O(L²)** for a materialized table (**8192× less at L=16384**, widening
+  with context). *This is the structural advantage the whole bet rests on, now
+  measured rather than asserted.*
+- **§6 honest counterweight:** the *current, unfused* kernel is **~3.7× slower** than
+  fused dense SDPA in wall-clock — an HBM-traffic win, **not yet a latency win**. We
+  state this plainly (the `tests.md` T6.3 guard forbids reporting speed without it).
+
+**The improvement that follows directly (Stage B′ on the roadmap):** *fuse* the bias
+generation into the FlashAttention inner loop so the O(L) HBM saving is converted
+into wall-clock — the goal is to **match or beat fused SDPA latency while keeping the
+O(L) bias traffic**. Only then does "HBM-free positional bias" become a speed
+contribution and not merely a bandwidth one. The honest current headline is
+*"memory-traffic win at long context; latency work remaining,"* never *"faster
+attention."*
 
 ### Mathematical depth (the actual core)
 - **Prove the supercongruences** — these are the highest-impact open problems in this project
