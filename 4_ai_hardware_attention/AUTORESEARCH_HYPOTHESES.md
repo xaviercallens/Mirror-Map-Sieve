@@ -39,3 +39,27 @@ flexibility, anchored on two ideas:
 
 All learnable schemes keep the **O(L) bias-generation** property — γ is just H
 scalars; the shape is still the recurrence-generated vector.
+
+---
+
+## Screen-phase results (2026-06-22, NVIDIA L4, 1200 steps, real WikiText-2)
+
+| rank | scheme | ppl@512 | note |
+|---|---|---|---|
+| 1 | **holo_ladder** | **5.89** | learnable-γ Holonomic-ALiBi — **beats every baseline** |
+| 2 | holo_ladder_pos | 5.96 | γ clamped ≥0 |
+| 3 | alibi (baseline) | 6.15 | best baseline |
+| 4 | holo_tiny | 6.99 | learnable-γ, flat init |
+| 5 | holo_curv | 11.33 | β-curvature only — weak |
+| 6–12 | comet_* | 11.7–12.4 | Direction B underperformed at this budget |
+| — | learned / sliding | 12.24 / 12.54 | baselines |
+
+**Key finding: Direction A (learnable per-head γ) works** — the top two schemes
+beat the best baseline (ALiBi 6.15) at screen scale, overturning the fixed-bias
+KILL *at this budget*. Decoupling the slope from the sequence (γ learnable,
+geometry fixes only the shape) is the decisive change, and O(L) generation is
+preserved. **Direction B (Comet) disappointed here** — likely too few steps for
+the learnable tail to find signal; revisit at longer context.
+
+**Selected top-3 for the full 6000-step run:** `holo_ladder`, `holo_ladder_pos`,
+`holo_tiny` (vs `learned` + `sliding`). Full-run verdict pending.

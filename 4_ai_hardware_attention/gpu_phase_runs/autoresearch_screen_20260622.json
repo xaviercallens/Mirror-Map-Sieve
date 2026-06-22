@@ -1,0 +1,292 @@
+{
+  "phase": "screen",
+  "device": "cuda",
+  "corpus_source": "Salesforce/wikitext:wikitext-2-raw-v1",
+  "config": {
+    "d_model": 384,
+    "n_layer": 6,
+    "n_head": 6,
+    "d_ff": 1536,
+    "ctx": 512,
+    "batch": 16,
+    "steps": 1200,
+    "lr": 0.0003,
+    "max_extrap": 2048,
+    "window": 512
+  },
+  "runs": [
+    {
+      "scheme": "learned",
+      "params": 11532288,
+      "train_seconds": 109.2,
+      "ppl_by_ctx": {
+        "512": 12.2413,
+        "1024": 12.595,
+        "2048": 12.7574
+      },
+      "gamma_final": null
+    },
+    {
+      "scheme": "alibi",
+      "params": 10745856,
+      "train_seconds": 120.2,
+      "ppl_by_ctx": {
+        "512": 6.1509,
+        "1024": 6.1637,
+        "2048": 6.0792
+      },
+      "gamma_final": null
+    },
+    {
+      "scheme": "sliding",
+      "params": 10745856,
+      "train_seconds": 120.0,
+      "ppl_by_ctx": {
+        "512": 12.5363,
+        "1024": 12.6579,
+        "2048": 12.7329
+      },
+      "gamma_final": null
+    },
+    {
+      "scheme": "holo_ladder",
+      "params": 10745862,
+      "train_seconds": 126.5,
+      "ppl_by_ctx": {
+        "512": 5.887,
+        "1024": 5.8892,
+        "2048": 5.7908
+      },
+      "gamma_final": [
+        0.14956,
+        0.06381,
+        0.02614,
+        0.00995,
+        0.00379,
+        0.00143
+      ]
+    },
+    {
+      "scheme": "holo_tiny",
+      "params": 10745862,
+      "train_seconds": 126.6,
+      "ppl_by_ctx": {
+        "512": 6.9892,
+        "1024": 6.9739,
+        "2048": 6.9111
+      },
+      "gamma_final": [
+        0.03173,
+        0.03142,
+        0.03178,
+        0.03177,
+        0.03157,
+        0.03172
+      ]
+    },
+    {
+      "scheme": "holo_curv",
+      "params": 10745862,
+      "train_seconds": 126.5,
+      "ppl_by_ctx": {
+        "512": 11.329,
+        "1024": 11.5081,
+        "2048": 11.6921
+      },
+      "gamma_final": [
+        0.15249,
+        0.06236,
+        0.0262,
+        0.01058,
+        0.00428,
+        0.00176
+      ]
+    },
+    {
+      "scheme": "holo_ladder_pos",
+      "params": 10745862,
+      "train_seconds": 126.6,
+      "ppl_by_ctx": {
+        "512": 5.9553,
+        "1024": 5.9637,
+        "2048": 5.8749
+      },
+      "gamma_final": [
+        0.14887,
+        0.06391,
+        0.02619,
+        0.00996,
+        0.00384,
+        0.00142
+      ]
+    },
+    {
+      "scheme": "comet512_fixed",
+      "params": 10745862,
+      "train_seconds": 120.0,
+      "ppl_by_ctx": {
+        "512": 12.2125,
+        "1024": 12.2287,
+        "2048": 12.2182
+      },
+      "gamma_final": [
+        0.00781,
+        0.00781,
+        0.00781,
+        0.00781,
+        0.00781,
+        0.00781
+      ]
+    },
+    {
+      "scheme": "comet512_learn",
+      "params": 10745862,
+      "train_seconds": 127.3,
+      "ppl_by_ctx": {
+        "512": 12.4354,
+        "1024": 12.4434,
+        "2048": 12.4773
+      },
+      "gamma_final": [
+        0.0118,
+        0.01115,
+        0.01117,
+        0.01186,
+        0.01141,
+        0.0116
+      ]
+    },
+    {
+      "scheme": "comet256_learn",
+      "params": 10745862,
+      "train_seconds": 127.4,
+      "ppl_by_ctx": {
+        "512": 11.9642,
+        "1024": 11.9682,
+        "2048": 11.9497
+      },
+      "gamma_final": [
+        0.01218,
+        0.01183,
+        0.01218,
+        0.0121,
+        0.01184,
+        0.01214
+      ]
+    },
+    {
+      "scheme": "comet1024_learn",
+      "params": 10745862,
+      "train_seconds": 127.4,
+      "ppl_by_ctx": {
+        "512": 12.1032,
+        "1024": 12.1288,
+        "2048": 12.1483
+      },
+      "gamma_final": [
+        0.01118,
+        0.0107,
+        0.01025,
+        0.01102,
+        0.01041,
+        0.01091
+      ]
+    },
+    {
+      "scheme": "comet_perhead_W",
+      "params": 10745862,
+      "train_seconds": 127.4,
+      "ppl_by_ctx": {
+        "512": 11.669,
+        "1024": 11.7103,
+        "2048": 11.6834
+      },
+      "gamma_final": [
+        0.01268,
+        0.0125,
+        0.01234,
+        0.01134,
+        0.01035,
+        0.00963
+      ]
+    },
+    {
+      "scheme": "comet512_soft",
+      "params": 10745862,
+      "train_seconds": 127.7,
+      "ppl_by_ctx": {
+        "512": 12.1506,
+        "1024": 12.1684,
+        "2048": 12.1766
+      },
+      "gamma_final": [
+        0.01169,
+        0.01121,
+        0.01121,
+        0.01175,
+        0.01128,
+        0.01153
+      ]
+    }
+  ],
+  "ranking_by_train_ppl": [
+    [
+      "holo_ladder",
+      5.887
+    ],
+    [
+      "holo_ladder_pos",
+      5.9553
+    ],
+    [
+      "alibi",
+      6.1509
+    ],
+    [
+      "holo_tiny",
+      6.9892
+    ],
+    [
+      "holo_curv",
+      11.329
+    ],
+    [
+      "comet_perhead_W",
+      11.669
+    ],
+    [
+      "comet256_learn",
+      11.9642
+    ],
+    [
+      "comet1024_learn",
+      12.1032
+    ],
+    [
+      "comet512_soft",
+      12.1506
+    ],
+    [
+      "comet512_fixed",
+      12.2125
+    ],
+    [
+      "learned",
+      12.2413
+    ],
+    [
+      "comet512_learn",
+      12.4354
+    ],
+    [
+      "sliding",
+      12.5363
+    ]
+  ],
+  "top3_cy": [
+    "holo_ladder",
+    "holo_ladder_pos",
+    "holo_tiny"
+  ],
+  "best_baseline_ppl": 6.1509
+}
