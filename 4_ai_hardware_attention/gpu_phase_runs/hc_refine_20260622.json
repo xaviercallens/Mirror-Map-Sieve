@@ -1,0 +1,112 @@
+{
+  "corpus": "Salesforce/wikitext:wikitext-2-raw-v1",
+  "cfg": {
+    "d_model": 128,
+    "n_layer": 3,
+    "n_head": 4,
+    "d_ff": 512,
+    "ctx": 512,
+    "batch": 12,
+    "steps": 800,
+    "lr": 0.0003,
+    "max_extrap": 1024,
+    "gamma_l2": 0.001
+  },
+  "runs": [
+    {
+      "scheme": "alibi",
+      "ppl_by_ctx": {
+        "512": 9.1814,
+        "1024": 9.0963
+      },
+      "params": 627840,
+      "bias_report": null
+    },
+    {
+      "scheme": "alibi_learn",
+      "ppl_by_ctx": {
+        "512": 8.835,
+        "1024": 8.7537
+      },
+      "params": 627848,
+      "bias_report": {
+        "slope_a": [
+          0.3371,
+          0.0873,
+          0.0188,
+          0.0052
+        ],
+        "logcurv_b": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "scheme": "holo_fixed",
+      "ppl_by_ctx": {
+        "512": 8.9979,
+        "1024": 8.9128
+      },
+      "params": 627844,
+      "bias_report": null
+    },
+    {
+      "scheme": "nested_free",
+      "ppl_by_ctx": {
+        "512": 8.6796,
+        "1024": 8.5982
+      },
+      "params": 627848,
+      "bias_report": {
+        "slope_a": [
+          0.3329,
+          0.0876,
+          0.0203,
+          0.0052
+        ],
+        "logcurv_b": [
+          -0.1805,
+          -0.2733,
+          -0.2137,
+          -0.1948
+        ]
+      }
+    },
+    {
+      "scheme": "nested_curv0",
+      "ppl_by_ctx": {
+        "512": 8.5481,
+        "1024": 8.4614
+      },
+      "params": 627848,
+      "bias_report": {
+        "slope_a": [
+          0.3291,
+          0.087,
+          0.0196,
+          0.0052
+        ],
+        "logcurv_b": [
+          -0.2967,
+          -0.2964,
+          -0.1985,
+          -0.2044
+        ]
+      }
+    },
+    {
+      "scheme": "log_only",
+      "ppl_by_ctx": {
+        "512": 8.9979,
+        "1024": 8.9128
+      },
+      "params": 627844,
+      "bias_report": null
+    }
+  ],
+  "best": "nested_curv0",
+  "best_baseline_ppl": 8.835
+}

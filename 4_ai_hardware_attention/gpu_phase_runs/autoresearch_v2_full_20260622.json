@@ -1,0 +1,132 @@
+{
+  "phase": "full",
+  "device": "cuda",
+  "corpus_source": "Salesforce/wikitext:wikitext-2-raw-v1",
+  "config": {
+    "d_model": 512,
+    "n_layer": 8,
+    "n_head": 8,
+    "d_ff": 2048,
+    "ctx": 512,
+    "batch": 24,
+    "steps": 8000,
+    "lr": 0.0003,
+    "max_extrap": 2048,
+    "window": 512,
+    "gamma_l2": 0.001,
+    "eval_every": 400,
+    "patience": 4,
+    "max_chars": 16000000
+  },
+  "runs": [
+    {
+      "scheme": "holo_ladder",
+      "params": 25351176,
+      "train_seconds": 2792.0,
+      "ppl_by_ctx": {
+        "512": 3.3356,
+        "1024": 3.2527,
+        "2048": 3.1964
+      },
+      "gamma_final": [
+        0.23435,
+        0.17912,
+        0.11891,
+        0.06732,
+        0.03466,
+        0.01902,
+        0.00221,
+        0.0013
+      ],
+      "best_val": 3.3356
+    },
+    {
+      "scheme": "holo_ladder_pos",
+      "params": 25351176,
+      "train_seconds": 2793.5,
+      "ppl_by_ctx": {
+        "512": 3.3242,
+        "1024": 3.2406,
+        "2048": 3.1873
+      },
+      "gamma_final": [
+        0.24007,
+        0.18931,
+        0.12487,
+        0.06807,
+        0.03655,
+        0.02218,
+        0.00176,
+        0.0031
+      ],
+      "best_val": 3.3242
+    },
+    {
+      "scheme": "holo_tiny",
+      "params": 25351176,
+      "train_seconds": 2786.7,
+      "ppl_by_ctx": {
+        "512": 3.5755,
+        "1024": 3.5755,
+        "2048": 3.5452
+      },
+      "gamma_final": [
+        0.08417,
+        0.08234,
+        0.09764,
+        0.09342,
+        0.09351,
+        0.09504,
+        0.09998,
+        0.09347
+      ],
+      "best_val": 3.5755
+    },
+    {
+      "scheme": "learned",
+      "params": 26399744,
+      "train_seconds": 2486.8,
+      "ppl_by_ctx": {
+        "512": 3.6171,
+        "1024": 10.4929,
+        "2048": 17.7939
+      },
+      "gamma_final": null,
+      "best_val": 3.6171
+    },
+    {
+      "scheme": "sliding",
+      "params": 25351168,
+      "train_seconds": 2699.7,
+      "ppl_by_ctx": {
+        "512": 3.7017,
+        "1024": 29.6131,
+        "2048": 17910966.3584
+      },
+      "gamma_final": null,
+      "best_val": 3.7017
+    }
+  ],
+  "ranking_by_train_ppl": [
+    [
+      "holo_ladder_pos",
+      3.3242
+    ],
+    [
+      "holo_ladder",
+      3.3356
+    ],
+    [
+      "holo_tiny",
+      3.5755
+    ],
+    [
+      "learned",
+      3.6171
+    ],
+    [
+      "sliding",
+      3.7017
+    ]
+  ]
+}
