@@ -46,7 +46,7 @@ is established:
 | Minimal **differential** operator order of $f(z)$ | **Computed: order 6, degree 15** | Exact nullspace + `ore_algebra`; indicial eq. $-715\,s^4(s-1)^2$ ⇒ order-4 **MUM block** + order-2 apparent singularity. See [`docs/PHASE2_FINDINGS.md`](docs/PHASE2_FINDINGS.md) |
 | Calabi-Yau **3-fold** period interpretation | **Conjectural — evidence strengthened** | Two strands now point to a CY **3-fold** (order-4 MUM block; $q_d\in\mathbb{Z}$), refuting "4-fold". Still needs the explicit $L_6=L_4\cdot L_2$ factorization to be a claim |
 | Instanton-number integrality | **Unresolved (honest negative)** | Placeholder Yukawa gave non-integers (denominators $\sim d^3$ — a normalization artifact); the correct coupling needs $L_4$. Not evidence against CY-ness |
-| CY-Sieve attention kernel (AI hardware) | **Tested on GPU — honest _negative_ result** | Kernel correct (FP16 parity) and bias-HBM is $\mathcal{O}(L)$ vs $\mathcal{O}(L^2)$ (8192× less @16K), but on real WikiText-2 it **failed its quality gate (+10.15% perplexity; a plain sliding window won)**. Reported, not shipped. A learnable-slope redesign is being screened now. See [`docs/PHASE3_CYSIEVE_GPU_FINDINGS.md`](docs/PHASE3_CYSIEVE_GPU_FINDINGS.md) |
+| Learnable positional bias (AI hardware) | **Tested on GPU — PASS (+8%), but gain is _learnability_, not Calabi–Yau** | Fixed CY bias first **failed** (+10% ppl); a *learnable* per-head bias then **PASSES at scale (+8.1% vs baseline)** with flat extrapolation — yet a controlled experiment shows the win comes from learnability, not the geometry (the model moves *away* from the CY curvature). No memory win vs FlashAttention+ALiBi. Shipped as a learnable bias, not "CY-Sieve". Full arc: [`docs/CYSIEVE_JOURNEY.md`](docs/CYSIEVE_JOURNEY.md) |
 
 If you find an error in any row above, please open an issue — that is exactly
 the kind of feedback this preprint is published to receive.
@@ -238,32 +238,38 @@ benchmark data on [🤗 Hugging Face](https://huggingface.co/datasets/callensxav
   while the quality gate fails. (The unfused kernel is also currently ~4–6× slower
   than fused SDPA in wall-clock — an HBM-traffic win, not yet a latency win.)
 
-**Follow-up: an autoresearch sweep (propose → screen → select) of 10 hypotheses**
-that decouple the slope from the sequence — a **learnable per-head scale**
-$\gamma_h$ ("Holonomic-ALiBi", $\text{bias}_h(d) = -\gamma_h\log S_{20}(d)$, GD
-picks the steepness, $\mathcal{O}(L)$ generation kept) and a **"Comet" hybrid**
-(exact local window + cheap CY tail). The result is instructive and we report it
-warts-and-all:
-- **At the screen budget (1200 steps), learnable-$\gamma$ Holonomic-ALiBi _beat_
-  every baseline** (5.89 vs ALiBi 6.15) — the mechanism works.
-- **At the full budget (6000 steps), it lost badly** (best CY 12.7 vs baseline
-  4.3): the setup over-trains (~37 epochs over a 2 MB corpus), and the expressive
-  learnable bias overfit hardest (train loss 3× lower, val 3× worse). So the
-  full-scale verdict **remains a KILL — UNCONFIRMED, not cleanly refuted.**
-- One real signal survives: the holonomic schemes **extrapolate flat** (12.7→13.3
-  over 512→2048) where learned-absolute collapses (4.3→20.6).
+**Follow-up — an autoresearch sweep that overturned the KILL, then corrected its
+own story.** We ran propose→screen→select over 10 hypotheses that make the slope
+**learnable** per head, and chased the result honestly through an overfitting
+near-miss to a controlled attribution experiment. The full arc is documented in
+[`docs/CYSIEVE_JOURNEY.md`](docs/CYSIEVE_JOURNEY.md). Headline outcomes (real
+WikiText-2, trained from scratch):
 
-The honest reading: expressive positional biases need a *generalization* budget
-(more data / fewer epochs / $\gamma$-regularization), not just a fit budget — and
-the screen→full inversion is exactly that lesson. A **v2 run is underway** with the
-concrete fixes (γ-L2 regularization to pull the slope *flat*, validation
-early-stopping, a larger corpus / epoch-aware budget) to test whether the
-screen-scale **+4% margin over ALiBi survives proper regularization**. If it does,
-this flips to a genuine PASS with the $\mathcal{O}(L)$ HBM advantage intact —
-realistic ceiling: *competitive with, or a few % better than, ALiBi*, not dominant.
-Details + live status in
-[`4_ai_hardware_attention/AUTORESEARCH_HYPOTHESES.md`](4_ai_hardware_attention/AUTORESEARCH_HYPOTHESES.md).
-This is a genuinely open thread — **ML/kernel experts especially welcome.**
+- **A learnable per-head positional bias PASSES the gate at GPU scale: +8.1%**
+  perplexity vs the best baseline (3.32 vs 3.62, regularized 8000-step run) — the
+  original §5 KILL is overturned. It also **extrapolates flat** where learned-
+  absolute positions collapse.
+- **But the gain is from _learnability_, not the Calabi–Yau geometry.** A controlled
+  nested bias $-a_h d + b_h\log d$ shows a plain learnable-ALiBi slope (zero CY
+  content) already beats the fixed holonomic bias, and when the log-curvature $b$ is
+  freed the model drives it **away** from the CY value $\beta=2$. We therefore
+  **drop the $S_{20}$/recurrence machinery** and ship the scheme as what it is — a
+  learnable linear+log positional bias — not as "CY-Sieve". (Attribution:
+  [`docs/PHASE4_HC_ATTRIBUTION.md`](docs/PHASE4_HC_ATTRIBUTION.md).)
+- **No memory win over real SOTA.** Against a stored bias table the $\mathcal{O}(L)$
+  generation is 8192× lighter; against FlashAttention+ALiBi (which already generates
+  its bias on the fly) it is ~0. A learnable per-head scalar bias is $\mathcal{O}(1)$
+  state, like ALiBi. (Analysis: [`docs/CYSIEVE_FUTURE_DIRECTIONS.md`](docs/CYSIEVE_FUTURE_DIRECTIONS.md).)
+- *En route* we caught an instructive trap: at a 1200-step screen the learnable bias
+  beat baselines, but a 6000-step run **inverted** it (overfitting, ~37 epochs/2 MB,
+  γ ran *steeper* not flatter) — fixed with γ-regularization + val early-stopping +
+  a larger corpus. A short screen can crown an overfitter.
+
+**The honest achievement** is the *method*: a falsifiable loop that went KILL →
+caught false-positive → confirmed +8% → self-corrected attribution, reporting the
+negative and null results as prominently as the positive one. This is a genuinely
+open thread — **ML/kernel experts especially welcome** (fair comparison vs
+learnable-ALiBi / NoPE / RoPE-scaling on a real long-range benchmark would be ideal).
 
 > Earlier versions of this README reported large block-sparse "speedups" and "0%
 > perplexity degradation." Those are **superseded and retracted**: the speedups
