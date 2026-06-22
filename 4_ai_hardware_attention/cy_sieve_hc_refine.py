@@ -145,9 +145,10 @@ def train_eval(name, td, vd, device, cfg=CFG):
         res = {str(L): round(qg_eval(model, vd, L, device), 4)
                for L in [cfg["ctx"], 2 * cfg["ctx"]] if L <= maxd}
         rep = bias_mod.report() if (bias_mod is not None and hasattr(bias_mod, "report")) else None
+    nparams = sum(p.numel() for p in model.parameters())
     if device == "cuda":
         del model; torch.cuda.empty_cache()
-    return {"scheme": name, "ppl_by_ctx": res, "params": sum(p.numel() for p in model.parameters()),
+    return {"scheme": name, "ppl_by_ctx": res, "params": nparams,
             "bias_report": rep, "best_val": round(best_val, 4) if best_res else None}
 
 
