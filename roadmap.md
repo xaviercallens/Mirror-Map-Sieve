@@ -86,26 +86,25 @@ fails. See `vision.md` for the corrected architecture and the verified numbers.
       orchestrator advanced past §4 to §5. block_n=32/num_stages=1 keeps SMEM
       under the L4's ~100KB.
 
-**Stage C — the gate that decides everything: quality, not just speed:**
-- [~] **In flight on the L4 (run started 2026-06-21).** `cy_sieve_quality_gate.py`
-      + `cy_sieve_perf.py`, driven by `run_gpu_phase.py`; results upload to
-      `gs://gen-lang-client-0625573011-cy-sieve-bench/cy_sieve/`.
-- **Methodology correction (important):** the gate does **not** zero-shot-swap the
-      positional scheme on a *frozen* pretrained model — that was tried and is
-      invalid (it collapses **every** scheme equally: native ppl 32.5 vs ALiBi
-      1641, sliding 2529, CY-Sieve ~7180 on WikiText-2 — pure train/test mismatch,
-      not the scheme). Instead it follows the **ALiBi-paper methodology: train small
-      GPTs from scratch**, identical arch/data/compute, one per scheme
-      (learned-abs / ALiBi / sliding-window / CY-Sieve τ-ladder + single-τ sweep),
-      then compare validation perplexity at the train context **and 2×/4×
-      length-extrapolation** perplexity.
-- **Anticipated outcome (hypothesis, not a result):** if the geometry-fixed
-      β=2 / per-head-τ bias carries genuine positional signal, CY-Sieve val
-      perplexity lands **within +1% of the best baseline** with **no worse
-      length-extrapolation** — which, paired with §6's **O(L) vs O(L²) bias-HBM
-      reduction**, is the whole case for the kernel. **Kill criterion (unchanged):
-      >5% perplexity regression vs the best baseline ⇒ negative result, not
-      shipped.** No verdict is claimed until the run completes.
+**Stage C — the gate that decides everything: KILL (negative result).**
+- [x] **Run complete on the L4 (2026-06-22), real WikiText-2.** Methodology: trained
+      small GPTs from scratch, identical compute, per scheme. (We first tried — and
+      rejected as invalid — zero-shot-swapping the scheme on a *frozen* model: it
+      collapses every scheme equally, native 32.5 vs ALiBi 1641 / sliding 2529 /
+      CY-Sieve ~7180; train/test mismatch, not the scheme.)
+- ❌ **VERDICT: KILL (+10.15%).** Best baseline = learned-absolute 4.22 ppl @train;
+      best CY-Sieve = τ=512 4.65 → +10.15%, past the >5% kill threshold. A plain
+      **sliding-window won** (4.99, flat across 512→2048). CY-Sieve's geometry-fixed
+      steep decay (logλ=3.762) is too aggressive: no single τ gives both good
+      absolute quality and stable extrapolation, and the τ-ladder lands at ~11–12.
+      Full table + analysis: `docs/PHASE3_CYSIEVE_GPU_FINDINGS.md`.
+- ✅ §4 kernel correctness PASS and §6 O(L)-vs-O(L²) HBM (8192×@16K) stand on their
+      own — but per T6.3, with §5 failing, the speed/HBM numbers are NOT a
+      contribution. **A fast kernel that hurts quality is a failed kernel.**
+- **Next (not a commitment):** the kill points at specific fixes — decouple the
+      attention slope from the S₂₀ growth rate (learnable, geometry-as-prior), a
+      local-window + gentle-tail hybrid, and a β=2 ablation. Only a redesigned bias
+      that clears +5% would re-open the HBM case. See Stage B′ + the findings doc.
 - [x] Throughput / HBM-traffic on the L4 (`cy_sieve_perf.py`, §6) **MEASURED**
       (2026-06-21; see `docs/PHASE3_CYSIEVE_GPU_FINDINGS.md`): bias-path HBM is
       **O(L) vs O(L²) — 8192× less at L=16384** (the core claim, confirmed). Honest

@@ -81,14 +81,17 @@ extrapolation. (We explicitly rejected zero-shot-swapping the scheme into a froz
 model — it collapses every scheme equally and measures train/test mismatch, not the
 bias.)
 
-> **Anticipated improvement (a hypothesis we are about to confirm or kill).** If the
-> geometry-fixed bias — slope $\log\lambda=3.762$, curvature $\beta=2$ from the
-> rank-4 MUM Calabi–Yau-3-fold tail, spread across heads by the τ-ladder — carries
-> real positional signal, we expect CY-Sieve to sit **within +1% of the best
-> baseline's perplexity** with **no worse length extrapolation**. **We commit in
-> advance to the kill criterion: a >5% perplexity regression vs the best baseline,
-> or an extrapolation collapse, is reported as a negative result and the tier is
-> not shipped.** No §5 verdict is asserted until the real-WikiText-2 L4 run completes.
+> **Result (2026-06-22): the hypothesis was KILLED, and we report it.** On real
+> WikiText-2, trained from scratch, the best CY-Sieve variant scored 4.65 perplexity
+> vs the best baseline's 4.22 — **+10.15%**, past our pre-committed >5% kill
+> threshold. A plain **sliding-window won** (4.99, flat across 2×/4× extrapolation).
+> The geometry-fixed slope $\log\lambda=3.762$ is the *growth rate of $S_{20}$*, but
+> there is no law that the optimal *attention* slope equals it — the Calabi–Yau
+> structure is a sound **prior for the bias shape, not the right value**, and pinning
+> it that steeply failed. This is the falsification discipline working exactly as
+> designed: a correct kernel (§4 PASS) with a real 8192× bias-HBM reduction (§6) is
+> **still a failed kernel** because it hurts quality. Full numbers + redesign
+> directions: `docs/PHASE3_CYSIEVE_GPU_FINDINGS.md`.
 
 **What the L4 has already measured (intermediary — `docs/PHASE3_CYSIEVE_GPU_FINDINGS.md`):**
 - **§4 kernel correctness: PASS** — the Triton kernel matches the CPU reference
@@ -101,13 +104,15 @@ bias.)
   fused dense SDPA in wall-clock — an HBM-traffic win, **not yet a latency win**. We
   state this plainly (the `tests.md` T6.3 guard forbids reporting speed without it).
 
-**The improvement that follows directly (Stage B′ on the roadmap):** *fuse* the bias
-generation into the FlashAttention inner loop so the O(L) HBM saving is converted
-into wall-clock — the goal is to **match or beat fused SDPA latency while keeping the
-O(L) bias traffic**. Only then does "HBM-free positional bias" become a speed
-contribution and not merely a bandwidth one. The honest current headline is
-*"memory-traffic win at long context; latency work remaining,"* never *"faster
-attention."*
+**Because §5 failed, the kernel-speed work is on hold (per T6.3):** there is no point
+fusing the bias for latency, or claiming the HBM advantage, while the positional
+*scheme itself* loses to a sliding window on quality. The honest order of operations
+is **fix the bias, re-pass §5, then optimize the kernel** — not the reverse. The
+redesign directions the kill points to (learnable geometry-initialized slope;
+exact-local-window + gentle-tail hybrid; β=2 ablation) are in
+`docs/PHASE3_CYSIEVE_GPU_FINDINGS.md`. Until one clears the +5% gate, CY-Sieve is a
+**documented negative result**, and the project's mathematics — not this applied
+bet — remains its contribution.
 
 ### Mathematical depth (the actual core)
 - **Prove the supercongruences** — these are the highest-impact open problems in this project

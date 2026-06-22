@@ -1,0 +1,112 @@
+{
+  "preset": "l4",
+  "device": "cuda",
+  "config": {
+    "d_model": 512,
+    "n_layer": 8,
+    "n_head": 8,
+    "d_ff": 2048,
+    "ctx": 512,
+    "batch": 24,
+    "steps": 6000,
+    "lr": 0.0003,
+    "max_extrap": 2048
+  },
+  "corpus_source": "Salesforce/wikitext:wikitext-2-raw-v1",
+  "window": 128,
+  "seq": "S20",
+  "runs": [
+    {
+      "scheme": "learned",
+      "params": 26399744,
+      "train_seconds": 1772.6,
+      "ppl_by_ctx": {
+        "512": 4.2175,
+        "1024": 12.1002,
+        "2048": 20.8223
+      },
+      "tau": null
+    },
+    {
+      "scheme": "alibi",
+      "params": 25351168,
+      "train_seconds": 1911.9,
+      "ppl_by_ctx": {
+        "512": 10.7394,
+        "1024": 11.73,
+        "2048": 11.352
+      },
+      "tau": null
+    },
+    {
+      "scheme": "sliding",
+      "params": 25351168,
+      "train_seconds": 1899.6,
+      "ppl_by_ctx": {
+        "512": 4.9946,
+        "1024": 5.074,
+        "2048": 5.0275
+      },
+      "tau": null
+    },
+    {
+      "scheme": "cy_sieve",
+      "params": 25351168,
+      "train_seconds": 1913.4,
+      "ppl_by_ctx": {
+        "512": 11.3273,
+        "1024": 12.3106,
+        "2048": 12.0486
+      },
+      "tau": "ladder"
+    },
+    {
+      "scheme": "cy_sieve",
+      "params": 25351168,
+      "train_seconds": 1913.1,
+      "ppl_by_ctx": {
+        "512": 16.0189,
+        "1024": 16.8097,
+        "2048": 16.4887
+      },
+      "tau": 20.0
+    },
+    {
+      "scheme": "cy_sieve",
+      "params": 25351168,
+      "train_seconds": 1911.7,
+      "ppl_by_ctx": {
+        "512": 6.7958,
+        "1024": 7.1196,
+        "2048": 7.0051
+      },
+      "tau": 128.0
+    },
+    {
+      "scheme": "cy_sieve",
+      "params": 25351168,
+      "train_seconds": 1909.2,
+      "ppl_by_ctx": {
+        "512": 4.6457,
+        "1024": 6.0832,
+        "2048": 10.6212
+      },
+      "tau": 512.0
+    }
+  ],
+  "verdict": {
+    "status": "KILL (negative result)",
+    "delta_pct": 10.153,
+    "best_cy_ppl": 4.6457,
+    "best_cy_tau": 512.0,
+    "best_baseline_ppl": 4.2175,
+    "best_baseline": "learned",
+    "baselines": {
+      "learned": 4.2175,
+      "alibi": 10.7394,
+      "sliding": 4.9946
+    },
+    "train_ctx": 512,
+    "summary": "best CY-Sieve 4.646 (tau=512.0) vs best baseline 4.218: +10.15%"
+  }
+}

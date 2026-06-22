@@ -1,0 +1,206 @@
+{
+  "gpu": {
+    "cuda": true,
+    "name": "NVIDIA L4",
+    "vram_gb": 23.7,
+    "torch": "2.9.1+cu129",
+    "cuda_version": "12.9"
+  },
+  "elapsed_seconds": 13347.4,
+  "section4_parity": {
+    "returncode": 0,
+    "passed": true,
+    "status": "PASS",
+    "summary": "============================== 4 passed in 6.02s ==============================="
+  },
+  "section5_quality": {
+    "preset": "l4",
+    "device": "cuda",
+    "config": {
+      "d_model": 512,
+      "n_layer": 8,
+      "n_head": 8,
+      "d_ff": 2048,
+      "ctx": 512,
+      "batch": 24,
+      "steps": 6000,
+      "lr": 0.0003,
+      "max_extrap": 2048
+    },
+    "corpus_source": "Salesforce/wikitext:wikitext-2-raw-v1",
+    "window": 128,
+    "seq": "S20",
+    "runs": [
+      {
+        "scheme": "learned",
+        "params": 26399744,
+        "train_seconds": 1772.6,
+        "ppl_by_ctx": {
+          "512": 4.2175,
+          "1024": 12.1002,
+          "2048": 20.8223
+        },
+        "tau": null
+      },
+      {
+        "scheme": "alibi",
+        "params": 25351168,
+        "train_seconds": 1911.9,
+        "ppl_by_ctx": {
+          "512": 10.7394,
+          "1024": 11.73,
+          "2048": 11.352
+        },
+        "tau": null
+      },
+      {
+        "scheme": "sliding",
+        "params": 25351168,
+        "train_seconds": 1899.6,
+        "ppl_by_ctx": {
+          "512": 4.9946,
+          "1024": 5.074,
+          "2048": 5.0275
+        },
+        "tau": null
+      },
+      {
+        "scheme": "cy_sieve",
+        "params": 25351168,
+        "train_seconds": 1913.4,
+        "ppl_by_ctx": {
+          "512": 11.3273,
+          "1024": 12.3106,
+          "2048": 12.0486
+        },
+        "tau": "ladder"
+      },
+      {
+        "scheme": "cy_sieve",
+        "params": 25351168,
+        "train_seconds": 1913.1,
+        "ppl_by_ctx": {
+          "512": 16.0189,
+          "1024": 16.8097,
+          "2048": 16.4887
+        },
+        "tau": 20.0
+      },
+      {
+        "scheme": "cy_sieve",
+        "params": 25351168,
+        "train_seconds": 1911.7,
+        "ppl_by_ctx": {
+          "512": 6.7958,
+          "1024": 7.1196,
+          "2048": 7.0051
+        },
+        "tau": 128.0
+      },
+      {
+        "scheme": "cy_sieve",
+        "params": 25351168,
+        "train_seconds": 1909.2,
+        "ppl_by_ctx": {
+          "512": 4.6457,
+          "1024": 6.0832,
+          "2048": 10.6212
+        },
+        "tau": 512.0
+      }
+    ],
+    "verdict": {
+      "status": "KILL (negative result)",
+      "delta_pct": 10.153,
+      "best_cy_ppl": 4.6457,
+      "best_cy_tau": 512.0,
+      "best_baseline_ppl": 4.2175,
+      "best_baseline": "learned",
+      "baselines": {
+        "learned": 4.2175,
+        "alibi": 10.7394,
+        "sliding": 4.9946
+      },
+      "train_ctx": 512,
+      "summary": "best CY-Sieve 4.646 (tau=512.0) vs best baseline 4.218: +10.15%"
+    }
+  },
+  "section6_perf": {
+    "hardware": "NVIDIA L4",
+    "head_dim": 64,
+    "seq": "S20",
+    "tau": 128.0,
+    "block_n": 32,
+    "num_stages": 1,
+    "torch": "2.9.1+cu129",
+    "cuda": "12.9",
+    "rows": [
+      {
+        "seq_len": 1024,
+        "cy_sieve_ms": 0.0546,
+        "sdpa_dense_ms": 0.0535,
+        "sdpa_table_bias_ms": 0.0601,
+        "cy_bias_hbm_bytes": 4096,
+        "table_bias_hbm_bytes": 2097152,
+        "bias_hbm_reduction_x": 512.0,
+        "cy_vs_dense_ratio": 1.021
+      },
+      {
+        "seq_len": 2048,
+        "cy_sieve_ms": 0.1046,
+        "sdpa_dense_ms": 0.0531,
+        "sdpa_table_bias_ms": 0.1157,
+        "cy_bias_hbm_bytes": 8192,
+        "table_bias_hbm_bytes": 8388608,
+        "bias_hbm_reduction_x": 1024.0,
+        "cy_vs_dense_ratio": 1.97
+      },
+      {
+        "seq_len": 4096,
+        "cy_sieve_ms": 0.2596,
+        "sdpa_dense_ms": 0.0596,
+        "sdpa_table_bias_ms": 0.2678,
+        "cy_bias_hbm_bytes": 16384,
+        "table_bias_hbm_bytes": 33554432,
+        "bias_hbm_reduction_x": 2048.0,
+        "cy_vs_dense_ratio": 4.355
+      },
+      {
+        "seq_len": 8192,
+        "cy_sieve_ms": 1.0843,
+        "sdpa_dense_ms": 0.2876,
+        "sdpa_table_bias_ms": 0.8053,
+        "cy_bias_hbm_bytes": 32768,
+        "table_bias_hbm_bytes": 134217728,
+        "bias_hbm_reduction_x": 4096.0,
+        "cy_vs_dense_ratio": 3.77
+      },
+      {
+        "seq_len": 16384,
+        "cy_sieve_ms": 4.1559,
+        "sdpa_dense_ms": 1.0156,
+        "sdpa_table_bias_ms": 3.9384,
+        "cy_bias_hbm_bytes": 65536,
+        "table_bias_hbm_bytes": 536870912,
+        "bias_hbm_reduction_x": 8192.0,
+        "cy_vs_dense_ratio": 4.092
+      },
+      {
+        "seq_len": 32768,
+        "cy_sieve_ms": 15.2835,
+        "sdpa_dense_ms": 2.5128,
+        "sdpa_table_bias_ms": null,
+        "cy_bias_hbm_bytes": 131072,
+        "table_bias_hbm_bytes": null,
+        "bias_hbm_reduction_x": null,
+        "cy_vs_dense_ratio": 6.082
+      }
+    ],
+    "note": "T6.3: report ONLY beside the \u00a75 quality verdict; speed alone is not a contribution."
+  },
+  "headline": {
+    "section4_parity": "PASS",
+    "section5_quality": "KILL (negative result)",
+    "section6_speed_honesty_note": "Speed numbers below are valid as a contribution ONLY if \u00a75 is PASS. Current \u00a75 verdict: KILL (negative result). (tests.md T6.3)"
+  }
+}

@@ -134,6 +134,23 @@ optimal" imply "faster," and treat fusion as the work that converts the one into
 the other. The honest framing is "memory-traffic win at long context; latency work
 remaining," not "faster attention."
 
+### 22. The Geometry Sets a Prior, Not the Value — CY-Sieve §5 KILL
+The CY-Sieve quality gate returned a clean NEGATIVE result on real WikiText-2
+(train-from-scratch): best CY-Sieve 4.65 ppl vs best baseline 4.22 → **+10.15%**,
+past the >5% kill threshold; a plain **sliding-window won** (4.99, flat across
+2×/4× extrapolation). The seductive error we avoided: the synthetic-corpus
+shakedown made CY-Sieve's extrapolation look excellent (ppl~1.0), and reporting
+*that* would have been a false positive — the real corpus inverted it. The deeper
+lesson: we fixed the long-range slope to logλ=3.762 because that is the *growth
+rate of S₂₀*, but there is **no law that the optimal attention slope equals the
+sequence's growth rate**. The Calabi–Yau geometry is a principled *prior* for the
+bias shape, not the right *value* — pinning the value too steeply is what failed.
+A redesign should make the slope learnable (geometry-initialized, à la
+learnable-ALiBi) and/or hybridize the exact local window (Tier 1) with a far
+gentler tail. Reporting this kill — not burying it — is the project working as
+intended: a fast, correct kernel (§4 PASS, §6 8192× HBM) is still a FAILED kernel
+if it hurts quality.
+
 ### 21. `pip install --no-deps <pkg>` Silently Cripples the Package
 Trying to protect the DLVM's pre-installed CUDA torch, we ran
 `pip install --no-deps datasets`. Result: `datasets` imported-failed (missing

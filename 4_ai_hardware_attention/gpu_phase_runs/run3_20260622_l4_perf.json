@@ -1,0 +1,73 @@
+{
+  "hardware": "NVIDIA L4",
+  "head_dim": 64,
+  "seq": "S20",
+  "tau": 128.0,
+  "block_n": 32,
+  "num_stages": 1,
+  "torch": "2.9.1+cu129",
+  "cuda": "12.9",
+  "rows": [
+    {
+      "seq_len": 1024,
+      "cy_sieve_ms": 0.0546,
+      "sdpa_dense_ms": 0.0535,
+      "sdpa_table_bias_ms": 0.0601,
+      "cy_bias_hbm_bytes": 4096,
+      "table_bias_hbm_bytes": 2097152,
+      "bias_hbm_reduction_x": 512.0,
+      "cy_vs_dense_ratio": 1.021
+    },
+    {
+      "seq_len": 2048,
+      "cy_sieve_ms": 0.1046,
+      "sdpa_dense_ms": 0.0531,
+      "sdpa_table_bias_ms": 0.1157,
+      "cy_bias_hbm_bytes": 8192,
+      "table_bias_hbm_bytes": 8388608,
+      "bias_hbm_reduction_x": 1024.0,
+      "cy_vs_dense_ratio": 1.97
+    },
+    {
+      "seq_len": 4096,
+      "cy_sieve_ms": 0.2596,
+      "sdpa_dense_ms": 0.0596,
+      "sdpa_table_bias_ms": 0.2678,
+      "cy_bias_hbm_bytes": 16384,
+      "table_bias_hbm_bytes": 33554432,
+      "bias_hbm_reduction_x": 2048.0,
+      "cy_vs_dense_ratio": 4.355
+    },
+    {
+      "seq_len": 8192,
+      "cy_sieve_ms": 1.0843,
+      "sdpa_dense_ms": 0.2876,
+      "sdpa_table_bias_ms": 0.8053,
+      "cy_bias_hbm_bytes": 32768,
+      "table_bias_hbm_bytes": 134217728,
+      "bias_hbm_reduction_x": 4096.0,
+      "cy_vs_dense_ratio": 3.77
+    },
+    {
+      "seq_len": 16384,
+      "cy_sieve_ms": 4.1559,
+      "sdpa_dense_ms": 1.0156,
+      "sdpa_table_bias_ms": 3.9384,
+      "cy_bias_hbm_bytes": 65536,
+      "table_bias_hbm_bytes": 536870912,
+      "bias_hbm_reduction_x": 8192.0,
+      "cy_vs_dense_ratio": 4.092
+    },
+    {
+      "seq_len": 32768,
+      "cy_sieve_ms": 15.2835,
+      "sdpa_dense_ms": 2.5128,
+      "sdpa_table_bias_ms": null,
+      "cy_bias_hbm_bytes": 131072,
+      "table_bias_hbm_bytes": null,
+      "bias_hbm_reduction_x": null,
+      "cy_vs_dense_ratio": 6.082
+    }
+  ],
+  "note": "T6.3: report ONLY beside the \u00a75 quality verdict; speed alone is not a contribution."
+}

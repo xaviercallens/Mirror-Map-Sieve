@@ -1,0 +1,189 @@
+==========================================
+CY-Sieve GPU phase — startup Sun Jun 21 20:50:40 UTC 2026
+==========================================
+Sun Jun 21 20:50:40 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.159.03             Driver Version: 580.159.03     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA L4                      On  |   00000000:00:03.0 Off |                    0 |
+| N/A   48C    P0             28W /   72W |       0MiB /  23034MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+deps OK: datasets 5.0.0
+PyTorch 2.9.1+cu129, CUDA 12.9
+GPU: NVIDIA L4
+VRAM: 23.7 GB
+Triton 3.5.1
+Cloning into 'Mirror-Map-Sieve'...
+
+Starting CY-Sieve GPU phase at Sun Jun 21 20:51:07 UTC 2026...
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+==========================================================================
+  CY-Sieve §5 QUALITY GATE (from-scratch) — preset=l4 on cuda
+  arch d_model=512 L=8 H=8 ctx=512 steps=6000
+==========================================================================
+Generating test split:   0%|          | 0/4358 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 4358/4358 [00:00<00:00, 410316.44 examples/s]
+Generating train split:   0%|          | 0/36718 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 36718/36718 [00:00<00:00, 740636.41 examples/s]
+Generating validation split:   0%|          | 0/3760 [00:00<?, ? examples/s]Generating validation split: 100%|██████████| 3760/3760 [00:00<00:00, 563798.91 examples/s]
+  corpus: Salesforce/wikitext:wikitext-2-raw-v1 | train 2,004,085 bytes | val 250,345 bytes
+
+[learned]
+      learned step     1/6000 loss 327.8488
+      learned step  1200/6000 loss 2.5287
+      learned step  2400/6000 loss 2.0594
+      learned step  3600/6000 loss 1.6516
+      learned step  4800/6000 loss 1.3834
+      learned step  6000/6000 loss 1.1621
+      learned val ppl @ L=512   (train): 4.218
+      learned val ppl @ L=1024  (2x-extrap): 12.100
+      learned val ppl @ L=2048  (4x-extrap): 20.822
+
+[alibi]
+        alibi step     1/6000 loss 424.0075
+        alibi step  1200/6000 loss 1.6411
+        alibi step  2400/6000 loss 1.2131
+        alibi step  3600/6000 loss 1.0217
+        alibi step  4800/6000 loss 0.7236
+        alibi step  6000/6000 loss 0.4733
+        alibi val ppl @ L=512   (train): 10.739
+        alibi val ppl @ L=1024  (2x-extrap): 11.730
+        alibi val ppl @ L=2048  (4x-extrap): 11.352
+
+[sliding]
+      sliding step     1/6000 loss 429.6556
+      sliding step  1200/6000 loss 2.5268
+      sliding step  2400/6000 loss 2.4214
+      sliding step  3600/6000 loss 2.1249
+      sliding step  4800/6000 loss 1.6317
+      sliding step  6000/6000 loss 1.3118
+      sliding val ppl @ L=512   (train): 4.995
+      sliding val ppl @ L=1024  (2x-extrap): 5.074
+      sliding val ppl @ L=2048  (4x-extrap): 5.027
+
+[cy_sieve / per-head tau ladder]
+     cy_sieve step     1/6000 loss 425.0591
+     cy_sieve step  1200/6000 loss 1.6198
+     cy_sieve step  2400/6000 loss 1.2219
+     cy_sieve step  3600/6000 loss 1.0458
+     cy_sieve step  4800/6000 loss 0.7074
+     cy_sieve step  6000/6000 loss 0.4682
+     cy_sieve val ppl @ L=512   (train): 11.327
+     cy_sieve val ppl @ L=1024  (2x-extrap): 12.311
+     cy_sieve val ppl @ L=2048  (4x-extrap): 12.049
+
+[cy_sieve / tau=20.0]
+     cy_sieve step     1/6000 loss 421.5372
+     cy_sieve step  1200/6000 loss 1.6310
+     cy_sieve step  2400/6000 loss 1.2126
+     cy_sieve step  3600/6000 loss 1.0404
+     cy_sieve step  4800/6000 loss 0.6793
+     cy_sieve step  6000/6000 loss 0.4282
+     cy_sieve val ppl @ L=512   (train): 16.019
+     cy_sieve val ppl @ L=1024  (2x-extrap): 16.810
+     cy_sieve val ppl @ L=2048  (4x-extrap): 16.489
+
+[cy_sieve / tau=128.0]
+     cy_sieve step     1/6000 loss 429.1540
+     cy_sieve step  1200/6000 loss 2.3809
+     cy_sieve step  2400/6000 loss 1.6042
+     cy_sieve step  3600/6000 loss 1.3417
+     cy_sieve step  4800/6000 loss 1.0884
+     cy_sieve step  6000/6000 loss 0.8346
+     cy_sieve val ppl @ L=512   (train): 6.796
+     cy_sieve val ppl @ L=1024  (2x-extrap): 7.120
+     cy_sieve val ppl @ L=2048  (4x-extrap): 7.005
+
+[cy_sieve / tau=512.0]
+     cy_sieve step     1/6000 loss 429.9576
+     cy_sieve step  1200/6000 loss 2.4574
+     cy_sieve step  2400/6000 loss 2.3402
+     cy_sieve step  3600/6000 loss 1.9214
+     cy_sieve step  4800/6000 loss 1.4814
+     cy_sieve step  6000/6000 loss 1.2002
+     cy_sieve val ppl @ L=512   (train): 4.646
+     cy_sieve val ppl @ L=1024  (2x-extrap): 6.083
+     cy_sieve val ppl @ L=2048  (4x-extrap): 10.621
+
+==========================================================================
+  VERDICT: KILL (negative result) — best CY-Sieve 4.646 (tau=512.0) vs best baseline 4.218: +10.15%
+  results -> /tmp/Mirror-Map-Sieve/4_ai_hardware_attention/cy_sieve_quality_results.json
+==========================================================================
+==========================================================================
+  CY-Sieve §6 PERF — NVIDIA L4 (24 GB) | D=64, tau=128.0
+  (speed is only meaningful alongside the §5 quality verdict — T6.3)
+==========================================================================
+  L=1024    cy_sieve=  0.055ms  dense=  0.054ms  table_bias=  0.060ms  bias_HBM=     4096B vs 2097152B
+  L=2048    cy_sieve=  0.105ms  dense=  0.053ms  table_bias=  0.116ms  bias_HBM=     8192B vs 8388608B
+  L=4096    cy_sieve=  0.260ms  dense=  0.060ms  table_bias=  0.268ms  bias_HBM=    16384B vs 33554432B
+  L=8192    cy_sieve=  1.084ms  dense=  0.288ms  table_bias=  0.805ms  bias_HBM=    32768B vs 134217728B
+  L=16384   cy_sieve=  4.156ms  dense=  1.016ms  table_bias=  3.938ms  bias_HBM=    65536B vs 536870912B
+  [skip] L=32768: materialized-table baseline exceeds VRAM budget (need ~8.6 GB peak); CY-Sieve path still timed.
+  L=32768   cy_sieve= 15.283ms  dense=  2.513ms  table_bias=   n/a ms  bias_HBM=   131072B vs n/aB
+
+  results -> /tmp/Mirror-Map-Sieve/4_ai_hardware_attention/cy_sieve_perf_results.json
+==========================================================================
+  CY-Sieve GPU PHASE — tests.md §4 / §5 / §6
+  GPU: {'cuda': True, 'name': 'NVIDIA L4', 'vram_gb': 23.7, 'torch': '2.9.1+cu129', 'cuda_version': '12.9'}
+==========================================================================
+
+==========================================================================
+  §4 — Triton kernel <-> CPU reference parity
+==========================================================================
+============================= test session starts ==============================
+platform linux -- Python 3.10.12, pytest-9.1.1, pluggy-1.6.0 -- /usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /tmp/Mirror-Map-Sieve/4_ai_hardware_attention
+plugins: anyio-4.14.0
+collecting ... collected 4 items
+
+test_cy_sieve_triton.py::test_t4_1_triton_matches_reference[128-64-20.0] PASSED [ 25%]
+test_cy_sieve_triton.py::test_t4_1_triton_matches_reference[256-64-128.0] PASSED [ 50%]
+test_cy_sieve_triton.py::test_t4_1_triton_matches_reference[256-128-480.0] PASSED [ 75%]
+test_cy_sieve_triton.py::test_t4_1_smoke PASSED                          [100%]
+
+============================== 4 passed in 6.02s ===============================
+
+
+==========================================================================
+  §5 — QUALITY GATE (from-scratch training)
+==========================================================================
+
+==========================================================================
+  §6 — Performance (Triton kernel)
+==========================================================================
+
+==========================================================================
+  GPU PHASE COMPLETE
+    §4 parity : PASS (============================== 4 passed in 6.02s ===============================)
+    §5 quality: KILL (negative result) — best CY-Sieve 4.646 (tau=512.0) vs best baseline 4.218: +10.15%
+    §6 perf   : L=32768 cy_sieve=15.2835ms dense=2.5128ms  bias-HBM reduction Nonex
+    -> /tmp/gpu_phase_results_20260621_205040.json  (13347.4s)
+==========================================================================
+
+GPU phase exit code: 0 at Mon Jun 22 00:33:35 UTC 2026
+Copying file:///tmp/gpu_phase_results_20260621_205040.json [Content-Type=application/json]...
+/ [0 files][    0.0 B/  5.1 KiB]                                                / [1 files][  5.1 KiB/  5.1 KiB]                                                
+Operation completed over 1 objects/5.1 KiB.                                      
+✅ uploaded gpu_phase_results_20260621_205040.json
+Copying file:///tmp/Mirror-Map-Sieve/4_ai_hardware_attention/cy_sieve_quality_results.json [Content-Type=application/json]...
+/ [0 files][    0.0 B/  2.2 KiB]                                                / [1 files][  2.2 KiB/  2.2 KiB]                                                
+Operation completed over 1 objects/2.2 KiB.                                      
+✅ uploaded cy_sieve_quality_results.json
+Copying file:///tmp/Mirror-Map-Sieve/4_ai_hardware_attention/cy_sieve_perf_results.json [Content-Type=application/json]...
+/ [0 files][    0.0 B/  1.9 KiB]                                                / [1 files][  1.9 KiB/  1.9 KiB]                                                
+Operation completed over 1 objects/1.9 KiB.                                      
+✅ uploaded cy_sieve_perf_results.json

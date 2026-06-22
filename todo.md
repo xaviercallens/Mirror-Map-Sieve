@@ -77,18 +77,19 @@ Architecture + verified numbers in `vision.md`; staged plan in `roadmap.md`.
   bias-path HBM **O(L) vs O(L²), 8192× less @L=16384** — core claim confirmed.
   Caveat (reported per T6.3): unfused kernel is ~3.7× SLOWER than fused dense SDPA
   → HBM-traffic win, NOT yet a latency win.
-- [open / IN FLIGHT] **Stage C (the §5 quality gate)** running on the L4
-  (`cy_sieve_quality_gate.py` via `run_gpu_phase.py`; results →
-  `gs://gen-lang-client-0625573011-cy-sieve-bench/cy_sieve/`).
-  **Methodology fix:** do NOT zero-shot-swap positions on a frozen model — invalid
-  (every scheme collapses equally: native 32.5 vs ALiBi 1641 / sliding 2529 /
-  CY-Sieve ~7180 on WikiText-2). Instead **train small GPTs from scratch**,
-  identical compute, per scheme (learned/ALiBi/sliding/CY-Sieve τ-ladder + τ
-  sweep); compare val perplexity at train ctx + **2×/4× length extrapolation**.
-  Early directional signal (synthetic shakedown): learned-abs collapses past
-  train-len (ppl 2495→251818), CY-Sieve τ-ladder/τ≤128 extrapolate like ALiBi,
-  τ=512 degrades. **Anticipated:** within +1% of best baseline ⇒ case holds;
-  **kill if >5%.** No verdict until the real-WikiText run finishes.
+- [done] **Stage C (§5 quality gate) COMPLETE — KILL (negative result)** (2026-06-22,
+  real WikiText-2 on L4; `docs/PHASE3_CYSIEVE_GPU_FINDINGS.md`,
+  `gpu_phase_runs/run3_*`). Trained from scratch per scheme. Best baseline
+  learned-abs 4.22 ppl@train; best CY-Sieve τ=512 4.65 → **+10.15%**, past the >5%
+  threshold. Sliding-window won (4.99, flat 512→2048). The earlier "great
+  extrapolation" was a synthetic-corpus artifact — gone on real text. CY-Sieve's
+  geometry-fixed steep decay (logλ=3.762) is too aggressive for a drop-in scheme.
+  Per T6.3 the §6 HBM/speed numbers are NOT a contribution while §5 fails.
+- [open] **Redesign CY-Sieve bias (post-KILL, only if pursued):** decouple the
+  attention slope from the S₂₀ growth rate (learnable, geometry-as-prior); local
+  exact-window + gentle long-range tail hybrid (sliding-window won, and Tier 1
+  already gives the exact window); ablate the β=2 log-curvature. Re-gate at +5%
+  before re-claiming the O(L) HBM advantage.
 - [open] **Stage B′ — kernel optimization (NEW, what §6 revealed):** fuse the bias
   into the FlashAttention inner loop so the O(L) HBM saving becomes a *latency*
   saving; autotune block_n/stages/warps per arch; add BF16; re-measure vs fused
