@@ -255,7 +255,13 @@ warts-and-all:
 
 The honest reading: expressive positional biases need a *generalization* budget
 (more data / fewer epochs / $\gamma$-regularization), not just a fit budget — and
-the screen→full inversion is exactly that lesson. Next iterations and details in
+the screen→full inversion is exactly that lesson. A **v2 run is underway** with the
+concrete fixes (γ-L2 regularization to pull the slope *flat*, validation
+early-stopping, a larger corpus / epoch-aware budget) to test whether the
+screen-scale **+4% margin over ALiBi survives proper regularization**. If it does,
+this flips to a genuine PASS with the $\mathcal{O}(L)$ HBM advantage intact —
+realistic ceiling: *competitive with, or a few % better than, ALiBi*, not dominant.
+Details + live status in
 [`4_ai_hardware_attention/AUTORESEARCH_HYPOTHESES.md`](4_ai_hardware_attention/AUTORESEARCH_HYPOTHESES.md).
 This is a genuinely open thread — **ML/kernel experts especially welcome.**
 

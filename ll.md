@@ -134,6 +134,26 @@ optimal" imply "faster," and treat fusion as the work that converts the one into
 the other. The honest framing is "memory-traffic win at long context; latency work
 remaining," not "faster attention."
 
+### 23. A Short Screen Can Crown an Overfitter — Budget for Generalization, Not Fit
+The CY-Sieve autoresearch loop (propose→screen→select) cleanly demonstrated a trap.
+At the **screen budget (1200 steps)** the learnable-γ Holonomic-ALiBi schemes
+*beat every baseline* (holo_ladder 5.89 vs ALiBi 6.15) — a real, exciting signal.
+At the **full budget (6000 steps)** the ranking **inverted**: the same schemes hit
+val ppl ~13 vs the baselines' ~4.3, because the setup over-trained (~37 epochs over
+a 2 MB corpus) and the *more expressive* learnable bias overfit hardest (train loss
+0.42 vs 1.17 — 3× lower — but val 3× worse). Two lessons: (a) **selection on a
+short screen preferentially promotes the highest-capacity hypothesis**, which is
+exactly the one most prone to overfit at scale — always validate the screen winner
+at the target budget before believing it; (b) the intended mechanism backfired
+silently — γ was supposed to *flatten* the steep CY slope, but with no
+regularization gradient descent pushed it *steeper* (max 0.13→0.21) to memorize
+n-grams. Fixes that follow directly: γ-regularization (pull toward flat),
+val-based early-stopping, and more data / fewer epochs — i.e. give expressive
+positional biases a **generalization** budget, not just a fit budget. (One genuine
+survivor: the CY shape extrapolates *flat*, 12.7→13.3 over 512→2048, where
+learned-absolute collapses 4.3→20.6 — stable length-extrapolation is real even
+when absolute quality is mediocre.)
+
 ### 22. The Geometry Sets a Prior, Not the Value — CY-Sieve §5 KILL
 The CY-Sieve quality gate returned a clean NEGATIVE result on real WikiText-2
 (train-from-scratch): best CY-Sieve 4.65 ppl vs best baseline 4.22 → **+10.15%**,

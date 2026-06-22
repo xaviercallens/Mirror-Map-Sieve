@@ -85,11 +85,18 @@ Architecture + verified numbers in `vision.md`; staged plan in `roadmap.md`.
   extrapolation" was a synthetic-corpus artifact — gone on real text. CY-Sieve's
   geometry-fixed steep decay (logλ=3.762) is too aggressive for a drop-in scheme.
   Per T6.3 the §6 HBM/speed numbers are NOT a contribution while §5 fails.
-- [open] **Redesign CY-Sieve bias (post-KILL, only if pursued):** decouple the
-  attention slope from the S₂₀ growth rate (learnable, geometry-as-prior); local
-  exact-window + gentle long-range tail hybrid (sliding-window won, and Tier 1
-  already gives the exact window); ablate the β=2 log-curvature. Re-gate at +5%
-  before re-claiming the O(L) HBM advantage.
+- [done] **Autoresearch sweep (10 hypotheses, propose→screen→select)** of the
+  post-KILL redesigns (`cy_sieve_autoresearch.py`, `AUTORESEARCH_HYPOTHESES.md`).
+  **Learnable-γ Holonomic-ALiBi beat every baseline at the screen budget** (5.89 vs
+  ALiBi 6.15) — the decouple-the-slope mechanism works. But the full 6000-step run
+  **inverted** (best CY 12.7 vs baseline 4.3): overfitting (~37 epochs/2MB; γ ran
+  steeper, not flatter). Still KILL — **UNCONFIRMED, not refuted.** Comet (local+CY
+  tail) underperformed at screen.
+- [in progress] **Autoresearch v2 — RUNNING:** γ-L2 regularization (toward flat) +
+  val early-stopping + larger corpus / epoch-aware budget. Goal: convert the
+  screen-scale +4% margin into a real PASS with the O(L) HBM advantage intact.
+  Realistic ceiling: competitive-with / a few % better than ALiBi. Then re-judge
+  holo_ladder_pos vs baselines; re-try Comet at longer ctx.
 - [open] **Stage B′ — kernel optimization (NEW, what §6 revealed):** fuse the bias
   into the FlashAttention inner loop so the O(L) HBM saving becomes a *latency*
   saving; autotune block_n/stages/warps per arch; add BF16; re-measure vs fused

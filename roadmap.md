@@ -101,10 +101,22 @@ fails. See `vision.md` for the corrected architecture and the verified numbers.
 - ✅ §4 kernel correctness PASS and §6 O(L)-vs-O(L²) HBM (8192×@16K) stand on their
       own — but per T6.3, with §5 failing, the speed/HBM numbers are NOT a
       contribution. **A fast kernel that hurts quality is a failed kernel.**
-- **Next (not a commitment):** the kill points at specific fixes — decouple the
-      attention slope from the S₂₀ growth rate (learnable, geometry-as-prior), a
-      local-window + gentle-tail hybrid, and a β=2 ablation. Only a redesigned bias
-      that clears +5% would re-open the HBM case. See Stage B′ + the findings doc.
+- **Autoresearch follow-up (2026-06-22):** a 10-hypothesis propose→screen→select
+      sweep tested the fixes. **Learnable-γ "Holonomic-ALiBi"** (decouple the slope:
+      bias_h(d) = -γ_h·logS₂₀(d), γ learnable per head; O(L) kept) **beat every
+      baseline at the screen budget** (holo_ladder 5.89 vs ALiBi 6.15) — the
+      mechanism works. **But the full 6000-step run inverted it** (best CY 12.7 vs
+      baseline 4.3): the setup over-trained (~37 epochs/2MB corpus) and the
+      expressive bias overfit (γ drifted *steeper*, not flatter). Still KILL, but
+      **UNCONFIRMED, not refuted**; the CY shape does extrapolate *flat* (12.7→13.3
+      over 512→2048) where learned collapses (4.3→20.6). See
+      `4_ai_hardware_attention/AUTORESEARCH_HYPOTHESES.md`.
+- [~] **Autoresearch v2 — RUNNING (2026-06-22):** γ-regularization (pull toward
+      flat), val early-stopping, and a larger corpus / epoch-aware budget — the
+      concrete path to convert the screen-scale +4% margin into a real PASS while
+      keeping the O(L) HBM advantage. Realistic ceiling: *competitive with / a few %
+      better than ALiBi*, not dominant. Comet (local+CY-tail) to be re-tried at
+      longer context.
 - [x] Throughput / HBM-traffic on the L4 (`cy_sieve_perf.py`, §6) **MEASURED**
       (2026-06-21; see `docs/PHASE3_CYSIEVE_GPU_FINDINGS.md`): bias-path HBM is
       **O(L) vs O(L²) — 8192× less at L=16384** (the core claim, confirmed). Honest
