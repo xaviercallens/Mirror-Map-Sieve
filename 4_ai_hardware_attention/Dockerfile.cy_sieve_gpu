@@ -9,7 +9,9 @@
 #     --timeout=2400s 4_ai_hardware_attention/
 # Run on a GPU VM/GKE:
 #   docker run --gpus all <image> python run_gpu_phase.py
-FROM pytorch/pytorch:2.9.1-cuda12.9-cudnn9-runtime
+# 2.9.1-cuda12.8 (valid Docker Hub tag; the cu12.8 runtime is compatible with the
+# L4's 12.9 driver — the benchmark VM used the cu12.9 DLVM wheel).
+FROM pytorch/pytorch:2.9.1-cuda12.8-cudnn9-runtime
 
 ENV PIP_NO_CACHE_DIR=1 HF_HUB_DISABLE_TELEMETRY=1 DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends git && \
