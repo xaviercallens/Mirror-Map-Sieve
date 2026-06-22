@@ -257,10 +257,20 @@ def train_one(name, train_data, val_data, cfg, device):
                             weight_decay=0.1)
     gen = torch.Generator().manual_seed(42)
     it = qg.batch_iter(train_data, cfg["ctx"], cfg["batch"], device, gen)
+    # Anti-overfit (v2): γ-regularization pulls the learnable scale toward FLAT
+    # (the killed/overfit run let γ drift steeper); + early-stopping on a held-out
+    # val ppl checkpoint (the over-trained run kept going past the val optimum).
+    gamma_l2 = cfg.get("gamma_l2", 0.0)
+    eval_every = cfg.get("eval_every", 0)        # 0 disables early-stop
+    best_val = float("inf"); best_res = None; best_gamma = None; patience = 0
+    max_patience = cfg.get("patience", 3)
+
     model.train(); t0 = time.perf_counter()
     for step in range(1, cfg["steps"] + 1):
         x, y = next(it)
         _, loss = model(x, targets=y)
+        if gamma_l2 > 0 and bias_mod is not None and hasattr(bias_mod, "scales"):
+            loss = loss + gamma_l2 * (bias_mod.scales() ** 2).sum()
         opt.zero_grad(set_to_none=True); loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0); opt.step()
         if step % max(1, cfg["steps"] // 4) == 0 or step == 1:
@@ -269,22 +279,37 @@ def train_one(name, train_data, val_data, cfg, device):
                 g = bias_mod.scales().detach().cpu()
                 extra = f" | gamma[min,med,max]={g.min():.4f},{g.median():.4f},{g.max():.4f}"
             print(f"    {name:>16} step {step:>5}/{cfg['steps']} loss {loss.item():.4f}{extra}")
+        # early-stop on val ppl @ train ctx
+        if eval_every and step % eval_every == 0:
+            vp = eval_ppl(model, val_data, cfg["ctx"], device)
+            if vp < best_val - 1e-3:
+                best_val = vp; patience = 0
+                best_res = {str(L): round(eval_ppl(model, val_data, L, device), 4)
+                            for L in [cfg["ctx"], 2 * cfg["ctx"], 4 * cfg["ctx"]]
+                            if L <= max_d}
+                if bias_mod is not None and hasattr(bias_mod, "scales"):
+                    best_gamma = [round(float(v), 5) for v in bias_mod.scales().detach().cpu()]
+            else:
+                patience += 1
+                if patience >= max_patience:
+                    print(f"    {name:>16} early-stop at step {step} (best val {best_val:.3f})")
+                    break
     train_s = time.perf_counter() - t0
 
-    # eval at train ctx + extrapolation
-    res = {}
-    for L in [cfg["ctx"], 2 * cfg["ctx"], 4 * cfg["ctx"]]:
-        if L > max_d:
-            continue
-        res[str(L)] = round(eval_ppl(model, val_data, L, device), 4)
-    gamma_final = None
-    if bias_mod is not None and hasattr(bias_mod, "scales"):
-        gamma_final = [round(float(v), 5) for v in bias_mod.scales().detach().cpu()]
+    # use early-stop checkpoint if we have one, else final
+    if best_res is not None:
+        res, gamma_final = best_res, best_gamma
+    else:
+        res = {str(L): round(eval_ppl(model, val_data, L, device), 4)
+               for L in [cfg["ctx"], 2 * cfg["ctx"], 4 * cfg["ctx"]] if L <= max_d}
+        gamma_final = ([round(float(v), 5) for v in bias_mod.scales().detach().cpu()]
+                       if bias_mod is not None and hasattr(bias_mod, "scales") else None)
     del model
     if device == "cuda":
         torch.cuda.empty_cache()
     return {"scheme": name, "params": n_params, "train_seconds": round(train_s, 1),
-            "ppl_by_ctx": res, "gamma_final": gamma_final}
+            "ppl_by_ctx": res, "gamma_final": gamma_final, "best_val": round(best_val, 4)
+            if best_res is not None else None}
 
 
 @torch.no_grad()
@@ -304,10 +329,14 @@ def eval_ppl(model, data, ctx, device, n_batches=20, batch=8):
     return math.exp(tot / max(cnt, 1))
 
 
+# v2 configs: γ-regularization + val early-stop to fight the overfitting that
+# inverted the screen→full ranking. The corpus is also enlarged (see main()).
 SCREEN = dict(d_model=384, n_layer=6, n_head=6, d_ff=1536, ctx=512, batch=16,
-              steps=1200, lr=3e-4, max_extrap=2048, window=512)
+              steps=2000, lr=3e-4, max_extrap=2048, window=512,
+              gamma_l2=1e-3, eval_every=250, patience=3, max_chars=8_000_000)
 FULL = dict(d_model=512, n_layer=8, n_head=8, d_ff=2048, ctx=512, batch=24,
-            steps=6000, lr=3e-4, max_extrap=2048, window=512)
+            steps=8000, lr=3e-4, max_extrap=2048, window=512,
+            gamma_l2=1e-3, eval_every=400, patience=4, max_chars=16_000_000)
 
 
 def main():
@@ -321,12 +350,14 @@ def main():
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     cfg = dict(SCREEN if args.phase == "screen" else FULL)
-    tr, va, src = qg.load_corpus()
+    tr, va, src = qg.load_corpus(max_chars=cfg.get("max_chars", 2_000_000))
     train_data, val_data = qg.to_bytes(tr), qg.to_bytes(va)
+    epochs = cfg["steps"] * cfg["batch"] * cfg["ctx"] / max(train_data.numel(), 1)
     print("=" * 76)
-    print(f"  CY-Sieve AUTORESEARCH — phase={args.phase} on {device} | corpus={src}")
+    print(f"  CY-Sieve AUTORESEARCH v2 — phase={args.phase} on {device} | corpus={src}")
     print(f"  arch d_model={cfg['d_model']} L={cfg['n_layer']} H={cfg['n_head']} "
-          f"ctx={cfg['ctx']} steps={cfg['steps']}")
+          f"ctx={cfg['ctx']} steps={cfg['steps']} | train {train_data.numel():,}B "
+          f"~{epochs:.1f} epochs | gamma_l2={cfg.get('gamma_l2')} early-stop@{cfg.get('eval_every')}")
     print("=" * 76)
 
     if args.phase == "screen":
