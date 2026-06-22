@@ -46,7 +46,7 @@ is established:
 | Minimal **differential** operator order of $f(z)$ | **Computed: order 6, degree 15** | Exact nullspace + `ore_algebra`; indicial eq. $-715\,s^4(s-1)^2$ ⇒ order-4 **MUM block** + order-2 apparent singularity. See [`docs/PHASE2_FINDINGS.md`](docs/PHASE2_FINDINGS.md) |
 | Calabi-Yau **3-fold** period interpretation | **Conjectural — evidence strengthened** | Two strands now point to a CY **3-fold** (order-4 MUM block; $q_d\in\mathbb{Z}$), refuting "4-fold". Still needs the explicit $L_6=L_4\cdot L_2$ factorization to be a claim |
 | Instanton-number integrality | **Unresolved (honest negative)** | Placeholder Yukawa gave non-integers (denominators $\sim d^3$ — a normalization artifact); the correct coupling needs $L_4$. Not evidence against CY-ness |
-| INT64 attention kernels (AI hardware) | **Exploratory proof-of-concept** | Heuristic; benchmarks largely CPU — see caveats |
+| CY-Sieve attention kernel (AI hardware) | **Tested on GPU — honest _negative_ result** | Kernel correct (FP16 parity) and bias-HBM is $\mathcal{O}(L)$ vs $\mathcal{O}(L^2)$ (8192× less @16K), but on real WikiText-2 it **failed its quality gate (+10.15% perplexity; a plain sliding window won)**. Reported, not shipped. A learnable-slope redesign is being screened now. See [`docs/PHASE3_CYSIEVE_GPU_FINDINGS.md`](docs/PHASE3_CYSIEVE_GPU_FINDINGS.md) |
 
 If you find an error in any row above, please open an issue — that is exactly
 the kind of feedback this preprint is published to receive.
@@ -169,12 +169,15 @@ audit ([`journal.md`](journal.md)):
   that we have not re-verified independently inside this repository.
 - **The Calabi-Yau / mirror-symmetry narrative is interpretive.** The integrality
   and period statements are computational evidence and analogy, not theorems.
-- **The AI-hardware kernels are exploratory.** Using $S_{20}$ as an attention
-  decay is a heuristic; any fast-growing integer sequence yields a similar
-  reciprocal decay. The shipped benchmark numbers were collected largely on CPU
-  — treat any GPU figures as unverified placeholders pending an independent run.
-  The "0% perplexity degradation" and "topological" framings are suggestive, not
-  rigorous, and should be reproduced before being relied upon.
+- **The AI-hardware kernel was tested on GPU and _failed its quality gate_ — a
+  deliberate negative result.** Trained from scratch on WikiText-2 (NVIDIA L4),
+  the CY-Sieve positional bias scored **+10.15% worse perplexity** than the best
+  baseline; a plain sliding window beat it. The kernel is numerically correct and
+  its bias-memory traffic is genuinely $\mathcal{O}(L)$ vs $\mathcal{O}(L^2)$, but
+  a fast kernel that hurts quality is a failed kernel, so we report it as such and
+  do not ship it. Any earlier "0% degradation" / "topological dominance" framing
+  is **superseded and retracted** by this measured result. A redesign (learnable
+  per-head slope; local-window + gentle-tail hybrid) is being screened.
 - **No external peer review yet.** Everything here is pre-publication.
 
 ---
@@ -203,40 +206,53 @@ failures.
 
 ---
 
-## AI hardware exploration (proof-of-concept)
+## AI-hardware exploration — CY-Sieve attention (a tested, honest negative result)
 
-The [`4_ai_hardware_attention/`](4_ai_hardware_attention/) directory contains an
-**experimental** study of using the exact integer sequence $S_{20}(d)$ as a
-deterministic INT64 attention-decay table, as an alternative to floating-point
-positional decays (ALiBi/RoPE-style). This is a curiosity-driven prototype, not a
-validated method. Please read the in-file caveats and reproduce before drawing
-conclusions.
+The [`4_ai_hardware_attention/`](4_ai_hardware_attention/) directory holds a
+**falsifiable engineering experiment**: can the holonomic structure of $S_{20}$
+serve as a *memory-bandwidth-free* positional-attention bias? Modern accelerators
+are bound by memory bandwidth, not arithmetic; a bias generated on the fly from
+the proved order-4 recurrence costs **zero HBM** for a lookup table — *if and only
+if* it preserves model quality. We built the kernel, set a pre-committed quality
+gate (`tests.md`), and ran it end-to-end on an **NVIDIA L4**. Full writeup:
+[`docs/PHASE3_CYSIEVE_GPU_FINDINGS.md`](docs/PHASE3_CYSIEVE_GPU_FINDINGS.md);
+benchmark data on [🤗 Hugging Face](https://huggingface.co/datasets/callensxavier/cy-sieve-attention-benchmark).
 
-### Block-sparse long-context timings (please interpret carefully)
+**What held up:**
+- **§4 kernel correctness — PASS.** The Triton kernel matches the NumPy reference
+  within FP16 tolerance (4/4).
+- **§6 memory claim — confirmed.** The on-the-fly bias reads $\mathcal{O}(L)$ bytes
+  of HBM versus $\mathcal{O}(L^2)$ for a materialized table — **8192× less at
+  $L=16384$**, widening with context.
 
-Using the rapid decay of $S_{20}$ to justify a fixed attention window $W$ turns
-the kernel into ordinary **block-sparse attention**, which lowers prefill cost
-from $\mathcal{O}(N^2)$ to $\mathcal{O}(N\cdot W)$. The following prefill
-latencies were reported on a single NVIDIA L4 GPU:
+**What did not (the decisive test):**
+- **§5 quality gate — KILL (+10.15%).** Trained from scratch on WikiText-2, the
+  best CY-Sieve variant scored **4.65 perplexity vs the best baseline's 4.22**,
+  past our pre-committed 5% kill threshold. A plain **sliding window won** (4.99,
+  essentially flat across 2×/4× length extrapolation). The geometry-fixed decay
+  slope ($\log\lambda=3.762$, the growth rate of $S_{20}$) is too steep for a
+  drop-in positional scheme.
+- **Honest consequence:** a correct, bandwidth-optimal kernel that hurts quality is
+  a **failed** kernel. We report the negative result rather than cherry-picking the
+  HBM number; per our own reporting rule, speed/memory are *not* a contribution
+  while the quality gate fails. (The unfused kernel is also currently ~4–6× slower
+  than fused SDPA in wall-clock — an HBM-traffic win, not yet a latency win.)
 
-| Sequence length | Dense SDPA | $S_{20}$ block-sparse ($W$ fixed) | Ratio |
-| :--- | :--- | :--- | :--- |
-| 8,192 (8k) | 3.81 ms | 1.20 ms | 3.2× |
-| 16,384 (16k) | 19.16 ms | 3.23 ms | 5.9× |
-| 32,768 (32k) | 75.62 ms | 6.38 ms | 11.9× |
-| 65,536 (64k) | 311.88 ms | 12.89 ms | 24.2× |
-| 131,072 (128k) | 1,602.37 ms | 26.01 ms | 61.6× |
+**Why this is the interesting part.** The negative is *informative*: the
+Calabi–Yau geometry is a sound **prior for the bias shape**, not the right
+**value**. We are now running an **autoresearch sweep** (propose → screen →
+select) of 10 hypotheses that decouple the slope from the sequence — a
+**learnable per-head scale** $\gamma_h$ ("Holonomic-ALiBi", $\text{bias}_h(d) =
+-\gamma_h\log S_{20}(d)$, where gradient descent picks the steepness while keeping
+the $\mathcal{O}(L)$ generation) and a **"Comet" hybrid** (exact local window +
+cheap CY tail). Screening is in progress; results will be reported here with the
+same honesty whether they overturn the KILL or confirm it.
 
-**Honest reading of this table.** The speedup is the *generic* consequence of
-replacing dense $\mathcal{O}(N^2)$ attention with a fixed-window
-$\mathcal{O}(N\cdot W)$ kernel — **any** windowing scheme (sliding-window, local
-attention, etc.) gives the same asymptotics; $S_{20}$ only supplies one
-particular justification for the window size. It is **not** evidence that
-$S_{20}$ outperforms other sparse-attention methods, and it says nothing about
-model *quality* (perplexity/accuracy), which a windowed kernel can degrade.
-These are single-run numbers on one GPU, not a controlled benchmark; we publish
-them only as a reproducibility target and would welcome a rigorous comparison
-against established sparse-attention baselines.
+> Earlier versions of this README reported large block-sparse "speedups" and "0%
+> perplexity degradation." Those are **superseded and retracted**: the speedups
+> were the generic consequence of windowing (any sparse scheme gives them) and the
+> quality claim came from an invalid frozen-model method. The numbers above are the
+> controlled, train-from-scratch replacements.
 
 ---
 
@@ -255,8 +271,11 @@ Concretely, we would welcome:
   through editorial review (or pointing out a prior appearance we missed).
 - **A rigorous take on the Calabi-Yau interpretation** — is the mirror-period
   identification actually correct, and can it be proven?
-- **Counter-evidence or critique** of the AI-hardware kernels, including proper
-  GPU benchmarks.
+- **ML / kernel expertise on the CY-Sieve attention experiment.** The fixed bias
+  failed its quality gate; we are screening learnable-slope and local-window-hybrid
+  redesigns. Critique of the methodology, better baselines (NoPE, learnable-ALiBi,
+  RoPE-scaling), a fused Triton implementation, or a clean refutation are all very
+  welcome. Data: [🤗 cy-sieve-attention-benchmark](https://huggingface.co/datasets/callensxavier/cy-sieve-attention-benchmark).
 - **General corrections** to any overstatement in the docs or paper.
 
 Please open a [GitHub issue](https://github.com/xaviercallens/Mirror-Map-Sieve/issues)
