@@ -238,15 +238,26 @@ benchmark data on [🤗 Hugging Face](https://huggingface.co/datasets/callensxav
   while the quality gate fails. (The unfused kernel is also currently ~4–6× slower
   than fused SDPA in wall-clock — an HBM-traffic win, not yet a latency win.)
 
-**Why this is the interesting part.** The negative is *informative*: the
-Calabi–Yau geometry is a sound **prior for the bias shape**, not the right
-**value**. We are now running an **autoresearch sweep** (propose → screen →
-select) of 10 hypotheses that decouple the slope from the sequence — a
-**learnable per-head scale** $\gamma_h$ ("Holonomic-ALiBi", $\text{bias}_h(d) =
--\gamma_h\log S_{20}(d)$, where gradient descent picks the steepness while keeping
-the $\mathcal{O}(L)$ generation) and a **"Comet" hybrid** (exact local window +
-cheap CY tail). Screening is in progress; results will be reported here with the
-same honesty whether they overturn the KILL or confirm it.
+**Follow-up: an autoresearch sweep (propose → screen → select) of 10 hypotheses**
+that decouple the slope from the sequence — a **learnable per-head scale**
+$\gamma_h$ ("Holonomic-ALiBi", $\text{bias}_h(d) = -\gamma_h\log S_{20}(d)$, GD
+picks the steepness, $\mathcal{O}(L)$ generation kept) and a **"Comet" hybrid**
+(exact local window + cheap CY tail). The result is instructive and we report it
+warts-and-all:
+- **At the screen budget (1200 steps), learnable-$\gamma$ Holonomic-ALiBi _beat_
+  every baseline** (5.89 vs ALiBi 6.15) — the mechanism works.
+- **At the full budget (6000 steps), it lost badly** (best CY 12.7 vs baseline
+  4.3): the setup over-trains (~37 epochs over a 2 MB corpus), and the expressive
+  learnable bias overfit hardest (train loss 3× lower, val 3× worse). So the
+  full-scale verdict **remains a KILL — UNCONFIRMED, not cleanly refuted.**
+- One real signal survives: the holonomic schemes **extrapolate flat** (12.7→13.3
+  over 512→2048) where learned-absolute collapses (4.3→20.6).
+
+The honest reading: expressive positional biases need a *generalization* budget
+(more data / fewer epochs / $\gamma$-regularization), not just a fit budget — and
+the screen→full inversion is exactly that lesson. Next iterations and details in
+[`4_ai_hardware_attention/AUTORESEARCH_HYPOTHESES.md`](4_ai_hardware_attention/AUTORESEARCH_HYPOTHESES.md).
+This is a genuinely open thread — **ML/kernel experts especially welcome.**
 
 > Earlier versions of this README reported large block-sparse "speedups" and "0%
 > perplexity degradation." Those are **superseded and retracted**: the speedups

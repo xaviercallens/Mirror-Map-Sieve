@@ -1,0 +1,123 @@
+{
+  "phase": "full",
+  "device": "cuda",
+  "corpus_source": "Salesforce/wikitext:wikitext-2-raw-v1",
+  "config": {
+    "d_model": 512,
+    "n_layer": 8,
+    "n_head": 8,
+    "d_ff": 2048,
+    "ctx": 512,
+    "batch": 24,
+    "steps": 6000,
+    "lr": 0.0003,
+    "max_extrap": 2048,
+    "window": 512
+  },
+  "runs": [
+    {
+      "scheme": "holo_ladder",
+      "params": 25351176,
+      "train_seconds": 1963.8,
+      "ppl_by_ctx": {
+        "512": 13.8984,
+        "1024": 14.9617,
+        "2048": 14.8784
+      },
+      "gamma_final": [
+        0.21024,
+        0.14404,
+        0.08625,
+        0.05015,
+        0.0266,
+        0.01722,
+        0.00825,
+        0.00505
+      ]
+    },
+    {
+      "scheme": "holo_ladder_pos",
+      "params": 25351176,
+      "train_seconds": 1963.8,
+      "ppl_by_ctx": {
+        "512": 12.72,
+        "1024": 13.5451,
+        "2048": 13.3026
+      },
+      "gamma_final": [
+        0.20952,
+        0.14392,
+        0.08498,
+        0.05051,
+        0.02635,
+        0.01614,
+        0.00857,
+        0.00449
+      ]
+    },
+    {
+      "scheme": "holo_tiny",
+      "params": 25351176,
+      "train_seconds": 1964.8,
+      "ppl_by_ctx": {
+        "512": 13.6385,
+        "1024": 14.3524,
+        "2048": 14.0675
+      },
+      "gamma_final": [
+        0.06232,
+        0.06003,
+        0.06225,
+        0.06089,
+        0.06282,
+        0.06283,
+        0.06272,
+        0.06248
+      ]
+    },
+    {
+      "scheme": "learned",
+      "params": 26399744,
+      "train_seconds": 1750.2,
+      "ppl_by_ctx": {
+        "512": 4.277,
+        "1024": 12.1607,
+        "2048": 20.6294
+      },
+      "gamma_final": null
+    },
+    {
+      "scheme": "sliding",
+      "params": 25351168,
+      "train_seconds": 1894.3,
+      "ppl_by_ctx": {
+        "512": 4.6219,
+        "1024": 8.6587,
+        "2048": 13.0274
+      },
+      "gamma_final": null
+    }
+  ],
+  "ranking_by_train_ppl": [
+    [
+      "learned",
+      4.277
+    ],
+    [
+      "sliding",
+      4.6219
+    ],
+    [
+      "holo_ladder_pos",
+      12.72
+    ],
+    [
+      "holo_tiny",
+      13.6385
+    ],
+    [
+      "holo_ladder",
+      13.8984
+    ]
+  ]
+}

@@ -62,4 +62,37 @@ preserved. **Direction B (Comet) disappointed here** — likely too few steps fo
 the learnable tail to find signal; revisit at longer context.
 
 **Selected top-3 for the full 6000-step run:** `holo_ladder`, `holo_ladder_pos`,
-`holo_tiny` (vs `learned` + `sliding`). Full-run verdict pending.
+`holo_tiny` (vs `learned` + `sliding`).
+
+## Full-run results (2026-06-22, 6000 steps, d_model=512/L=8) — the screen REVERSED
+
+| scheme | train loss | **val ppl@512** | @1024 | @2048 |
+|---|---|---|---|---|
+| **learned** (baseline) | 1.17 | **4.28** | 12.16 | 20.63 |
+| **sliding** (baseline) | 1.31 | **4.62** | 8.66 | 13.03 |
+| holo_ladder_pos | 0.42 | 12.72 | 13.55 | 13.30 |
+| holo_tiny | 0.47 | 13.64 | 14.35 | 14.07 |
+| holo_ladder | 0.42 | 13.90 | 14.96 | 14.88 |
+
+**Verdict: still KILL** — best CY (holo_ladder_pos 12.72) vs best baseline (learned
+4.28) is **+197%**, far past the 5% threshold.
+
+**Diagnosis — overfitting confound, NOT a clean refutation.** The holonomic schemes
+drove train loss **3× lower** (0.42 vs 1.17) but val **3× worse** — a textbook
+overfitting signature. The setup over-trains: 6000×24×512 ≈ **74 M tokens over a
+2 MB corpus ≈ 37 epochs**. The expressive learnable bias memorized the train text
+hardest; at the 1200-step screen (before overfitting) the same scheme *beat* the
+baselines (5.89 vs 6.15). Also telling: γ drifted **up** (max 0.13→0.21, steeper),
+the opposite of the intended flattening — with no regularization it used a sharp
+bias to memorize.
+
+**One signal survives:** the holonomic schemes **extrapolate flat** (holo_ladder_pos
+12.7→13.3 over 512→2048) while `learned` collapses (4.3→20.6). The CY shape gives
+stable length-extrapolation; it's just uniformly mediocre at this (over-trained)
+budget.
+
+**Honest status: UNCONFIRMED, not refuted.** Right next steps before re-judging:
+(1) more data / far fewer epochs (or a held-out early-stop on val); (2) **regularize
+γ** (weight-decay / cap growth — it ran steeper, not flatter); (3) re-screen at a
+budget that doesn't over-train. The screen→full inversion is itself the lesson:
+expressive positional biases need a generalization budget, not just a fit budget.
