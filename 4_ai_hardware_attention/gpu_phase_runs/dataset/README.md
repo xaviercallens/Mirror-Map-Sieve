@@ -80,6 +80,27 @@ O(L²) for a materialized table. But the unfused kernel is **~4–6× slower** t
 fused dense SDPA: a memory-traffic win, **not** a latency win. Per the project's
 honesty rule, with §5 failing these numbers are *not* presented as a contribution.
 
+## Autoresearch follow-up (2026-06-22): can a learnable slope beat the baselines?
+
+A propose→screen→select sweep of 10 hypotheses (`autoresearch_results.csv`,
+`raw/autoresearch_*`) testing two fixes to the KILL: **learnable per-head γ
+"Holonomic-ALiBi"** ($\text{bias}_h(d)=-\gamma_h\log S_{20}(d)$, γ learnable, O(L)
+kept) and a **"Comet" hybrid** (local window + CY tail).
+
+- **Screen (1200 steps): learnable-γ Holonomic-ALiBi BEAT every baseline** —
+  holo_ladder **5.89** vs ALiBi 6.15. The mechanism works.
+- **Full (6000 steps): the ranking INVERTED** — best CY 12.7 vs best baseline 4.3.
+  The setup over-trained (~37 epochs over a 2 MB corpus); the expressive learnable
+  bias overfit hardest (train loss 3× lower, val 3× worse) and γ drifted *steeper*,
+  not flatter. **Still KILL — but UNCONFIRMED, not refuted.**
+- One survivor: the holonomic schemes **extrapolate flat** (12.7→13.3 over
+  512→2048) where learned-absolute collapses (4.3→20.6).
+
+A **v2 run** (γ-regularization toward flat + validation early-stopping + larger
+corpus) is testing whether the screen-scale +4% margin survives. Lesson: a short
+screen preferentially crowns the highest-capacity hypothesis — exactly the one that
+overfits at scale; validate the winner at the target budget.
+
 ## Hardware / reproducibility
 
 NVIDIA L4 (24 GB), PyTorch 2.9.1+cu129, Triton 3.5.1. §4 Triton↔reference parity:
