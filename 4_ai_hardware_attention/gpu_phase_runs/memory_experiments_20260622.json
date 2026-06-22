@@ -1,0 +1,100 @@
+{
+  "corpus": "Salesforce/wikitext:wikitext-2-raw-v1",
+  "cfg": {
+    "d_model": 128,
+    "n_layer": 3,
+    "n_head": 4,
+    "d_ff": 512,
+    "ctx": 512,
+    "batch": 12,
+    "steps": 800,
+    "lr": 0.0003,
+    "max_extrap": 1024
+  },
+  "results": {
+    "H-C": {
+      "alibi": 9.1814,
+      "sliding": 12.0375,
+      "holo_ladder_pos": 8.9979,
+      "gain_vs_best_baseline_pct": 2.0
+    },
+    "H-A": {
+      "full_ppl": 8.9979,
+      "B64": {
+        "recent": {
+          "ppl": 9.0021,
+          "avg_kept": 60.1
+        },
+        "sink+recent": {
+          "ppl": 9.0027,
+          "avg_kept": 60.1
+        },
+        "holo-strided": {
+          "ppl": 9.0021,
+          "avg_kept": 60.1
+        }
+      },
+      "B128": {
+        "recent": {
+          "ppl": 9.0002,
+          "avg_kept": 112.1
+        },
+        "sink+recent": {
+          "ppl": 8.9997,
+          "avg_kept": 112.1
+        },
+        "holo-strided": {
+          "ppl": 9.0002,
+          "avg_kept": 112.1
+        }
+      }
+    },
+    "H-F": {
+      "holo_init": {
+        "ppl": 16.2563,
+        "decay_init": [
+          0.95,
+          0.987,
+          0.997,
+          0.999
+        ],
+        "decay_final": [
+          0.9505,
+          0.9865,
+          0.9964,
+          0.9989
+        ]
+      },
+      "retnet_fixed": {
+        "ppl": 16.0649,
+        "decay_init": [
+          0.969,
+          0.984,
+          0.992,
+          0.996
+        ],
+        "decay_final": [
+          0.9685,
+          0.984,
+          0.9917,
+          0.9958
+        ]
+      },
+      "uniform_0.95": {
+        "ppl": 15.0615,
+        "decay_init": [
+          0.95,
+          0.95,
+          0.95,
+          0.95
+        ],
+        "decay_final": [
+          0.9488,
+          0.949,
+          0.9491,
+          0.9493
+        ]
+      }
+    }
+  }
+}

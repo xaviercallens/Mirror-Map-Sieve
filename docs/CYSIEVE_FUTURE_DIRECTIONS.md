@@ -128,6 +128,29 @@ Ranked by (memory leverage × conceptual fit × tractability), being honest that
 **De-prioritized:** H-B, H-D, H-G (decorative math link, prior negative evidence, or
 marginal-with-overfit-risk respectively).
 
+## Local experiment results (2026-06-22, CPU, ctx 512, WikiText-2)
+
+All three selected directions were tested locally (`cy_sieve_memory_experiments.py`,
+results `gpu_phase_runs/memory_experiments_20260622.json`):
+
+- **H-C (quality) — CONFIRMED.** holo_ladder_pos 8.998 vs ALiBi 9.181 = **+2.0%**,
+  reproducing the GPU screen gain on a fresh model. Real and robust.
+- **H-A (KV eviction) — NO ADVANTAGE (locally).** At budget B=64/128 vs L=512, the
+  holonomic-strided deep-past policy ties a plain recent window AND sink+recent
+  (all within 0.05% of full attention). WikiText@512 has too little long-range
+  dependency to exercise the deep-past benefit — a fair test needs a real
+  long-range/retrieval benchmark (NIAH, PG-19, repo-code), not runnable locally.
+  **Not refuted, but not validated** — do not claim a KV memory win on this evidence.
+- **H-F (SSM decay prior) — WORSE.** holo_init 16.26 > retnet_fixed 16.06 > uniform
+  0.95 15.06. The geometry prior did not help the forget-gate; gates converged to
+  α≈0.95–0.99 regardless of init, so the init barely mattered. De-prioritized.
+
+**Selection: H-C is the only one with a measurable gain — ship it as a quality/
+extrapolation contribution, NOT a memory win.** H-A remains the *only* path to a
+genuine memory win but is unproven and needs a long-range benchmark before any
+claim. The honest current position: +2% over ALiBi on quality; memory win
+**unrealized**.
+
 ## The one-line strategic conclusion
 
 > The positional-bias memory win is illusory against FlashAttention+ALiBi. The
