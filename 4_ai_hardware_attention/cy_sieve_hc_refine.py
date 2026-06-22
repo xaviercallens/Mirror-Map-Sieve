@@ -80,6 +80,7 @@ def make_refined(name, H, max_d):
     gamma_ladder = [1.0 / t for t in cy.alibi_style_tau_ladder(H)]
     a_cy = [g * LOGLAMBDA for g in gamma_ladder]            # CY linear coefficient
     b_cy = [g * BETA for g in gamma_ladder]                 # CY log-curvature coeff
+    if name == "learned_pos":    return True, None, None      # learned-abs control
     if name == "alibi":          return False, None, "alibi"
     if name == "alibi_learn":    # learnable slope, NO log term (control)
         return False, (lambda: NestedBias(H, max_d, alibi_slopes, [0.0] * H, learn_b=False)), None
@@ -94,22 +95,28 @@ def make_refined(name, H, max_d):
     raise ValueError(name)
 
 
+# local CPU smoke config; FULL (GPU) mirrors the trustworthy v2 setup.
 CFG = dict(d_model=128, n_layer=3, n_head=4, d_ff=512, ctx=512, batch=12,
            steps=800, lr=3e-4, max_extrap=1024, gamma_l2=1e-3)
+FULL = dict(d_model=512, n_layer=8, n_head=8, d_ff=2048, ctx=512, batch=24,
+            steps=8000, lr=3e-4, max_extrap=2048, gamma_l2=1e-3,
+            eval_every=400, patience=4, max_chars=16_000_000)
 
 
 def train_eval(name, td, vd, device, cfg=CFG):
     torch.manual_seed(0)
     H, maxd = cfg["n_head"], cfg["max_extrap"]
-    _, factory, static = make_refined(name, H, maxd)
+    learned_pos, factory, static = make_refined(name, H, maxd)
     bias_mod = factory() if factory else None
     model = ar.TinyGPT(256, cfg["d_model"], cfg["n_layer"], H, cfg["d_ff"],
-                       maxd, False, bias_mod).to(device)
+                       maxd, learned_pos, bias_mod).to(device)
     if static:
         model._static = ar.static_bias(static, H, cfg["ctx"], device); model._static_scheme = static
     opt = torch.optim.AdamW(model.parameters(), lr=cfg["lr"], weight_decay=0.1)
     gen = torch.Generator().manual_seed(42)
     it = qg.batch_iter(td, cfg["ctx"], cfg["batch"], device, gen)
+    eval_every = cfg.get("eval_every", 0); patience_max = cfg.get("patience", 4)
+    best_val = float("inf"); best_res = None; best_rep = None; patience = 0
     model.train()
     for step in range(1, cfg["steps"] + 1):
         x, y = next(it); _, loss = model(x, targets=y)
@@ -120,13 +127,28 @@ def train_eval(name, td, vd, device, cfg=CFG):
             loss = loss + cfg["gamma_l2"] * (bias_mod.scales() ** 2).sum()
         opt.zero_grad(set_to_none=True); loss.backward()
         nn.utils.clip_grad_norm_(model.parameters(), 1.0); opt.step()
-    # eval @ ctx + extrapolation
-    res = {}
-    for L in [cfg["ctx"], 2 * cfg["ctx"]]:
-        if L <= maxd: res[str(L)] = round(qg_eval(model, vd, L, device), 4)
-    rep = bias_mod.report() if (bias_mod is not None and hasattr(bias_mod, "report")) else None
+        if eval_every and step % eval_every == 0:
+            vp = qg_eval(model, vd, cfg["ctx"], device)
+            if vp < best_val - 1e-3:
+                best_val = vp; patience = 0
+                best_res = {str(L): round(qg_eval(model, vd, L, device), 4)
+                            for L in [cfg["ctx"], 2 * cfg["ctx"]] if L <= maxd}
+                best_rep = bias_mod.report() if (bias_mod is not None and hasattr(bias_mod, "report")) else None
+            else:
+                patience += 1
+                if patience >= patience_max:
+                    print(f"    {name} early-stop @ {step} (best val {best_val:.3f})")
+                    break
+    if best_res is not None:
+        res, rep = best_res, best_rep
+    else:
+        res = {str(L): round(qg_eval(model, vd, L, device), 4)
+               for L in [cfg["ctx"], 2 * cfg["ctx"]] if L <= maxd}
+        rep = bias_mod.report() if (bias_mod is not None and hasattr(bias_mod, "report")) else None
+    if device == "cuda":
+        del model; torch.cuda.empty_cache()
     return {"scheme": name, "ppl_by_ctx": res, "params": sum(p.numel() for p in model.parameters()),
-            "bias_report": rep}
+            "bias_report": rep, "best_val": round(best_val, 4) if best_res else None}
 
 
 @torch.no_grad()
@@ -147,14 +169,20 @@ def main():
     ap.add_argument("--schemes", nargs="+",
                     default=["alibi", "alibi_learn", "holo_fixed", "nested_free",
                              "nested_curv0", "log_only"])
-    ap.add_argument("--steps", type=int, default=CFG["steps"])
+    ap.add_argument("--preset", choices=["smoke", "full"], default="smoke")
+    ap.add_argument("--steps", type=int, default=None)
     ap.add_argument("--output", default="hc_refine_results.json")
     args = ap.parse_args()
-    CFG["steps"] = args.steps
-    device = "cpu"
-    tr, va, src = qg.load_corpus(max_chars=2_000_000)
+    if args.preset == "full":
+        CFG.clear(); CFG.update(FULL)
+    if args.steps:
+        CFG["steps"] = args.steps
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    tr, va, src = qg.load_corpus(max_chars=CFG.get("max_chars", 2_000_000))
     td, vd = qg.to_bytes(tr), qg.to_bytes(va)
-    print(f"H-C REFINE | corpus={src} train={td.numel():,}B steps={CFG['steps']}\n")
+    epochs = CFG["steps"] * CFG["batch"] * CFG["ctx"] / max(td.numel(), 1)
+    print(f"H-C REFINE ({args.preset}) | corpus={src} train={td.numel():,}B "
+          f"steps={CFG['steps']} ~{epochs:.1f}ep device={device}\n")
     runs = []
     for s in args.schemes:
         t0 = time.perf_counter()
@@ -169,8 +197,9 @@ def main():
               f"({time.perf_counter()-t0:.0f}s){extra}")
     Lk = str(CFG["ctx"])
     ranked = sorted(runs, key=lambda r: r["ppl_by_ctx"].get(Lk, 9e9))
-    best_base = min(r["ppl_by_ctx"].get(Lk, 9e9) for r in runs
-                    if r["scheme"] in ("alibi", "alibi_learn"))
+    base_ppls = [r["ppl_by_ctx"].get(Lk, 9e9) for r in runs
+                 if r["scheme"] in ("alibi", "alibi_learn", "learned_pos")]
+    best_base = min(base_ppls) if base_ppls else float("inf")
     print("\n  RANKING:", [(r["scheme"], r["ppl_by_ctx"].get(Lk)) for r in ranked])
     print(f"  best learnable/fixed-ALiBi baseline ppl: {best_base}")
     best = ranked[0]
