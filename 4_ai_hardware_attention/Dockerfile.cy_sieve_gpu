@@ -1,0 +1,29 @@
+# CY-Sieve GPU environment — fast-restart container for the attention/kernel
+# experiments (run_gpu_phase.py, cy_sieve_autoresearch.py, cy_sieve_hc_refine.py).
+# Base: PyTorch 2.9 + CUDA 12.9 (matches the DLVM image we benchmarked on; ships
+# Triton). We add the quality-gate deps and bake the repo in for instant launch.
+#
+# Build (server-side, no local Docker):
+#   gcloud builds submit --tag \
+#     us-central1-docker.pkg.dev/gen-lang-client-0625573011/agora-repo/cy-sieve-gpu:latest \
+#     --timeout=2400s 4_ai_hardware_attention/
+# Run on a GPU VM/GKE:
+#   docker run --gpus all <image> python run_gpu_phase.py
+FROM pytorch/pytorch:2.9.1-cuda12.9-cudnn9-runtime
+
+ENV PIP_NO_CACHE_DIR=1 HF_HUB_DISABLE_TELEMETRY=1 DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends git && \
+    rm -rf /var/lib/apt/lists/*
+RUN pip install --no-cache-dir \
+    "datasets>=2.19" xxhash multiprocess pandas "requests>=2.32.2" \
+    huggingface_hub fsspec pyarrow pytest "numpy>=1.24"
+
+WORKDIR /workspace
+RUN git clone --depth 1 https://github.com/xaviercallens/Mirror-Map-Sieve.git
+WORKDIR /workspace/Mirror-Map-Sieve/4_ai_hardware_attention
+
+# Build-time sanity (no GPU at build, so just import-check the stack).
+RUN python -c "import torch, datasets, xxhash, pytest; \
+print('cy-sieve-gpu env OK | torch', torch.__version__, '| datasets', datasets.__version__)"
+
+CMD ["python", "run_gpu_phase.py", "--quick"]
