@@ -98,8 +98,11 @@ def make_refined(name, H, max_d):
 # local CPU smoke config; FULL (GPU) mirrors the trustworthy v2 setup.
 CFG = dict(d_model=128, n_layer=3, n_head=4, d_ff=512, ctx=512, batch=12,
            steps=800, lr=3e-4, max_extrap=1024, gamma_l2=1e-3)
+# 4000 steps (was 8000): early-stop typically triggers well before the cap, and
+# 4000 is ample to confirm a margin while halving wall-clock (so the run finishes
+# inside a safe killswitch window). Bump back to 8000 only for a final camera-ready.
 FULL = dict(d_model=512, n_layer=8, n_head=8, d_ff=2048, ctx=512, batch=24,
-            steps=8000, lr=3e-4, max_extrap=2048, gamma_l2=1e-3,
+            steps=4000, lr=3e-4, max_extrap=2048, gamma_l2=1e-3,
             eval_every=400, patience=4, max_chars=16_000_000)
 
 
