@@ -1,0 +1,6 @@
+scheme,ppl_1x_512,ppl_2x_1024,ppl_4x_2048,ppl_8x_4096,params,note
+alibi_fixed,3.7048,3.6227,3.5767,3.5125,25351424,fixed ALiBi baseline
+alibi_learn,3.6505,3.5586,3.5003,3.4287,25351424,learnable per-head slope (selected hypothesis / control)
+nope,10.2904,10.8447,11.5714,12.3112,25351424,content-only sanity (degrades with length)
+content_balance,3.6419,3.5482,3.4879,3.4277,25351424,learnable slope + learnable per-head content scale c_h (ties: +0.35% @4x)
+cb_softmax_temp,3.7322,3.6587,3.5987,3.5482,25351424,content_balance + per-head softmax temperature (regresses)

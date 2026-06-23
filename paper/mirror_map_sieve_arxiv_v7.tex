@@ -673,6 +673,17 @@ scheme, at matched compute---the ALiBi-paper methodology).
   therefore drop the $\Sx$/recurrence machinery and report the result as what it
   is---a learnable linear-plus-log positional bias---rather than as a
   number-theoretic method.
+\item \textbf{Final form selected by elimination.} Three independent GPU bake-offs
+  converge on the simplest scheme. A six-family comparison (linear, log-curvature,
+  Fourier, fixed Calabi--Yau, local+tail hybrid, exponential decay) leaves
+  \emph{learnable per-head ALiBi} the winner; everything more expressive loses at
+  scale. A final orthogonal probe of per-head content/position balance---a learnable
+  scale $c_h$ on the content score, optionally with a per-head softmax
+  temperature---only \emph{ties} learnable-ALiBi ($+0.35\%$ at $4\times$ the
+  training length), while the temperature knob \emph{regresses}. The shipped
+  hypothesis is thus one learnable linear slope per head and nothing else: a single
+  per-head scalar, $\mathcal{O}(1)$ state, no curvature, no sequence, no content
+  scale. \emph{Adaptability beats added structure---up to that one slope.}
 \end{enumerate}
 
 \paragraph{What we claim, and what we do not.} We claim a small, reproducible

@@ -28,13 +28,20 @@ KILL at >5% regression.
 | **autoresearch full v1** (6000 steps) | **inverted → KILL** (12.7 vs 4.3) | overfitting: ~37 epochs/2 MB; γ ran *steeper*, not flatter |
 | **autoresearch full v2** (regularized) | **PASS +8.1%** (3.32 vs 3.62) | γ-L2 + val early-stop + bigger corpus fix it; the gain is real at scale |
 | **attribution** (nested $-a d + b\log d$) | gain is **learnability, not CY** | learnable-ALiBi (+3.8%) > fixed-CY (+2%); free curvature $b\to$ **negative**, away from the CY $\beta{=}2$ |
+| **bake-off** (6 learnable families, GPU) | **learnable-ALiBi wins** | log/curvature/Fourier/hybrid all lose at scale; `exp_decay`≡`alibi_learn` (`PHASE5_FINAL_BAKEOFF.md`) |
+| **hetero-pos** (content↔position balance) | **ties; temperature hurts** | explicit content-scale `c_h` ties `alibi_learn` (+0.35%@4×); per-head softmax-temperature *regresses* (`PHASE6_HETERO_POS.md`) |
 
 ## What we can honestly claim
 
-1. **A real, reproducible quality result.** A *learnable* per-head positional bias
-   beats fixed ALiBi by **~4–8%** perplexity on WikiText-2 (from scratch), with
-   **stable length-extrapolation** where learned-absolute positions collapse. This
-   PASSES the pre-committed gate at GPU scale.
+1. **A real, reproducible quality result, with a clean final form.** A *learnable*
+   per-head positional bias beats fixed ALiBi by **~4–8%** perplexity on WikiText-2
+   (from scratch), with **stable length-extrapolation** where learned-absolute
+   positions collapse. This PASSES the pre-committed gate at GPU scale. The
+   **selected hypothesis is the simplest one that wins: learnable-ALiBi** — one
+   learnable linear slope per head, no log-curvature, no $S_{20}$ sequence, no
+   content scale, no softmax temperature. Three independent GPU bake-offs
+   (attribution, bias-family, content↔position) all converge on it; every added
+   knob either ties within noise or *regresses* at scale.
 
 2. **The source is learnability, not the Calabi–Yau geometry.** A controlled,
    nested-parameterization experiment shows a plain learnable-ALiBi slope (zero CY
@@ -71,6 +78,7 @@ methodology and a fair comparison against learnable-ALiBi / NoPE / RoPE-scaling 
 a real long-range benchmark.
 
 — Artifacts: `docs/PHASE3_CYSIEVE_GPU_FINDINGS.md` (gate), `PHASE4_HC_ATTRIBUTION.md`
-(attribution), `CYSIEVE_FUTURE_DIRECTIONS.md` (memory analysis),
-`4_ai_hardware_attention/gpu_phase_runs/` (raw runs), and the
+(attribution), `PHASE5_FINAL_BAKEOFF.md` (bias-family + exact-kernel bake-off),
+`PHASE6_HETERO_POS.md` (content↔position balance), `CYSIEVE_FUTURE_DIRECTIONS.md`
+(memory analysis), `4_ai_hardware_attention/gpu_phase_runs/` (raw runs), and the
 [HF benchmark dataset](https://huggingface.co/datasets/callensxavier/cy-sieve-attention-benchmark).

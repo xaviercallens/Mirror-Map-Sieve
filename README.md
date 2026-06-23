@@ -264,6 +264,15 @@ WikiText-2, trained from scratch):
   beat baselines, but a 6000-step run **inverted** it (overfitting, ~37 epochs/2 MB,
   γ ran *steeper* not flatter) — fixed with γ-regularization + val early-stopping +
   a larger corpus. A short screen can crown an overfitter.
+- **Selected hypothesis (final): plain learnable-ALiBi.** Three GPU bake-offs —
+  attribution ([`PHASE4`](docs/PHASE4_HC_ATTRIBUTION.md)), bias-family
+  ([`PHASE5`](docs/PHASE5_FINAL_BAKEOFF.md)), and content↔position balance
+  ([`PHASE6`](docs/PHASE6_HETERO_POS.md), 2026-06-23) — all converge on **one
+  learnable linear slope per head, nothing else**. Every added knob (log-curvature,
+  Fourier, Calabi–Yau shape, explicit content-scale, per-head softmax temperature)
+  either ties within noise or **regresses at scale**; e.g. content-balance ties
+  learnable-ALiBi (+0.35%@4×) while the temperature knob loses. *Adaptability beats
+  added structure* — up to the single slope, and no further.
 
 **The honest achievement** is the *method*: a falsifiable loop that went KILL →
 caught false-positive → confirmed +8% → self-corrected attribution, reporting the

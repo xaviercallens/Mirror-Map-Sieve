@@ -96,3 +96,23 @@ budget.
 γ** (weight-decay / cap growth — it ran steeper, not flatter); (3) re-screen at a
 budget that doesn't over-train. The screen→full inversion is itself the lesson:
 expressive positional biases need a generalization budget, not just a fit budget.
+
+## Resolution (Phases 4–6): the selected hypothesis is plain learnable-ALiBi
+
+The next steps above were carried out. With γ-regularization + validation
+early-stopping + a larger corpus, the learnable-γ scheme **PASSED at GPU scale
+(+8.1%)** — but a controlled attribution experiment (`PHASE4_HC_ATTRIBUTION.md`)
+showed the gain is **learnability, not the Calabi–Yau shape**, and two further GPU
+bake-offs sealed the final form:
+
+- **Bias-family bake-off** (`PHASE5_FINAL_BAKEOFF.md`): of six learnable families,
+  **learnable-ALiBi wins**; log-curvature, Fourier, the fixed CY shape, and the
+  local+tail hybrid all lose at scale (`exp_decay`≡`alibi_learn`).
+- **Hetero-positional** (`PHASE6_HETERO_POS.md`, 2026-06-23): the last orthogonal
+  axis — per-head **content↔position balance** — only **ties** learnable-ALiBi
+  (+0.35%@4×), and adding a per-head **softmax temperature *regresses***.
+
+**Final selection:** ship **learnable-ALiBi** — one learnable linear slope per
+head, no log term, no $S_{20}$/recurrence, no content scale, no temperature. Every
+extra knob either ties within noise or hurts at scale. *Adaptability beats added
+structure — up to the single slope, and no further.*

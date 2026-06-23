@@ -97,9 +97,37 @@ kept) and a **"Comet" hybrid** (local window + CY tail).
   512→2048) where learned-absolute collapses (4.3→20.6).
 
 A **v2 run** (γ-regularization toward flat + validation early-stopping + larger
-corpus) is testing whether the screen-scale +4% margin survives. Lesson: a short
-screen preferentially crowns the highest-capacity hypothesis — exactly the one that
-overfits at scale; validate the winner at the target budget.
+corpus) confirmed the margin survives: **+8.1% PASS** at GPU scale. A controlled
+attribution experiment then showed the gain is **learnability, not the Calabi–Yau
+shape** (`PHASE4_HC_ATTRIBUTION.md`). Lesson: a short screen preferentially crowns
+the highest-capacity hypothesis — exactly the one that overfits at scale; validate
+the winner at the target budget.
+
+## Final selection (Phases 5–6): plain learnable-ALiBi
+
+Two further GPU bake-offs settled the shipped form (`hetero_pos_extrapolation.csv`,
+`raw/hetero_pos_gpu_20260623.*`):
+
+- **Bias-family bake-off** (`PHASE5_FINAL_BAKEOFF.md`): of six learnable families,
+  **learnable-ALiBi wins**; log-curvature, Fourier, the fixed CY shape, and a
+  local+tail hybrid all lose at scale.
+- **Hetero-positional** (`PHASE6_HETERO_POS.md`, NVIDIA L4, 2026-06-23, from
+  scratch, ctx 512, 4000 steps): the last orthogonal axis — per-head
+  **content↔position balance** — only **ties** the learnable-ALiBi control
+  (+0.35% @4×, +0.17% @8×), and adding a per-head **softmax temperature
+  *regresses***:
+
+  | mode | 1× | 2× | 4× | 8× |
+  |---|---|---|---|---|
+  | alibi_fixed | 3.705 | 3.623 | 3.577 | 3.513 |
+  | **alibi_learn** (control) | 3.651 | 3.559 | 3.500 | 3.429 |
+  | nope | 10.290 | 10.845 | 11.571 | 12.311 |
+  | content_balance | 3.642 | 3.548 | 3.488 | 3.428 |
+  | cb_softmax_temp | 3.732 | 3.659 | 3.599 | 3.548 |
+
+**Selected hypothesis:** ship **learnable-ALiBi** — one learnable linear slope per
+head, no log term, no $S_{20}$ sequence, no content scale, no temperature. Every
+extra knob ties within noise or hurts at scale.
 
 ## Hardware / reproducibility
 

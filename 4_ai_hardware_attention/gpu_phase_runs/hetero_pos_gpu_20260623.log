@@ -1,0 +1,60 @@
+=== hetero-pos GPU validation — startup Tue Jun 23 08:08:00 UTC 2026 ===
+Tue Jun 23 08:08:00 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.159.03             Driver Version: 580.159.03     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA L4                      On  |   00000000:00:03.0 Off |                    0 |
+| N/A   49C    P0             28W /   72W |       0MiB /  23034MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+torch 2.9.1+cu129 cuda True
+Cloning into 'Mirror-Map-Sieve'...
+=== run hetero-pos (full preset) Tue Jun 23 08:08:24 UTC 2026 ===
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Generating test split:   0%|          | 0/4358 [00:00<?, ? examples/s]Generating test split: 100%|██████████| 4358/4358 [00:00<00:00, 398925.73 examples/s]
+Generating train split:   0%|          | 0/36718 [00:00<?, ? examples/s]Generating train split: 100%|██████████| 36718/36718 [00:00<00:00, 704345.05 examples/s]
+Generating validation split:   0%|          | 0/3760 [00:00<?, ? examples/s]Generating validation split: 100%|██████████| 3760/3760 [00:00<00:00, 542914.59 examples/s]
+HETERO-POS (full) | corpus=Salesforce/wikitext:wikitext-2-raw-v1 steps=4000 ctx=512 device=cuda
+
+       alibi_fixed: extrap {'1x': 3.7048, '2x': 3.6227, '4x': 3.5767, '8x': 3.5125}  (1983s)
+                    report {'a': [0.5, 0.25, 0.125, 0.0625, 0.0313, 0.0156, 0.0078, 0.0039]}
+       alibi_learn: extrap {'1x': 3.6505, '2x': 3.5586, '4x': 3.5003, '8x': 3.4287}  (2052s)
+                    report {'a': [0.6777, 0.4848, 0.3185, 0.1875, 0.098, 0.0348, 0.0139, 0.0109]}
+              nope: extrap {'1x': 10.2904, '2x': 10.8447, '4x': 11.5714, '8x': 12.3112}  (1811s)
+                    report {'a': [0.5, 0.25, 0.125, 0.0625, 0.0313, 0.0156, 0.0078, 0.0039]}
+   content_balance: extrap {'1x': 3.6419, '2x': 3.5482, '4x': 3.4879, '8x': 3.4277}  (2134s)
+                    report {'a': [0.6762, 0.4835, 0.3142, 0.1833, 0.0983, 0.0357, 0.0143, 0.0101], 'c': [0.793, 0.8283, 0.8366, 0.8582, 0.8673, 0.8977, 0.8931, 0.9268]}
+   cb_softmax_temp: extrap {'1x': 3.7322, '2x': 3.6587, '4x': 3.5987, '8x': 3.5482}  (2503s)
+                    report {'a': [0.6401, 0.4434, 0.2888, 0.1716, 0.093, 0.0328, 0.0148, 0.0099], 'c': [0.8128, 0.7991, 0.7918, 0.8304, 0.8612, 0.9166, 0.9156, 0.9345], 'tau': [0.7842, 0.6754, 0.6412, 0.7283, 0.8728, 1.0553, 1.0861, 1.0466]}
+
+  EXTRAPOLATION verdict (val ppl; lower=better):
+                mode | 1x   2x   4x   8x
+         alibi_fixed | 3.7048 3.6227 3.5767 3.5125
+         alibi_learn | 3.6505 3.5586 3.5003 3.4287
+                nope | 10.2904 10.8447 11.5714 12.3112
+     content_balance | 3.6419 3.5482 3.4879 3.4277
+     cb_softmax_temp | 3.7322 3.6587 3.5987 3.5482
+
+  content_balance vs alibi_learn @4x extrap: +0.35% (BETTER)
+
+-> /tmp/hetero_full_20260623_080800.json
+rc=0 at Tue Jun 23 11:03:16 UTC 2026
+Copying file:///tmp/hetero_full_20260623_080800.json [Content-Type=application/json]...
+/ [0 files][    0.0 B/  2.8 KiB]                                                / [1 files][  2.8 KiB/  2.8 KiB]                                                
+Operation completed over 1 objects/2.8 KiB.                                      
+uploaded hetero_full_20260623_080800.json
+Copying file:///tmp/hetero_20260623_080800.log [Content-Type=application/octet-stream]...
+/ [0 files][    0.0 B/  4.8 KiB]                                                
