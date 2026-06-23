@@ -1,0 +1,145 @@
+{
+  "corpus": "Salesforce/wikitext:wikitext-2-raw-v1",
+  "cfg": {
+    "d_model": 512,
+    "n_layer": 8,
+    "n_head": 8,
+    "d_ff": 2048,
+    "ctx": 512,
+    "batch": 24,
+    "steps": 4000,
+    "lr": 0.0003,
+    "max_extrap": 2048,
+    "gamma_l2": 0.001,
+    "eval_every": 400,
+    "patience": 4,
+    "max_chars": 16000000
+  },
+  "runs": [
+    {
+      "scheme": "alibi",
+      "ppl_by_ctx": {
+        "512": 3.6969,
+        "1024": 3.6172
+      },
+      "params": 25351168,
+      "bias_report": null,
+      "best_val": 3.6969
+    },
+    {
+      "scheme": "alibi_learn",
+      "ppl_by_ctx": {
+        "512": 3.617,
+        "1024": 3.5429
+      },
+      "params": 25351184,
+      "bias_report": {
+        "slope_a": [
+          0.702,
+          0.5213,
+          0.3259,
+          0.2077,
+          0.102,
+          0.0517,
+          0.0056,
+          0.0066
+        ],
+        "logcurv_b": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "best_val": 3.617
+    },
+    {
+      "scheme": "nested_curv0",
+      "ppl_by_ctx": {
+        "512": 3.718,
+        "1024": 3.6417
+      },
+      "params": 25351184,
+      "bias_report": {
+        "slope_a": [
+          0.639,
+          0.4569,
+          0.2859,
+          0.1714,
+          0.0875,
+          0.0443,
+          0.0116,
+          0.0042
+        ],
+        "logcurv_b": [
+          -0.3007,
+          -0.4983,
+          -0.5626,
+          -0.6912,
+          -0.832,
+          -0.7948,
+          -0.3853,
+          0.1816
+        ]
+      },
+      "best_val": 3.718
+    },
+    {
+      "scheme": "nested_free",
+      "ppl_by_ctx": {
+        "512": 3.6624,
+        "1024": 3.5929
+      },
+      "params": 25351184,
+      "bias_report": {
+        "slope_a": [
+          0.6705,
+          0.4787,
+          0.2898,
+          0.1794,
+          0.0883,
+          0.0481,
+          0.0067,
+          0.0043
+        ],
+        "logcurv_b": [
+          -0.1203,
+          -0.4451,
+          -0.5007,
+          -0.6852,
+          -0.8453,
+          -0.785,
+          0.1559,
+          0.0618
+        ]
+      },
+      "best_val": 3.6624
+    },
+    {
+      "scheme": "holo_fixed",
+      "ppl_by_ctx": {
+        "512": 3.6473,
+        "1024": 3.5799
+      },
+      "params": 25351176,
+      "bias_report": null,
+      "best_val": 3.6473
+    },
+    {
+      "scheme": "learned_pos",
+      "ppl_by_ctx": {
+        "512": 4.8591,
+        "1024": 11.199
+      },
+      "params": 26399744,
+      "bias_report": null,
+      "best_val": 4.8591
+    }
+  ],
+  "best": "alibi_learn",
+  "best_baseline_ppl": 3.617
+}
