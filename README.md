@@ -279,6 +279,12 @@ caught false-positive → confirmed +8% → self-corrected attribution, reportin
 negative and null results as prominently as the positive one. This is a genuinely
 open thread — **ML/kernel experts especially welcome** (fair comparison vs
 learnable-ALiBi / NoPE / RoPE-scaling on a real long-range benchmark would be ideal).
+The concrete next experiment — validating learnable-ALiBi on a real **open-weight**
+model (BLOOM-1b1 / MPT-7B, learnable-slope continued-pretrain, evaluated on
+RULER + PG-19 sliding-window vs the frozen fixed-ALiBi release, with a measured
+energy/CO₂ accounting) — is fully specified in
+[`docs/BENCHMARK_SPEC_OPENWEIGHT.md`](docs/BENCHMARK_SPEC_OPENWEIGHT.md). The
+standalone applied paper is [`paper/learnable_positional_bias.pdf`](paper/learnable_positional_bias.pdf).
 
 > Earlier versions of this README reported large block-sparse "speedups" and "0%
 > perplexity degradation." Those are **superseded and retracted**: the speedups

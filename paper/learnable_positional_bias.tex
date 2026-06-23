@@ -345,10 +345,23 @@ than per-head slopes, to mixtures that remain $\mathcal{O}(1)$ state).
 
 \paragraph{Roadmap (concrete, falsifiable).}
 \begin{enumerate}[leftmargin=1.6em,itemsep=2pt]
-\item \textbf{Fair long-range bake-off.} Learnable-ALiBi vs.\ NoPE vs.\ RoPE
-  $+$ position-interpolation vs.\ fixed ALiBi, on a genuine long-range benchmark
-  (e.g.\ PG-19, long-document QA), at $\ge$$10\times$ the parameter scale used
-  here. Pre-commit the gate and the extrapolation protocol.
+\item \textbf{Validate on a real open-weight model.} The cheapest \emph{valid}
+  test is not from-scratch but a surgical edit of an ALiBi-native open-weight
+  model (frozen RoPE models cannot be tested by a positional swap---that is the
+  invalid frozen-swap that produces a vacuous PASS). Concretely: take BLOOM-1b1
+  (or MPT-7B at scale), make its fixed per-head slopes trainable (initialized at
+  the released ladder), and run a short, parameter-efficient continued-pretrain;
+  evaluate on a train-short/serve-long battery (RULER, PG-19 sliding-window
+  perplexity, passkey retrieval) against the frozen fixed-ALiBi release. The
+  primary metric is the \emph{usable-context multiple per unit of adaptation
+  compute}, which directly tests item~2. A full specification (models, licenses,
+  intervention, pre-committed kill criteria) is in
+  \texttt{docs/BENCHMARK\_SPEC\_OPENWEIGHT.md}.
+\item \textbf{Fair long-range bake-off (from scratch, family-neutral).}
+  Learnable-ALiBi vs.\ NoPE vs.\ RoPE $+$ position-interpolation vs.\ fixed
+  ALiBi at $\ge$$10\times$ the parameter scale used here, pre-committing the gate
+  and the extrapolation protocol---the cleaner but costlier complement to the
+  open-weight test above.
 \item \textbf{Measure the energy claim or retract it.} Instrument a serving
   harness; quantify, in kWh and $\mathrm{CO_2}\text{e}$, the cost of a
   position-interpolation extension pass that graceful extrapolation could avoid.
