@@ -1,0 +1,75 @@
+{
+  "D": 64,
+  "rows": [
+    {
+      "seq_len": 128,
+      "fp32": {
+        "max_rel_err": 1.816691891372453e-07,
+        "mean_rel_err": 1.3913186040863683e-08,
+        "ms": 0.19
+      },
+      "fp16": {
+        "max_rel_err": 0.0002926251504853231,
+        "mean_rel_err": 2.3242650428902855e-05,
+        "ms": 0.36
+      },
+      "rescaled_int": {
+        "max_rel_err": 1.3930690919049379e-05,
+        "mean_rel_err": 1.2718007105376714e-06,
+        "ms": 0.75
+      },
+      "mixed_int_fp16": {
+        "max_rel_err": 0.00031980674187870794,
+        "mean_rel_err": 1.756660138076724e-05,
+        "ms": 0.8
+      }
+    },
+    {
+      "seq_len": 512,
+      "fp32": {
+        "max_rel_err": 2.0503127629277588e-07,
+        "mean_rel_err": 8.061882932019543e-09,
+        "ms": 1.81
+      },
+      "fp16": {
+        "max_rel_err": 0.00023690799210403563,
+        "mean_rel_err": 1.0302670571337892e-05,
+        "ms": 3.09
+      },
+      "rescaled_int": {
+        "max_rel_err": 1.4671522038815243e-05,
+        "mean_rel_err": 5.932826035262496e-07,
+        "ms": 10.69
+      },
+      "mixed_int_fp16": {
+        "max_rel_err": 0.00023690799210403563,
+        "mean_rel_err": 7.53126532060307e-06,
+        "ms": 11.29
+      }
+    },
+    {
+      "seq_len": 2048,
+      "fp32": {
+        "max_rel_err": 3.1202143821688484e-07,
+        "mean_rel_err": 9.86901528000374e-09,
+        "ms": 26.22
+      },
+      "fp16": {
+        "max_rel_err": 0.0005336835623851621,
+        "mean_rel_err": 8.617467803151626e-06,
+        "ms": 45.73
+      },
+      "rescaled_int": {
+        "max_rel_err": 1.5646483563560507e-05,
+        "mean_rel_err": 4.955530887540425e-07,
+        "ms": 166.43
+      },
+      "mixed_int_fp16": {
+        "max_rel_err": 0.00031333053634344406,
+        "mean_rel_err": 6.075173480063436e-06,
+        "ms": 177.47
+      }
+    }
+  ],
+  "note": "rescaled_int QK^T is exact integer accumulation; mixed adds FP16 softmax/V. Compare both vs fp16 (the production baseline)."
+}
