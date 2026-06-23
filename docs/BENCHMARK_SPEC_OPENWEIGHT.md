@@ -89,10 +89,18 @@ open question is whether it *avoids* an extension fine-tune at fleet scale.
 
 ## 7. Feasibility & alternatives
 
-- **BLOOM-1b1 first** (cheapest *valid* test on a real open-weight model; reuses
-  `cy_sieve_hetero_pos.py` training scaffolding + the L4 launch pattern, see
-  `vm-benchmarking-state`). **MPT-7B** is the headline-credible scale-up once 1b1
-  is clean.
+- **Scaffolding exists:** `4_ai_hardware_attention/openweight_learnable_alibi.py`
+  implements this spec — it unfreezes BLOOM's per-head ALiBi slopes (global
+  monkey-patch of `build_alibi_tensor` → a learnable `nn.Parameter` initialized at
+  the released ladder, with a **step-0 bit-for-bit equivalence assert**), reuses
+  `cy_sieve_quality_gate.load_corpus` + the hetero-pos train loop (slopes-only,
+  γ-L2 + val early-stop), and reports the serve-long extrapolation ppl +
+  usable-context multiple. CPU smoke (`--preset smoke`, random tiny BLOOM) passes
+  end-to-end; GPU run: `--preset full --model bigscience/bloom-560m`. RULER /
+  passkey / measured-energy harnesses are stubbed as TODOs in the script header.
+- **BLOOM-560m/1b1 first** (cheapest *valid* test on a real open-weight model;
+  reuses the L4 launch pattern, see `vm-benchmarking-state`). **MPT-7B** is the
+  headline-credible scale-up once it is clean.
 - **From-scratch at mid-scale** (paper roadmap #1): cleanest, family-neutral, but
   ~10× compute and no real-model lineage — weaker for the "applies to deployed
   LLMs" story.
