@@ -1,0 +1,399 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\geometry{margin=1in}
+
+\hypersetup{colorlinks=true, linkcolor=blue!50!black, urlcolor=blue!50!black,
+  citecolor=blue!50!black}
+
+%% =====================================================================
+%% Standalone applied-ML note (2026-06-23).  Reports the learnable per-head
+%% positional bias selected by elimination across three GPU bake-offs, its
+%% length-extrapolation behaviour, and a careful (illustrative, NOT measured)
+%% discussion of what stable train-short/serve-long extrapolation could mean
+%% for inference-time energy and CO2.  Modest, falsification-first, forward
+%% looking.  Companion to the Mirror-Map-Sieve preprint (v7).
+%% =====================================================================
+
+\newtheorem{observation}{Observation}
+
+\title{Adaptability Beats Added Structure:\\
+  A Learnable Per-Head Positional Bias, Selected by Elimination,\\
+  and What Its Length Extrapolation Could Mean for the Energy\\
+  Footprint of Long-Context Inference\\
+  \large (applied note --- exploratory, seeking review)}
+\author{Xavier Callens\\
+  SocrateAI Laboratory\\
+  \url{https://github.com/xaviercallens/Mirror-Map-Sieve}}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We report a small, deliberately falsifiable applied-ML result and discuss its
+forward-looking implications without overclaiming. Starting from a geometric
+prior (a positional-attention bias derived from a Calabi--Yau--type period), we
+ran a sequence of from-scratch training comparisons on WikiText-2 and were led,
+by a chain of negative and null results, to a simple conclusion: among a family
+of increasingly expressive per-head positional biases, the one that wins at GPU
+scale is the \emph{plainest}---a single \emph{learnable} linear slope per
+attention head (``learnable-ALiBi''), with no log-curvature term, no
+number-theoretic sequence, no per-head content scale, and no per-head softmax
+temperature. Three independent head-to-head studies (an attribution experiment,
+a six-family bake-off, and a content/position-balance probe) converge on this
+scheme; every added degree of freedom we tested either ties it within noise or
+\emph{regresses} once the model is properly trained and regularized. The scheme
+PASSes a pre-committed quality gate ($+8.1\%$ perplexity over the best baseline
+on a regularized $8000$-step run) and---the property we find most
+interesting---\emph{extrapolates flat} in sequence length, degrading gracefully
+out to $8\times$ the training context where learned absolute positions collapse.
+We are explicit that this is a known-good idea (ALiBi with learnable slopes),
+modestly improved and carefully validated, not a new mechanism. We then discuss,
+as \emph{illustrative order-of-magnitude reasoning and not as a measured
+result}, why robust train-short / serve-long extrapolation is precisely the kind
+of property that bears on the energy and $\mathrm{CO_2}$ cost of LLM serving at
+scale, and we lay out a concrete, fair-comparison roadmap (vs.\ NoPE, RoPE +
+position-interpolation, and learnable-ALiBi on a genuine long-range benchmark)
+that would be needed to substantiate any such claim. Code, raw runs, and an open
+benchmark dataset accompany this note.
+\end{abstract}
+
+\tableofcontents
+
+\section{Scope, and what we do \emph{not} claim}
+\label{sec:scope}
+
+This is an applied side-note to a mathematics preprint~\cite{mms}, not a core
+result. To keep the reader's expectations calibrated, we state our limits up
+front.
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item The mechanism we end on---\textbf{a learnable per-head linear positional
+  bias}---is \emph{not new}. It is ALiBi~\cite{alibi} with the per-head slopes
+  made trainable rather than fixed. Our contribution is empirical and
+  methodological: a controlled elimination showing that, on this benchmark,
+  nothing more elaborate survives proper training, together with an honest
+  measurement of its length-extrapolation behaviour.
+\item All quality numbers are on \textbf{WikiText-2}~\cite{wikitext}, a single
+  small corpus, with models trained \emph{from scratch} at the $25$M-parameter
+  scale. They are suggestive, not conclusive; they should be reproduced at
+  larger scale and on more corpora before being relied upon.
+\item We claim \textbf{no memory or FLOP advantage} over a modern kernel. A
+  learnable per-head scalar bias is $\mathcal{O}(1)$ state and $\mathcal{O}(L)$
+  to apply---identical to ALiBi as implemented inside
+  FlashAttention~\cite{flash}. Earlier framings of this project that suggested a
+  memory ``breakthrough'' were against a materialized-table strawman and are
+  retracted.
+\item The energy / $\mathrm{CO_2}$ discussion in
+  Section~\ref{sec:energy} is \textbf{explicitly illustrative}. We did not
+  measure datacenter power. We reason about where a robust-extrapolation
+  positional scheme \emph{could} reduce work, and we are careful to separate that
+  reasoning from evidence.
+\end{itemize}
+
+\noindent The reason we publish at all is the discipline: a bold prior was
+falsified, a false positive was caught, a modest true result was confirmed, and a
+controlled experiment then corrected our own story about \emph{why} it works. We
+think that arc is worth recording even though the surviving mechanism is humble.
+
+\section{Background: positional bias as an additive score}
+\label{sec:bg}
+
+In a decoder attention layer with head $h$, query $i$ and key $j\le i$, the
+pre-softmax score is
+\begin{equation}
+  s_h(i,j) \;=\; \frac{q_i^\top k_j}{\sqrt{D}} \;+\; \beta_h(i,j),
+  \qquad j\le i,
+  \label{eq:score}
+\end{equation}
+where $\beta_h$ is an additive positional bias and $D$ the head dimension.
+Several widely used schemes are special cases of~\eqref{eq:score}:
+\begin{align}
+  \text{learned-absolute:}\quad & \beta_h(i,j)=0,\ \text{positions added to embeddings};\\
+  \text{ALiBi~\cite{alibi}:}\quad & \beta_h(i,j) = -a_h\,(i-j),\ a_h\ \text{a \emph{fixed} per-head slope};\\
+  \text{NoPE~\cite{nope}:}\quad & \beta_h(i,j)=0,\ \text{no positional signal at all}.
+\end{align}
+ALiBi's fixed geometric slope ladder $a_h = 2^{-8h/H}$ extrapolates well but is
+not adapted to the data; learned-absolute fits well in-distribution but cannot
+represent positions beyond the training length, so it collapses on
+extrapolation. The question that organizes this note is whether a \emph{more
+expressive but still cheap} $\beta_h$ can keep ALiBi's extrapolation while
+improving in-distribution quality---and, if so, \emph{how much} expressiveness
+actually helps.
+
+\section{Method and protocol}
+\label{sec:method}
+
+\paragraph{The candidate family.} We consider per-head biases of increasing
+expressiveness, all $\mathcal{O}(1)$ in stored parameters per head:
+\begin{align}
+  \text{(slope only)}\quad &\beta_h(d) = -\,a_h\,d, & a_h&\ \text{learnable};\label{eq:alibilearn}\\
+  \text{(slope $+$ log)}\quad &\beta_h(d) = -\,a_h\,d + b_h\log d, & a_h,b_h&\ \text{learnable};\label{eq:nested}\\
+  \text{(content balance)}\quad & s_h(i,j) = c_h\frac{q_i^\top k_j}{\sqrt D} - a_h\,d, & a_h,c_h&\ \text{learnable};\label{eq:cb}\\
+  \text{(}+\text{temperature)}\quad & s_h(i,j) = \tau_h^{-1}\Big(c_h\frac{q_i^\top k_j}{\sqrt D} - a_h\,d\Big), & a_h,c_h,\tau_h&\ \text{learnable},\label{eq:cbtemp}
+\end{align}
+with $d=i-j$. Equation~\eqref{eq:alibilearn} is \emph{learnable-ALiBi}, our
+eventual selection. Equation~\eqref{eq:nested} adds a learnable log-curvature
+(this is also where a fixed Calabi--Yau curve, $\beta_h(d)=-\gamma_h\log S_{20}(d)$,
+sits as a constrained special case). Equation~\eqref{eq:cb} introduces a
+per-head \emph{content scale} $c_h$ that lets a head trade off content matching
+against positional decay---making the ``local head vs.\ global head'' split
+explicit rather than emergent. Equation~\eqref{eq:cbtemp} adds a per-head softmax
+temperature.
+
+\paragraph{Pre-committed gate.} Following the ALiBi evaluation
+methodology---train one model \emph{from scratch} per positional scheme at
+matched compute---we fixed, in advance, a quality gate: \textsc{pass} within
+$+1\%$ of the best baseline validation perplexity, \textsc{kill} at $>5\%$
+regression. For each more-expressive scheme we also pre-committed a
+\emph{specific} null: e.g.\ ``content balance must improve length extrapolation
+over learnable-ALiBi, or it is killed.''
+
+\paragraph{Training.} Decoder-only Transformers, $d_{\text{model}}=512$, $8$
+layers, $8$ heads ($\approx 25$M parameters), trained on real WikiText-2
+(\texttt{Salesforce/wikitext}, \texttt{wikitext-2-raw-v1}) on a single NVIDIA L4,
+PyTorch~2.9.1\,/\,CUDA~12.9. The decisive runs use $4000$ steps, context $512$,
+batch $24$, with $\ell_2$ regularization on the learnable slopes ($\lambda=10^{-3}$)
+and validation early-stopping---both of which proved \emph{essential} (see
+Section~\ref{sec:lessons}). Length extrapolation is measured as validation
+perplexity at $1\times,2\times,4\times,8\times$ the training context, with no
+retraining.
+
+\section{Results}
+\label{sec:results}
+
+\subsection{Attribution: the gain is learnability, not the geometric shape}
+A controlled nested experiment~\eqref{eq:nested} separates the linear slope from
+the curvature term (Table~\ref{tab:attr}). A plain learnable slope with
+\emph{zero} curvature already beats a fixed geometric (Calabi--Yau) bias; and
+when the curvature $b_h$ is left free starting from the geometric value, gradient
+descent drives it \emph{away} from that value (toward and past zero). The
+geometry was a prior, and not a well-pointed one; what helps is letting the data
+choose the slope.
+
+\begin{table}[t]
+\centering
+\caption{Attribution (local controlled run). Perplexity vs.\ fixed ALiBi; lower
+ppl is better. A learnable slope with no curvature (\emph{alibi\_learn}) already
+beats the fixed geometric shape (\emph{holo\_fixed}).}
+\label{tab:attr}
+\begin{tabular}{lcc}
+\toprule
+scheme & ppl @512 & vs.\ fixed ALiBi \\
+\midrule
+nested (slope $+$ free log, linear init) & 8.548 & $+6.9\%$ \\
+nested (slope $+$ free log, geometric init) & 8.680 & $+5.5\%$ \\
+\textbf{learnable-ALiBi (slope only)} & 8.835 & $+3.8\%$ \\
+fixed geometric (Calabi--Yau) shape & 8.998 & $+2.0\%$ \\
+ALiBi (fixed slopes) & 9.181 & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Scale check: the win is real and PASSes the gate}
+On a regularized $8000$-step run, the learnable scheme reaches $3.324$ validation
+perplexity versus $3.617$ for the best baseline (learned-absolute)---a
+\textbf{$+8.1\%$ improvement that PASSes} the pre-committed gate, with the
+overfitting that plagued an earlier under-regularized run (Section~\ref{sec:lessons})
+removed.
+
+\subsection{Elimination: nothing more expressive survives}
+The decisive comparison~(Table~\ref{tab:hetero}) trains the
+schemes~\eqref{eq:alibilearn}--\eqref{eq:cbtemp} from scratch and measures length
+extrapolation. The explicit content-balance knob $c_h$ \eqref{eq:cb} only
+\emph{ties} learnable-ALiBi ($+0.35\%$ at $4\times$, $+0.17\%$ at $8\times$---within
+noise), and adding the per-head temperature $\tau_h$ \eqref{eq:cbtemp}
+\emph{regresses} at every length. The content-only control (NoPE) collapses and,
+tellingly, gets \emph{worse} with length, confirming the positional term is doing
+real work.
+
+\begin{table}[t]
+\centering
+\caption{Length extrapolation (NVIDIA L4, from scratch, ctx $512$, $4000$ steps).
+Validation perplexity at $1$--$8\times$ the training context; lower is better.
+The added content scale ties learnable-ALiBi; the temperature knob regresses.}
+\label{tab:hetero}
+\begin{tabular}{lcccc}
+\toprule
+scheme & $1\times$ (512) & $2\times$ (1024) & $4\times$ (2048) & $8\times$ (4096) \\
+\midrule
+ALiBi (fixed) & 3.705 & 3.623 & 3.577 & 3.513 \\
+\textbf{learnable-ALiBi} & \textbf{3.651} & \textbf{3.559} & 3.500 & 3.429 \\
+$+$ content scale $c_h$ & 3.642 & 3.548 & \textbf{3.488} & \textbf{3.428} \\
+$+$ content $+$ temperature & 3.732 & 3.659 & 3.599 & 3.548 \\
+NoPE (content only) & 10.290 & 10.845 & 11.571 & 12.311 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{observation}
+Across all three studies, expressiveness beyond a single learnable per-head slope
+does not survive proper training at this scale: it either ties within noise or
+regresses. We summarize this as \emph{adaptability beats added structure---up to
+one learnable slope per head, and no further}.
+\end{observation}
+
+\subsection{The property worth keeping: graceful extrapolation}
+The learnable scheme not only edges the baselines in-distribution; its perplexity
+is \emph{flat-to-improving} from $1\times$ to $8\times$ the training context
+(Table~\ref{tab:hetero}), whereas learned-absolute positions degrade sharply
+beyond the training length (in earlier runs, perplexity rose from $4.3$ at
+$1\times$ to $20.6$ at $4\times$). This is the inherited ALiBi property,
+preserved when the slopes are made learnable. We regard \emph{stable
+train-short / serve-long extrapolation}, rather than the modest in-distribution
+gain, as the result's most consequential feature---and the bridge to the next
+section.
+
+\section{Forward-looking discussion: extrapolation and the energy footprint of
+serving}
+\label{sec:energy}
+
+\paragraph{A caveat, restated.} Nothing in this section is measured. We did not
+profile datacenter power, and we make no quantitative energy claim. What follows
+is order-of-magnitude reasoning about \emph{where} a robust-extrapolation
+positional scheme could reduce computational work, offered to motivate the
+roadmap in Section~\ref{sec:roadmap}, not to assert a result.
+
+\paragraph{Why extrapolation, specifically, touches energy.} The dominant energy
+costs in the LLM lifecycle that a positional scheme can plausibly influence are:
+(i) \emph{long-context adaptation}---the additional training/fine-tuning used to
+extend a model's usable context (e.g.\ position-interpolation or RoPE-scaling
+passes); and (ii) \emph{serving headroom}---the practice of training or
+fine-tuning at a longer context than strictly necessary to guarantee quality at
+the longest expected prompt. A positional scheme that degrades gracefully beyond
+its training length attacks both: if a model trained at context $L$ retains
+quality at $4$--$8L$ without a dedicated extension pass, the energy of that pass
+is avoided, and the training context itself can be set by the \emph{typical}
+rather than the \emph{worst-case} prompt.
+
+\paragraph{An illustrative budget (not a claim).} Self-attention cost scales as
+$\mathcal{O}(L^2)$ per layer in compute and---inside FlashAttention---roughly
+$\mathcal{O}(L)$ in HBM traffic. A context-extension fine-tune is itself a
+training job whose energy is a non-trivial fraction of a serving fleet's monthly
+budget at scale. \emph{If} graceful extrapolation removed the need for such a
+pass for a class of deployments, the saving would be the entire energy of that
+pass; \emph{if} it allowed a fleet to train at $L$ rather than $2L$, the
+quadratic term in the affected training compute would fall by up to $4\times$ on
+those steps. We deliberately phrase these as conditionals: each depends on the
+extrapolation holding at production scale and quality, which our $25$M-parameter
+WikiText-2 evidence does \emph{not} establish.
+
+\paragraph{What is genuinely free here.} Independently of the above, the scheme
+adds essentially zero inference overhead: $H$ learnable scalars, applied as an
+additive bias already fused into FlashAttention's inner loop for ALiBi. So
+whatever extrapolation benefit exists comes at no measurable per-token energy
+cost---unlike methods that buy context length with extra computation. This is the
+honest, defensible half of the energy story: \emph{the mechanism is cheap}; the
+\emph{open question} is whether its extrapolation translates into avoided
+training/fine-tuning at scale.
+
+\paragraph{Datacenter and $\mathrm{CO_2}$ framing.} Inference now dominates the
+lifecycle energy of widely deployed models, and context length is a primary
+driver of per-request cost. A positional scheme that is (a) free at inference and
+(b) robust to serving beyond its training length is, in principle, aligned with
+reducing both per-request energy variance and the amortized training energy
+attributable to long-context support. Translating ``aligned in principle'' into
+``kWh and $\mathrm{CO_2}$ saved'' requires the measurements we have not made. We
+flag this as the single most valuable thing a reader with a serving fleet could
+contribute.
+
+\section{Lessons learned (methodological)}
+\label{sec:lessons}
+
+\begin{enumerate}[leftmargin=1.6em,itemsep=3pt]
+\item \textbf{A short training budget crowns the overfitter.} An early
+  $1200$-step screen ranked the most expressive bias first; at $6000$ steps the
+  ranking \emph{inverted} (the expressive bias overfit a $2$\,MB corpus over
+  $\sim$$37$ epochs, train loss $3\times$ lower but validation $3\times$ worse).
+  Screens must validate at, or near, the target budget---or include explicit
+  generalization controls.
+\item \textbf{Expressive positional biases need a generalization budget, not a
+  fit budget.} $\ell_2$ regularization on the learnable slopes plus validation
+  early-stopping converted the inversion into a clean $+8.1\%$ PASS. Without them
+  the same scheme fails.
+\item \textbf{Attribution beats celebration.} Once a learnable bias beat the
+  baselines, the decisive experiment was not to ship it but to ask \emph{why} it
+  won. The nested control showed the win was learnability, not the geometric
+  prior we started from---and saved us from publishing a false mechanism.
+\item \textbf{Test the orthogonal axis, then stop.} Having exhausted ``more
+  distance shape,'' we tested the one untried axis (content/position balance). It
+  tied. Knowing \emph{when the search is done}---when added structure no longer
+  pays---is itself a result.
+\item \textbf{Negative and null results are the product.} Three of our four
+  studies returned ``no improvement.'' Reported together, they are what gives the
+  surviving positive result its credibility.
+\end{enumerate}
+
+\section{Vision, roadmap, and open invitations}
+\label{sec:roadmap}
+
+\paragraph{Vision.} We are interested in positional mechanisms that are
+\emph{cheap, adaptable, and robust to serving beyond their training regime},
+because that triple is where a small architectural choice can have an
+outsized, fleet-level energy footprint. Learnable-ALiBi is a minimal instance;
+the forward question is how far the ``adaptability beats added structure''
+principle generalizes (to RoPE frequencies made learnable, to per-layer rather
+than per-head slopes, to mixtures that remain $\mathcal{O}(1)$ state).
+
+\paragraph{Roadmap (concrete, falsifiable).}
+\begin{enumerate}[leftmargin=1.6em,itemsep=2pt]
+\item \textbf{Fair long-range bake-off.} Learnable-ALiBi vs.\ NoPE vs.\ RoPE
+  $+$ position-interpolation vs.\ fixed ALiBi, on a genuine long-range benchmark
+  (e.g.\ PG-19, long-document QA), at $\ge$$10\times$ the parameter scale used
+  here. Pre-commit the gate and the extrapolation protocol.
+\item \textbf{Measure the energy claim or retract it.} Instrument a serving
+  harness; quantify, in kWh and $\mathrm{CO_2}\text{e}$, the cost of a
+  position-interpolation extension pass that graceful extrapolation could avoid.
+  Report a measured number or state that no saving was found.
+\item \textbf{Learnable RoPE frequencies.} Apply the same attribution discipline
+  to RoPE: are learnable per-head frequency scales the RoPE analogue of our
+  result, and do extra degrees of freedom again fail to survive?
+\item \textbf{Exact-kernel orthogonal track.} A separate finding (rescaled-integer
+  $QK^\top$ is $\sim$$34\times$ more accurate than FP16 at $L{=}2048$, bottlenecked
+  by the FP16 softmax) suggests an exact-$QK^\top$ $+$ FP32-softmax kernel; pair it
+  with learnable-ALiBi and re-measure quality and latency.
+\end{enumerate}
+
+\paragraph{Invitations.} We would especially value: (a) a refutation or
+confirmation of the extrapolation behaviour at larger scale; (b) a fair
+comparison against the baselines above run by someone without our priors; and (c)
+a measured energy/$\mathrm{CO_2}$ accounting from anyone operating a serving
+fleet. Code, raw run logs, and an open benchmark dataset are linked from the
+repository~\cite{mms}; the full chronological arc, including the false positive we
+caught, is documented there as a case study in falsification-first applied
+research.
+
+\section*{Reproducibility}
+All runs use the public scripts in \texttt{4\_ai\_hardware\_attention/} of the
+repository; the decisive comparison is \texttt{cy\_sieve\_hetero\_pos.py}, raw
+outputs are in \texttt{gpu\_phase\_runs/hetero\_pos\_gpu\_20260623.\{json,log\}},
+and the open benchmark dataset
+(\href{https://huggingface.co/datasets/callensxavier/cy-sieve-attention-benchmark}{callensxavier/cy-sieve-attention-benchmark})
+carries the per-scheme perplexities and the documented arc.
+
+\begin{thebibliography}{9}
+\bibitem{mms} X.~Callens, \emph{Mirror-Map-Sieve} (code, raw runs, and the
+  companion preprint v7), \url{https://github.com/xaviercallens/Mirror-Map-Sieve},
+  2026.
+\bibitem{alibi} O.~Press, N.~A.~Smith, M.~Lewis, \emph{Train Short, Test Long:
+  Attention with Linear Biases Enables Input Length Extrapolation} (ALiBi),
+  ICLR 2022.
+\bibitem{nope} A.~Kazemnejad et al., \emph{The Impact of Positional Encoding on
+  Length Generalization in Transformers} (incl.\ NoPE), NeurIPS 2023.
+\bibitem{flash} T.~Dao et al., \emph{FlashAttention: Fast and Memory-Efficient
+  Exact Attention with IO-Awareness}, NeurIPS 2022.
+\bibitem{rope} J.~Su et al., \emph{RoFormer: Enhanced Transformer with Rotary
+  Position Embedding} (RoPE), 2021.
+\bibitem{wikitext} S.~Merity, C.~Xiong, J.~Bradbury, R.~Socher, \emph{Pointer
+  Sentinel Mixture Models} (WikiText), 2016.
+\end{thebibliography}
+
+\end{document}
