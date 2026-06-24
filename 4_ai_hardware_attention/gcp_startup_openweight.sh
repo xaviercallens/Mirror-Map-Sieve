@@ -12,8 +12,13 @@ exec > >(tee -a "$LOG_FILE") 2>&1
 echo "=== openweight learnable-ALiBi GPU run — startup $(date -u) ==="
 nvidia-smi || echo "WARN no nvidia-smi"
 # transformers/peft for the model; datasets stack for the real WikiText corpus.
-pip3 install --quiet "transformers>=4.40" "datasets>=2.19" xxhash multiprocess pandas \
+# Pin transformers <5 (5.x eagerly probes torchaudio, whose prebuilt .so is ABI-
+# mismatched on this image and throws OSError at import — crashed the first run).
+pip3 install --quiet "transformers>=4.40,<5" "datasets>=2.19" xxhash multiprocess pandas \
     "requests>=2.32.2" huggingface_hub fsspec pyarrow accelerate safetensors 2>&1 | tail -3 || true
+# We need neither audio nor vision; remove the broken torchaudio so transformers
+# treats it as cleanly-absent rather than failing to dlopen it.
+pip3 uninstall -y torchaudio torchvision 2>/dev/null || true
 python3 -c "import torch,transformers,datasets;print('torch',torch.__version__,'tf',transformers.__version__,'cuda',torch.cuda.is_available())" || true
 cd /tmp; rm -rf Mirror-Map-Sieve
 git clone --depth 1 https://github.com/xaviercallens/Mirror-Map-Sieve.git
