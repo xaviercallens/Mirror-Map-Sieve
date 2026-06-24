@@ -185,9 +185,40 @@ def assert_pure_dense(model):
     return impl
 
 
-def run_model(model_id, ids, lengths, device, args):
+def _apply_learnable_slopes(slopes_file):
+    """Re-apply trained learnable-ALiBi slopes from a checkpoint's slopes.json.
+    HF's build_alibi_tensor uses the FIXED geometric ladder, so a learnable-ALiBi
+    checkpoint must have its learned slopes re-installed for a faithful eval — else
+    we would silently gate the FIXED scheme. Monkey-patches build_alibi_tensor."""
+    with open(slopes_file) as f:
+        meta = json.load(f)
+    slopes = torch.tensor(meta["slopes"], dtype=torch.float32)
+    import transformers.models.bloom.modeling_bloom as bloom_mod
+
+    def fixed_from_file_build(attention_mask, n_heads, dtype):
+        batch, seq = attention_mask.shape
+        s = slopes.to(attention_mask.device)
+        arange = ((attention_mask.cumsum(dim=-1) - 1) * attention_mask)[:, None, :]
+        alibi = s[..., None] * arange
+        return alibi.reshape(batch * n_heads, 1, seq).to(dtype)
+
+    bloom_mod.build_alibi_tensor = fixed_from_file_build
+    print(f"  [slopes] re-applied {len(meta['slopes'])} learned slopes "
+          f"(mode={meta.get('mode')}, [0,-1]={meta['slopes'][0]:.4f},{meta['slopes'][-1]:.4f})")
+    return meta
+
+
+def run_model(model_id, ids, lengths, device, args, slopes_file=None):
     from transformers import AutoModelForCausalLM
     dtype = torch.float16 if args.fp16 else torch.bfloat16
+    slopes_meta = None
+    # A learnable-ALiBi checkpoint stores its trained slopes in slopes.json; re-apply
+    # them BEFORE loading the model so the gate tests the TRAINED scheme, not fixed.
+    sf = slopes_file or (os.path.join(model_id, "slopes.json")
+                         if os.path.isdir(model_id) and
+                         os.path.exists(os.path.join(model_id, "slopes.json")) else None)
+    if sf:
+        slopes_meta = _apply_learnable_slopes(sf)
     # FlashAttention/SDPA backend = O(L) memory, EXACT dense attention (not sparse).
     model = AutoModelForCausalLM.from_pretrained(
         model_id, torch_dtype=dtype if device == "cuda" else torch.float32,
@@ -228,7 +259,9 @@ def run_model(model_id, ids, lengths, device, args):
             print(f"  L={L:>6}: ERROR {e}")
     if device == "cuda":
         del model; torch.cuda.empty_cache()
-    return {"model": model_id, "attn_impl": impl, "ppl": results, "energy": energy}
+    return {"model": model_id, "attn_impl": impl, "ppl": results, "energy": energy,
+            "scheme": (slopes_meta or {}).get("mode", "as-released-fixed-alibi"),
+            "applied_slopes": (slopes_meta or {}).get("slopes")}
 
 
 def verdict(ppl, lengths, band):
@@ -254,6 +287,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default=None, help="checkpoint to gate (treatment or control)")
     ap.add_argument("--control", default=None, help="optional second model on the same protocol")
+    ap.add_argument("--slopes-file", default=None,
+                    help="path/gs to slopes.json for --model (learnable-ALiBi checkpoint); "
+                         "auto-detected if --model is a dir containing slopes.json")
+    ap.add_argument("--control-slopes", default=None, help="slopes.json for --control")
     ap.add_argument("--lengths", type=int, nargs="+", default=[4096, 8192, 16384, 32768])
     ap.add_argument("--dataset", default="pg19", choices=["pg19", "proofpile", "longbench"])
     ap.add_argument("--max-windows", type=int, default=16, help="non-overlapping windows per length")
@@ -284,9 +321,11 @@ def main():
         print("  [smoke] synthetic corpus — plumbing only, ppl not meaningful.\n")
 
     out = {"corpus": src, "args": vars(args), "models": []}
-    for mid in [m for m in (args.model, args.control) if m]:
+    for mid, sf in [(args.model, args.slopes_file), (args.control, args.control_slopes)]:
+        if not mid:
+            continue
         print(f"== {mid} ==")
-        r = run_model(mid, ids, args.lengths, device, args)
+        r = run_model(mid, ids, args.lengths, device, args, slopes_file=sf)
         r["verdict"] = verdict(r["ppl"], args.lengths, args.success_band)
         print(f"  VERDICT: {r['verdict']['status']}  "
               f"(worst {r['verdict'].get('worst_ratio')}x @ L={r['verdict'].get('worst_length')})\n")
