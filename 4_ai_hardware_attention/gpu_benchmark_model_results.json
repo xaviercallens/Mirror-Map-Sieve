@@ -1,0 +1,95 @@
+{
+  "gpu_info": {
+    "gpu_name": "Tesla T4",
+    "memory_total_MiB": 15360,
+    "power_draw_W": 14.61,
+    "power_limit_W": 70.0,
+    "temperature_C": 49
+  },
+  "pytorch_version": "2.12.1+cu130",
+  "kernel_benchmark": [
+    {
+      "seq_len": 64,
+      "sdpa_baseline_ms": 0.019,
+      "sdpa_s20_ms": 0.022,
+      "overhead": 1.137,
+      "correct": true
+    },
+    {
+      "seq_len": 128,
+      "sdpa_baseline_ms": 0.029,
+      "sdpa_s20_ms": 0.034,
+      "overhead": 1.193,
+      "correct": true
+    },
+    {
+      "seq_len": 256,
+      "sdpa_baseline_ms": 0.05,
+      "sdpa_s20_ms": 0.065,
+      "overhead": 1.302,
+      "correct": true
+    },
+    {
+      "seq_len": 512,
+      "sdpa_baseline_ms": 0.114,
+      "sdpa_s20_ms": 0.179,
+      "overhead": 1.569,
+      "correct": true
+    }
+  ],
+  "model_benchmark": {
+    "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+    "n_params_M": 494.0,
+    "device": "cuda",
+    "results": [
+      {
+        "seq_len": 64,
+        "baseline_ms": 36.105,
+        "s20_sdpa_ms": 34.061,
+        "overhead": 0.943,
+        "throughput_base_tok_s": 1773,
+        "throughput_s20_tok_s": 1879,
+        "energy_J": 27.015,
+        "avg_power_W": 39.9,
+        "peak_power_W": 42.7,
+        "correct": true
+      },
+      {
+        "seq_len": 128,
+        "baseline_ms": 34.368,
+        "s20_sdpa_ms": 33.612,
+        "overhead": 0.978,
+        "throughput_base_tok_s": 3724,
+        "throughput_s20_tok_s": 3808,
+        "energy_J": 35.76,
+        "avg_power_W": 52.6,
+        "peak_power_W": 55.7,
+        "correct": true
+      },
+      {
+        "seq_len": 256,
+        "baseline_ms": 36.197,
+        "s20_sdpa_ms": 34.459,
+        "overhead": 0.952,
+        "throughput_base_tok_s": 7072,
+        "throughput_s20_tok_s": 7429,
+        "energy_J": 50.441,
+        "avg_power_W": 73.6,
+        "peak_power_W": 80.7,
+        "correct": true
+      },
+      {
+        "seq_len": 512,
+        "baseline_ms": 51.799,
+        "s20_sdpa_ms": 52.1,
+        "overhead": 1.006,
+        "throughput_base_tok_s": 9884,
+        "throughput_s20_tok_s": 9827,
+        "energy_J": 54.141,
+        "avg_power_W": 52.6,
+        "peak_power_W": 66.6,
+        "correct": true
+      }
+    ]
+  }
+}

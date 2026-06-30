@@ -1,0 +1,17 @@
+{
+  "hypothesis": "H4_slopes_only_wd",
+  "best_val_ppl": 24.81444097920271,
+  "extrapolation_ppl": {
+    "1x": 27.9883,
+    "2x": 26.5701,
+    "4x": null
+  },
+  "passkey_retrieval": {
+    "1x": 1,
+    "2x": 1,
+    "4x": 1
+  },
+  "energy_kwh": 10.47485776388923,
+  "co2e_g": 4032.8202390973534,
+  "duration_s": 559.4
+}

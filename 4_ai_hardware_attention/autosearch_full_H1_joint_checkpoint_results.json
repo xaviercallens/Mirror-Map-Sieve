@@ -1,0 +1,17 @@
+{
+  "hypothesis": "H1_joint_checkpoint",
+  "best_val_ppl": 24.80232751057381,
+  "extrapolation_ppl": {
+    "1x": 28.0088,
+    "2x": 26.7066,
+    "4x": null
+  },
+  "passkey_retrieval": {
+    "1x": 1,
+    "2x": 1,
+    "4x": 0
+  },
+  "energy_kwh": 11.219547444444704,
+  "co2e_g": 4319.525766111211,
+  "duration_s": 599.45
+}

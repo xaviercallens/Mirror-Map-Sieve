@@ -1,0 +1,80 @@
+{
+  "dims": {
+    "n_layers": 24,
+    "n_heads": 14,
+    "n_kv_heads": 2,
+    "head_dim": 64,
+    "vocab_size": 151936
+  },
+  "batch_size": 4,
+  "window_size": 64,
+  "pruned_layers": 23,
+  "results": [
+    {
+      "seq_len": 512,
+      "dense_vram_mb": 24.0,
+      "pruned_vram_mb": 3.875,
+      "vram_saved_mb": 20.125,
+      "vram_saved_pct": 83.85416666666666,
+      "dense_latency_ms": 122.88310080184601,
+      "pruned_latency_ms": 52.283837198592664,
+      "latency_saved_ms": 70.59926360325335,
+      "latency_saved_pct": 57.452378026411886
+    },
+    {
+      "seq_len": 1024,
+      "dense_vram_mb": 48.0,
+      "pruned_vram_mb": 4.875,
+      "vram_saved_mb": 43.125,
+      "vram_saved_pct": 89.84375,
+      "dense_latency_ms": 313.88599920028355,
+      "pruned_latency_ms": 52.38302570051019,
+      "latency_saved_ms": 261.50297349977336,
+      "latency_saved_pct": 83.3114487954317
+    },
+    {
+      "seq_len": 2048,
+      "dense_vram_mb": 96.0,
+      "pruned_vram_mb": 6.875,
+      "vram_saved_mb": 89.125,
+      "vram_saved_pct": 92.83854166666666,
+      "dense_latency_ms": 679.7674896020908,
+      "pruned_latency_ms": 107.97687739741377,
+      "latency_saved_ms": 571.790612204677,
+      "latency_saved_pct": 84.11561614095149
+    },
+    {
+      "seq_len": 4096,
+      "dense_vram_mb": 192.0,
+      "pruned_vram_mb": 10.875,
+      "vram_saved_mb": 181.125,
+      "vram_saved_pct": 94.3359375,
+      "dense_latency_ms": 2675.514067200129,
+      "pruned_latency_ms": 274.514072897,
+      "latency_saved_ms": 2400.999994303129,
+      "latency_saved_pct": 89.73976342481826
+    },
+    {
+      "seq_len": 8192,
+      "dense_vram_mb": 384.0,
+      "pruned_vram_mb": 18.875,
+      "vram_saved_mb": 365.125,
+      "vram_saved_pct": 95.08463541666666,
+      "dense_latency_ms": 24816.759012000693,
+      "pruned_latency_ms": 1846.7987393007206,
+      "latency_saved_ms": 22969.960272699973,
+      "latency_saved_pct": 92.55825976950632
+    },
+    {
+      "seq_len": 16384,
+      "dense_vram_mb": 768.0,
+      "pruned_vram_mb": 34.875,
+      "vram_saved_mb": 733.125,
+      "vram_saved_pct": 95.458984375,
+      "dense_latency_ms": 65676.53308080335,
+      "pruned_latency_ms": 3472.6340813993374,
+      "latency_saved_ms": 62203.89899940401,
+      "latency_saved_pct": 94.71251919292561
+    }
+  ]
+}

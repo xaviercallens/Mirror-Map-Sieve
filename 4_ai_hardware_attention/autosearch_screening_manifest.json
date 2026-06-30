@@ -1,0 +1,70 @@
+[
+  {
+    "hypothesis": "H1_joint_checkpoint",
+    "best_val_ppl": 24.80232751057381,
+    "extrapolation_ppl": {
+      "1x": 28.0088,
+      "2x": 26.7066,
+      "4x": null
+    },
+    "passkey_retrieval": {
+      "1x": 1,
+      "2x": 1,
+      "4x": 0
+    },
+    "energy_kwh": 1.1960175277777791,
+    "co2e_g": 460.46674819444496,
+    "duration_s": 64.2
+  },
+  {
+    "hypothesis": "H4_slopes_only_wd",
+    "best_val_ppl": 24.778118310436746,
+    "extrapolation_ppl": {
+      "1x": 27.9678,
+      "2x": 26.5506,
+      "4x": 22.0327
+    },
+    "passkey_retrieval": {
+      "1x": 1,
+      "2x": 1,
+      "4x": 0
+    },
+    "energy_kwh": 1.4033687222222215,
+    "co2e_g": 540.2969580555553,
+    "duration_s": 75.2
+  },
+  {
+    "hypothesis": "H2_clamped_slopes",
+    "best_val_ppl": 24.93590153503627,
+    "extrapolation_ppl": {
+      "1x": 28.1597,
+      "2x": 26.8636,
+      "4x": null
+    },
+    "passkey_retrieval": {
+      "1x": 1,
+      "2x": 1,
+      "4x": 0
+    },
+    "energy_kwh": 1.4323823611111113,
+    "co2e_g": 551.4672090277778,
+    "duration_s": 76.45
+  },
+  {
+    "hypothesis": "H3_asymmetric_lr",
+    "best_val_ppl": 24.81444097920271,
+    "extrapolation_ppl": {
+      "1x": 27.9951,
+      "2x": 26.4729,
+      "4x": null
+    },
+    "passkey_retrieval": {
+      "1x": 1,
+      "2x": 1,
+      "4x": 0
+    },
+    "energy_kwh": 1.4831482777777765,
+    "co2e_g": 571.0120869444439,
+    "duration_s": 79.25
+  }
+]

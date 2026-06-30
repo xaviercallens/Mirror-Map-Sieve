@@ -162,10 +162,153 @@ def perplexity(model, ids, ctx, device, n_batches=8, batch=4):
 
 
 # ---------------------------------------------------------------------------
+# Energy & CO2e Tracker (Hardware-Level Monitoring)
+# ---------------------------------------------------------------------------
+
+class EnergyTracker:
+    def __init__(self, sample_interval=0.05):
+        self.interval = sample_interval
+        self.power_draws = []
+        self.lock = threading.Lock()
+        self.running = False
+        self.nvml_active = False
+        
+    def start(self):
+        try:
+            import pynvml
+            pynvml.nvmlInit()
+            self.handle = pynvml.nvmlDeviceGetHandleByIndex(0)
+            self.nvml_active = True
+        except Exception:
+            self.nvml_active = False
+            
+        self.running = True
+        import threading
+        self.thread = threading.Thread(target=self._log_power)
+        self.thread.daemon = True
+        self.thread.start()
+        
+    def _log_power(self):
+        import time
+        while self.running:
+            if self.nvml_active:
+                try:
+                    import pynvml
+                    power = pynvml.nvmlDeviceGetPowerUsage(self.handle) / 1000.0 # Watts
+                except Exception:
+                    power = 0.0
+            else:
+                power = 0.0
+                
+            with self.lock:
+                self.power_draws.append(power)
+            time.sleep(self.interval)
+            
+    def stop(self, carbon_intensity=385.0): # g CO2e/kWh (national/regional grid average)
+        self.running = False
+        self.thread.join()
+        
+        if self.nvml_active:
+            try:
+                import pynvml
+                pynvml.nvmlShutdown()
+            except Exception:
+                pass
+                
+        with self.lock:
+            draws = list(self.power_draws)
+            
+        if not draws:
+            return {"kwh": 0.0, "co2e_grams": 0.0, "avg_power_watts": 0.0, "duration_hours": 0.0}
+            
+        avg_power = sum(draws) / len(draws)
+        duration_hrs = (len(draws) * self.interval) / 3600.0
+        kwh = avg_power * duration_hrs
+        co2e = kwh * carbon_intensity
+        
+        return {
+            "kwh": kwh,
+            "co2e_grams": co2e,
+            "avg_power_watts": avg_power,
+            "duration_hours": duration_hrs,
+            "samples": len(draws)
+        }
+
+
+# ---------------------------------------------------------------------------
+# Passkey Retrieval (Needle-in-a-Haystack long context evaluation)
+# ---------------------------------------------------------------------------
+
+@torch.no_grad()
+def evaluate_passkey(model, tokenizer, device, context_length=2048, depth_ratio=0.5):
+    """Evaluates passkey retrieval (needle-in-a-haystack)."""
+    model.eval()
+    import random
+    passkey = f"{random.randint(10000, 99999)}"
+    
+    prefix_template = "The following is a long text containing a hidden passkey. Read it carefully.\n\n"
+    needle = f"\nThe secret passkey is {passkey}. Remember this passkey.\n"
+    suffix = f"\nWhat is the secret passkey? Answer: The secret passkey is"
+    
+    garbage_words = ["apple", "banana", "cherry", "dog", "elephant", "fox", "grape", "house", "ice", "jacket", 
+                     "kangaroo", "lemon", "melon", "nest", "orange", "pear", "quail", "rabbit", "strawberry", 
+                     "tiger", "umbrella", "violin", "watermelon", "xylophone", "yellow", "zebra"]
+    
+    prefix_ids = tokenizer.encode(prefix_template, return_tensors="pt")[0]
+    needle_ids = tokenizer.encode(needle, return_tensors="pt")[0]
+    suffix_ids = tokenizer.encode(suffix, return_tensors="pt")[0]
+    
+    fixed_len = prefix_ids.size(0) + needle_ids.size(0) + suffix_ids.size(0)
+    target_garbage_len = context_length - fixed_len
+    if target_garbage_len <= 0:
+        return 0, "Context length too small"
+        
+    garbage_text_list = []
+    while True:
+        word = random.choice(garbage_words)
+        garbage_text_list.append(word)
+        if len(garbage_text_list) % 50 == 0:
+            candidate_text = " ".join(garbage_text_list)
+            candidate_ids = tokenizer.encode(candidate_text, return_tensors="pt")[0]
+            if candidate_ids.size(0) >= target_garbage_len:
+                garbage_ids = candidate_ids[:target_garbage_len]
+                break
+                
+    split_idx = int(depth_ratio * garbage_ids.size(0))
+    garbage_before = garbage_ids[:split_idx]
+    garbage_after = garbage_ids[split_idx:]
+    
+    input_ids = torch.cat([
+        prefix_ids,
+        garbage_before,
+        needle_ids,
+        garbage_after,
+        suffix_ids
+    ]).unsqueeze(0).to(device)
+    
+    outputs = model.generate(
+        input_ids=input_ids,
+        max_new_tokens=10,
+        do_sample=False,
+        num_beams=1,
+        use_cache=True,
+        pad_token_id=tokenizer.eos_token_id if tokenizer.eos_token_id is not None else 0
+    )
+    
+    generated_ids = outputs[0, input_ids.size(1):]
+    response = tokenizer.decode(generated_ids, skip_special_tokens=True).strip()
+    
+    success = 1 if passkey in response else 0
+    return success, f"Expected {passkey}, got '{response}'"
+
+
+# ---------------------------------------------------------------------------
 # Continued-pretrain (slopes only, frozen base) — reuses the hetero-pos pattern:
 # gamma-L2 on slopes + validation early-stopping (both proved ESSENTIAL, see
 # AUTORESEARCH_HYPOTHESES.md: a short budget otherwise crowns the overfitter).
 # ---------------------------------------------------------------------------
+
+import threading
 
 def continued_pretrain(model, holder, train_ids, val_ids, device, cfg):
     for p in model.parameters():
@@ -189,6 +332,11 @@ def continued_pretrain(model, holder, train_ids, val_ids, device, cfg):
     it = token_batch_iter(train_ids, cfg["ctx"], cfg["batch"], device, gen)
     ev, pmax = cfg.get("eval_every", 0), cfg.get("patience", 4)
     best, patience, best_slopes = float("inf"), 0, None
+    
+    # Initialize energy tracker
+    tracker = EnergyTracker()
+    tracker.start()
+    
     model.train()
     for step in range(1, cfg["steps"] + 1):
         x, y = next(it)
@@ -208,10 +356,15 @@ def continued_pretrain(model, holder, train_ids, val_ids, device, cfg):
                 if patience >= pmax:
                     print(f"    early-stop @ {step}"); break
             model.train()
+            
+    # Stop energy tracker
+    energy_metrics = tracker.stop()
+    print(f"    Adaptation Energy: {energy_metrics['kwh']:.6f} kWh | CO2e: {energy_metrics['co2e_grams']:.4f} grams")
+    
     if best_slopes is not None:
         with torch.no_grad():
             holder.log_slopes.copy_(best_slopes)
-    return model, best if best < 9e8 else None
+    return model, (best if best < 9e8 else None), energy_metrics
 
 
 def usable_context_multiple(extrap, base_key="1x", band=0.10):
@@ -245,16 +398,30 @@ def run_mode(mode, train_ids, val_ids, tok, device, cfg):
     holder = patch_bloom_with_learnable_slopes(model, learnable=(mode == "learnable_slopes"))
     init_slopes = [round(float(s), 5) for s in holder.slopes().detach().cpu()]
     best_val = None
+    energy_metrics = {"kwh": 0.0, "co2e_grams": 0.0, "avg_power_watts": 0.0, "duration_hours": 0.0}
     if mode == "learnable_slopes":
-        model, best_val = continued_pretrain(model, holder, train_ids, val_ids, device, cfg)
+        model, best_val, energy_metrics = continued_pretrain(model, holder, train_ids, val_ids, device, cfg)
+        
     # PRIMARY METRIC: serve-long extrapolation at 1x/2x/4x/8x
     extrap = {}
+    passkey_results = {}
     for mult in (1, 2, 4, 8):
         L = cfg["ctx"] * mult
         try:
             extrap[f"{mult}x"] = round(perplexity(model, val_ids, L, device), 4)
         except Exception as e:
             extrap[f"{mult}x"] = None
+            
+        # Passkey retrieval at length L
+        if L >= 80: # Skip if context too short for prompt template
+            try:
+                success, msg = evaluate_passkey(model, tok, device, context_length=L, depth_ratio=0.5)
+                passkey_results[f"{mult}x"] = success
+            except Exception as e:
+                passkey_results[f"{mult}x"] = f"ERROR: {str(e)}"
+        else:
+            passkey_results[f"{mult}x"] = "SKIP (ctx too small)"
+            
     final_slopes = [round(float(s), 5) for s in holder.slopes().detach().cpu()]
     # restore original builder so repeated runs in one process are clean
     import transformers.models.bloom.modeling_bloom as bloom_mod
@@ -264,6 +431,8 @@ def run_mode(mode, train_ids, val_ids, tok, device, cfg):
         del model; torch.cuda.empty_cache()
     return {"mode": mode, "extrap": extrap, "best_val": best_val,
             "usable_ctx_mult": usable_context_multiple(extrap),
+            "passkey_results": passkey_results,
+            "energy_metrics": energy_metrics,
             "init_slopes": init_slopes, "final_slopes": final_slopes}
 
 
@@ -300,6 +469,9 @@ def main():
             r = run_mode(m, train_ids, val_ids, tok, device, cfg); runs.append(r)
             print(f"  {m:>16}: extrap {r['extrap']}  usable_ctx={r['usable_ctx_mult']}x  "
                   f"({time.perf_counter()-t0:.0f}s)")
+            print(f"                    passkey {r['passkey_results']}")
+            if m == "learnable_slopes":
+                print(f"                    energy  {r['energy_metrics']['kwh']:.6f} kWh | CO2e: {r['energy_metrics']['co2e_grams']:.4f} grams")
         except Exception as e:
             print(f"  {m:>16}: ERROR {e}"); runs.append({"mode": m, "error": str(e)})
 
@@ -311,8 +483,11 @@ def main():
         print(f"\n  VERDICT — usable-context multiple: frozen={fz['usable_ctx_mult']}x  "
               f"learnable={lr['usable_ctx_mult']}x  "
               f"({'IMPROVED' if lr['usable_ctx_mult'] > fz['usable_ctx_mult'] else 'NO GAIN (KILL)'})")
-        print("  NOTE: scaffolding metric is sliding-window ppl; RULER/passkey + measured "
-              "kWh/CO2e are the next harness (docs/BENCHMARK_SPEC_OPENWEIGHT.md TODO).")
+        kwh = lr.get("energy_metrics", {}).get("kwh", 0.0)
+        if kwh > 0:
+            eff = lr["usable_ctx_mult"] / kwh
+            print(f"  PRIMARY METRIC: usable-context multiple per kWh: {eff:.4f}x/kWh")
+            
     json.dump({"corpus": src, "cfg": {k: v for k, v in cfg.items()}, "runs": runs},
               open(args.output, "w"), indent=2)
     print(f"\n-> {args.output}")

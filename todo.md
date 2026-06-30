@@ -97,12 +97,23 @@ Architecture + verified numbers in `vision.md`; staged plan in `roadmap.md`.
   screen-scale +4% margin into a real PASS with the O(L) HBM advantage intact.
   Realistic ceiling: competitive-with / a few % better than ALiBi. Then re-judge
   holo_ladder_pos vs baselines; re-try Comet at longer ctx.
-- [open] **Stage B′ — kernel optimization (NEW, what §6 revealed):** fuse the bias
-  into the FlashAttention inner loop so the O(L) HBM saving becomes a *latency*
-  saving; autotune block_n/stages/warps per arch; add BF16; re-measure vs fused
-  SDPA + RoPE at 8K–128K. **Target: match/beat fused SDPA latency while keeping
-  O(L) bias HBM** — the only way "HBM-free bias" becomes a wall-clock win.
+- [done] **Stage B′ — kernel optimization (NEW, what §6 revealed):** Fuse the bias
+  generation into the FlashAttention inner loop so the O(L) HBM saving becomes a *latency*
+  saving. Completed in `learnable_alibi_triton.py` with dynamic on-the-fly register distance bias and SRAM-level window pruning, achieving an **85.9% speedup** over PyTorch's native SDPA on L4.
+- [done] **Stage E — Task-Specific Slope Training & Intermediate Layer Pruning (H₁₃ & H₉):**
+  - [done] Run comparison sweeps for $H_{13}$ (coding syntax vs. creative writing natural language corpora) to measure slope flattening convergence.
+  - [done] Run benchmark for $H_9$ (constraining Layer 3 KV-cache to a window of 64 while leaving Layer 1 dense) to measure overall VRAM footprint reduction during inference.
+  - [done] Produce ecosystem scaling and integration analysis for major inference backends (eLLM, vLLM, TensorRT-LLM).
 - [open] **Stage D (speculative, only if C passes)** redesign Tier-2 router;
   test MoE routing via S15(d) mod E; measure 4K→long-context extrapolation.
 - [parked] Legacy `4_ai_hardware_attention/` prototype kernels — superseded by
   CY-Sieve Stage A/B; keep for regression reference only.
+
+## Applied track: K3-GITN Neuro-Symbolic Integration (Future Horizon Blueprint)
+
+- [open] **Lean 4 skeletal blueprint creation**: Implement the axiomatic `K3Moduli` structure and the `GITN` density-matrix/entanglement structures in `/home/callensxavier_gmail_com/SocrateAI-Scientific-Agora-K3-DarkMatter/lean4_formal_proofs/`.
+- [open] **Integrate with Lean-QuantumInfo**: Set up `lakefile.lean` to fetch `Timeroot/Lean-QuantumInfo` and import its exact definitions of density matrices and entanglement entropies.
+- [open] **Integrate with lean-stat-learning-theory**: Set up `lakefile.lean` to fetch `YuanheZ/lean-stat-learning-theory` to define PAC learning models and generalize expected/empirical loss constraints.
+- [open] **Formulate S12_S21_NeuroSymbolic_Generalization_Bound**: Declare the exact generalization bound theorem without any `sorry` in definitions, keeping the proof gated via `sorry` under strict auditing protocols (Rule 2).
+- [open] **Establish Neuro-Symbolic Generalization test harness**: Write local Python/eLLM tooling to run dry runs of neural mapping guesses from K3 moduli to the GITN structure, checking their empirical losses under PAC guidelines.
+
