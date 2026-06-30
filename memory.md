@@ -3,8 +3,8 @@
 ## Project Identity
 - **Sequence**: $S(n) = \sum_{k=0}^{n} \binom{n}{k}^4 \binom{n+k}{k}$ (Weight-5 Apéry-like, catalog index S₂₀)
 - **Zenodo DOI**: 10.5281/zenodo.20747943
-- **GitHub**: https://github.com/xaviercallens/Mirror-Map-Sieve (latest release **v3.0.0**, 2026-06-20)
-- **v3.0.0 contents**: de-eponymized; OEIS-pending honesty; 3 Lean theorems (cubic supercongruence, Wolstenholme, NEW Apéry-style S(p-1)≡1 mod p — all axiom-clean); v6 paper with full human proofs (paper/mirror_map_sieve_arxiv_v6.tex+pdf); python/verify_all.py (stdlib, exits 0); VERIFICATION_REPORT.md; CI consolidated to ci.yml (python-tests + lean-build both green).
+- **GitHub**: https://github.com/xaviercallens/Mirror-Map-Sieve (latest release **v4.2.0**, 2026-06-30)
+- **v4.2.0 contents**: Weight-5 Apéry-like sequence S₂₀(n) formalization and scaling; unconditional cubic supercongruence mod p³ verified sorry-free and axiom-clean; 100% sorry-free Lean 4 order-4 recurrence inductive step template (`S20_Inductive_Step_Template.lean`); exact Python-Lagrange mirror map integrality verifier up to d=100; S₂₀ preprint paper (`S20_Preprint_Draft.md`); fast restart automation (`restart_quick.sh`).
 - **GitHub push note**: repo owner account is `xaviercallens` (gh); the other logged-in account `pxcallen_amadeus` has read-only access. Switch with `gh auth switch --user xaviercallens` to push.
 - **OEIS Status**: DRAFT A397213 submitted but NOT YET APPROVED by editors. A397213 is a pending placeholder, not an accepted OEIS entry. Do not cite it as accepted.
 - **Naming**: All eponymous names ("S_20"/-Alix/-Al/-Lia) removed. Use the descriptive mathematical name "weight-5 Apéry-like sequence S₂₀(n)". Author byline "Xavier Callens" kept.
@@ -75,8 +75,20 @@ See docs/RESEARCH_PLAN.md, docs/PHASE1_FINDINGS.md, docs/PHASE2_FINDINGS.md.
 This guide ensures that any future developer or automated runtime can spin up the environment from scratch, recreate the virtual environment, execute all benchmarking/training scripts, and verify CUDA kernel functionality.
 
 ### One-Click Automation
-A fully automated restart script is available in the repository root. This script automatically recreates the virtual environment, installs dependencies, verifies the Triton kernels, and can re-run all benchmarking/training sweeps:
+The repository includes two major automated rapid-restart scripts in the root folder:
 
+#### 1. S₂₀ Math & Formal Proofs Rapid Verification (`restart_quick.sh`)
+This script executes exact mirror map and candidate instanton calculations up to $d \le 100$ in Python/SageMath and compiles/verifies the S₂₀ Lean 4 formal proofs (including the order-4 recurrence inductive step template) sorry-free in one unified step:
+```bash
+# Make sure the script is executable
+chmod +x restart_quick.sh
+
+# Run S₂₀ exact mathematical and Lean formal proof verifications
+./restart_quick.sh
+```
+
+#### 2. GPU AI Hardware & Triton Benchmarking (`fast_restart.sh`)
+This script automatically recreates the virtual environment, installs hardware dependencies, verifies Triton sliding window kernels, and runs the attention/pruning benchmarking sweeps:
 ```bash
 # Make sure the script is executable
 chmod +x fast_restart.sh

@@ -19,3 +19,7 @@ generated_check.lean
 4_ai_hardware_attention/cy_sieve_perf_results.json
 4_ai_hardware_attention/cy_sieve_quality_results.json
 4_ai_hardware_attention/gpu_phase_results*.json
+
+# External dependencies and pruned learning repos
+external/
+
